@@ -281,12 +281,11 @@ label {
 
 .profile-container {
   font-family: "Arial", sans-serif;
-  padding: 20px;
+  padding: 20px 0px 20px 5px;
   background-color: #fff;
   max-width: 400px;
   margin: 0 auto;
   border-radius: 10px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .profile-header {
@@ -385,7 +384,7 @@ select {
 @media (max-width: 480px) {
   .profile-container {
     max-width: 100%;
-    padding: 15px;
+    padding: 8px 8px 0 0 ;
   }
 
   .profile-header {
@@ -571,14 +570,7 @@ main.shifted {
   }
 }
 
-.profile-container {
-  padding: 20px;
-  background-color: #fff;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
+
 
 .profile-form {
   width: 100%;

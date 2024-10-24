@@ -32,24 +32,6 @@ const Login = () => {
   const [loginError, setLoginError] = useState(false);
   const [loginMsg, setLoginMsg] = useState("");
   const router = useRouter();
-  const previousPage = router.query.from || null;
-  const subCategory = router.query.subCategory || null;
-  const catValue = router.query.catValue || null;
-  const city = router.query.city || null;
-  const orderType = router.query.orderType || null;
-  const product = router.query.product || null;
-  const selectedDishDictionary = router.query.selectedDishDictionary || null;
-  const selectedDishPrice = router.query.selectedDishPrice || null;
-  const selectedDishes = router.query.selectedDishes || null;
-  const isDishSelected = router.query.isDishSelected || null;
-  const selectedCount = router.query.selectedCount || null;
-  const peopleCount = router.query.peopleCount || null;
-  const selectedDeliveryOption = router.query.selectedOption || null;
-  const totalOrderAmount = router.query.totalOrderAmount || null;
-  const selectedDishQuantities = router.query.selectedDishQuantities || null;
-  const selectedOption = router.query.selectedOption || null;
-  const selectedDishesFoodDelivery =
-    router.query.selectedDishesFoodDelivery || null;
   const [validMobileNumber, setValidMobileNumber] = useState(false);
   const otpRefs = useRef([
     React.createRef(),
@@ -172,6 +154,10 @@ const Login = () => {
           localStorage.setItem("mobileNumber", mobileNumber);
           localStorage.setItem("token", response.data.token);
           localStorage.setItem("userID", response.data.data._id);
+          // localStorage.setItem("supplierCity", response.data.data.city);
+          // localStorage.setItem("supplierJobProfile", response.data.data.job_profile);
+          // localStorage.setItem("supplierExperince", response.data.data.experience);
+          // localStorage.setItem("supplierName", response.data.data.name);
 
           console.log(response.data.token, "user token");
 
@@ -181,12 +167,12 @@ const Login = () => {
             localStorage.setItem("hasLoggedInBefore", "true");
             router.push("/Profile");
           } else {
-            router.push("/MyAccount");
+            router.push("/Profile");
           }
 
           handleOtpSuccess1();
         } else {
-          router.push("/home");
+          router.push("/Profile");
         }
       } else {
         setLoginMsg("");

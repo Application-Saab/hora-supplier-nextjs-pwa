@@ -1,71 +1,172 @@
-// // pages/dashboard.js
-// import React from 'react';
-// import Layout from '../../component/Layout';
-
-// const Dashboard = () => {
-//   return (
-//     <Layout>
-//     <div>
-//       <h1>Dashboard</h1>
-//       <p>Welcome to your profile!</p>
-//     </div>
-//     </Layout>
-//   );
-// };
-
-// export default Dashboard;
-
-
-
-
 import React, { useState } from 'react';
 import Layout from '../../component/Layout';
+import {
+  BASE_URL,
+  SUPPLIER_WORK_UPDATE,
+  SUPPLIER_UPDATE_PERSONAL_DETAILS// Define this constant for your second API
+} from "../../apiconstant/apiconstant";
+import axios from "axios";
 
 const ProfileUpdate = () => {
-  const [experience, setExperience] = useState('');
-  const [profile, setProfile] = useState('Chef');
+  const [jobType, setJobType] = useState('');
+  const [error, setError] = useState(null);
+  const [showAdditionalFields, setShowAdditionalFields] = useState(false);
+  const [userDetails, setUserDetails] = useState({
+    name: '',
+    city: '',
+    age: '',
+    experience: ''
+  });
 
-  const handleUpdate = () => {
-    // Add update logic here
-    console.log('Profile updated');
+  const userRestaurant = [{ name: "Planet of the Crepes", profile: "Bartender" }];
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    try {
+      const token = localStorage.getItem('token');
+      const url = BASE_URL + SUPPLIER_WORK_UPDATE;
+
+      const requestData = {
+        job_type: jobType,
+        userRestaurant: userRestaurant
+      };
+
+      console.log(requestData, "requestData");
+
+      const response = await axios.post(url, requestData, {
+        headers: {
+          "Content-Type": "application/json",
+          'Authorization': token
+        },
+      });
+
+      console.log(response.data, "response data");
+
+      if (response.status === 200) {
+        console.log('Data submitted successfully:', response.data);
+        setShowAdditionalFields(true); // Show additional fields
+      } else {
+        console.error('Submission failed:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error submitting data:', error.message);
+      setError(error.message);
+    }
+  };
+
+  const handleAdditionalSubmit = async (event) => {
+    event.preventDefault();
+
+    try {
+      const token = localStorage.getItem('token');
+      const url =  SUPPLIER_UPDATE_PERSONAL_DETAILS; // Define your endpoint
+
+      const requestData = {
+        age: userDetails.age,
+        city: userDetails.city,
+        experience: userDetails.experience,
+        name: userDetails.name,
+        vechicle_type: "Two wheeler", // Add other fields as necessary
+        aadhar_no: "26353476353", // Placeholder, you can modify as needed
+        aadhar_front_img: "attachment-1678985056105.jpg",
+        aadhar_back_img: "attachment-1678985062522.jpg",
+        avatar: "attachment-1678985070996.jpg",
+        userServedLocalities: [] // Modify this as necessary
+      };
+
+      console.log(requestData, "additionalRequestData");
+
+      const response = await axios.post(url, requestData, {
+        headers: {
+          "Content-Type": "application/json",
+          'Authorization': token
+        },
+      });
+
+      console.log(response.data, "additional response data");
+
+      if (response.status === 200) {
+        console.log('Additional data submitted successfully:', response.data);
+      } else {
+        console.error('Additional submission failed:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error submitting additional data:', error.message);
+      setError(error.message);
+    }
   };
 
   return (
     <Layout>
-    <div className="profile-container">
-      {/* Profile Picture and Status */}
-      <div className="profile-picture-section">
-        <div className="profile-picture"></div>
-        <button className="update-button">Update</button>
-        <span className="status-badge">0% InComplete</span>
-      </div>
+      <div className="profile-container">
+        <div className="profile-form">
+          <form onSubmit={handleSubmit} style={{ width: "100%" }}>
+            <div>
+              <label htmlFor="jobType">Job Type:</label>
+              <select 
+                id="jobType" 
+                value={jobType} 
+                onChange={(e) => setJobType(e.target.value)} 
+                required
+              >
+                <option value="">Select Job Type</option>
+                <option value="2">Chef</option>
+                <option value="1">Decorator</option>
+              </select>
+            </div>
+            <button type="submit">Submit</button>
+            {error && <p style={{ color: 'red' }}>{error}</p>}
+          </form>
 
-      {/* Experience Input */}
-      <div className="input-section">
-        <label>Experience (yrs)</label>
-        <input 
-          type="number" 
-          value={experience} 
-          onChange={(e) => setExperience(e.target.value)} 
-          placeholder="Enter years of experience" 
-        />
+          {showAdditionalFields && (
+            <form onSubmit={handleAdditionalSubmit} style={{ marginTop: "20px" }}>
+              <div>
+                <label htmlFor="name">Name:</label>
+                <input 
+                  type="text" 
+                  id="name" 
+                  value={userDetails.name} 
+                  onChange={(e) => setUserDetails({ ...userDetails, name: e.target.value })} 
+                  required
+                />
+              </div>
+              <div>
+                <label htmlFor="city">City:</label>
+                <input 
+                  type="text" 
+                  id="city" 
+                  value={userDetails.city} 
+                  onChange={(e) => setUserDetails({ ...userDetails, city: e.target.value })} 
+                  required
+                />
+              </div>
+              <div>
+                <label htmlFor="age">Age:</label>
+                <input 
+                  type="number" 
+                  id="age" 
+                  value={userDetails.age} 
+                  onChange={(e) => setUserDetails({ ...userDetails, age: e.target.value })} 
+                  required
+                />
+              </div>
+              <div>
+                <label htmlFor="experience">Experience:</label>
+                <input 
+                  type="text" 
+                  id="experience" 
+                  value={userDetails.experience} 
+                  onChange={(e) => setUserDetails({ ...userDetails, experience: e.target.value })} 
+                  required
+                />
+              </div>
+              <button type="submit">Submit Additional Info</button>
+              {error && <p style={{ color: 'red' }}>{error}</p>}
+            </form>
+          )}
+        </div>
       </div>
-
-      {/* Profile Dropdown */}
-      <div className="input-section">
-        <label>Profile</label>
-        <select 
-          value={profile} 
-          onChange={(e) => setProfile(e.target.value)}>
-          <option value="Chef">Chef</option>
-          <option value="Manager">Manager</option>
-          <option value="Waiter">Waiter</option>
-        </select>
-      </div>
-
-      {/* Update Button */}
-      <button className="update-action-button" onClick={handleUpdate}>UPDATE</button>
-    </div>
     </Layout>
   );
 };
