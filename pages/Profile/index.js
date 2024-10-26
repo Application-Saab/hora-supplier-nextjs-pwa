@@ -2,60 +2,133 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import Image from "next/image";
 import Layout from '../../component/Layout';
-import logo from '../../assets/new_logo_light.png.png'; 
-// import BASE_URL from "../../apiconstant/apiconstant";
-// import { useNavigate } from 'react-router-dom';
+import {
+  BASE_URL,
+  SUPPLIER_WORK_UPDATE,
+  SUPPLIER_UPDATE_PERSONAL_DETAILS// Define this constant for your second API
+} from "../../apiconstant/apiconstant";
 
 
-const BASE_URL="https://horaservices.com:3000";
+const ProfileUpdate = () => {
+  const [jobType, setJobType] = useState('');
+  const [error, setError] = useState(null);
+  const [showAdditionalFields, setShowAdditionalFields] = useState(false);
+  const [userDetails, setUserDetails] = useState({
+    name: '',
+    city: '',
+    age: '',
+    experience: ''
+  });
 
-function ProfileUpdate() {
-  const [imageSrc, setImageSrc] = useState(logo); 
-  const [imageFile, setImageFile] = useState(null); 
-  const [experience, setExperience] = useState(""); 
-  const [profile, setProfile] = useState("Decoration"); 
+  const userRestaurant = [{ name: "Planet of the Crepes", profile: "Bartender" }];
 
-//   const navigate = useNavigate();
-  
-  const handleImageUpload = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      setImageFile(file); 
-      const imageUrl = URL.createObjectURL(file); 
-      setImageSrc(imageUrl); 
-    }
-  };
-
-
-  const handleSubmit = async () => {
-    const requestData = {
-      profile: profile
-    };
+  const handleSubmit = async (event) => {
+    event.preventDefault();
 
     try {
-      const token = await localStorage.getItem('token');
-  
-      const response = await axios.post(`${BASE_URL}/api/users/update_work_details`,
-        JSON.stringify(requestData),
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'authorization': token
-          },
-        }
-      );
-  
+      const token = localStorage.getItem('token');
+      const url = BASE_URL + SUPPLIER_WORK_UPDATE;
+
+      const requestData = {
+        job_type: jobType,
+        userRestaurant: userRestaurant
+      };
+
+      console.log(requestData, "requestData");
+
+      const response = await axios.post(url, requestData, {
+        headers: {
+          "Content-Type": "application/json",
+          'Authorization': token
+        },
+      });
+
+      console.log(response.data, "response data");
+
       if (response.status === 200) {
         console.log('Data submitted successfully:', response.data);
-        // Redirect to home page
-        window.location.href = '/MyAcount'; // Or use window.location.replace('/home') for replacing the current history entry
+        setShowAdditionalFields(true); // Show additional fields
       } else {
         console.error('Submission failed:', response.statusText);
       }
     } catch (error) {
       console.error('Error submitting data:', error.message);
+      setError(error.message);
     }
   };
+
+  const handleAdditionalSubmit = async (event) => {
+    event.preventDefault();
+
+    try {
+      const token = localStorage.getItem('token');
+      const url =  SUPPLIER_UPDATE_PERSONAL_DETAILS; // Define your endpoint
+
+      const requestData = {
+        age: userDetails.age,
+        city: userDetails.city,
+        experience: userDetails.experience,
+        name: userDetails.name,
+        vechicle_type: "Two wheeler", // Add other fields as necessary
+        aadhar_no: "26353476353", // Placeholder, you can modify as needed
+        aadhar_front_img: "attachment-1678985056105.jpg",
+        aadhar_back_img: "attachment-1678985062522.jpg",
+        avatar: "attachment-1678985070996.jpg",
+        userServedLocalities: [] // Modify this as necessary
+      };
+
+      console.log(requestData, "additionalRequestData");
+
+      const response = await axios.post(url, requestData, {
+        headers: {
+          "Content-Type": "application/json",
+          'Authorization': token
+        },
+      });
+
+      console.log(response.data, "additional response data");
+
+      if (response.status === 200) {
+        console.log('Additional data submitted successfully:', response.data);
+      } else {
+        console.error('Additional submission failed:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error submitting additional data:', error.message);
+      setError(error.message);
+    }
+  };
+
+
+  // const handleSubmit = async () => {
+  //   const requestData = {
+  //     profile: profile
+  //   };
+
+  //   try {
+  //     const token = await localStorage.getItem('token');
+  
+  //     const response = await axios.post(`${BASE_URL}/api/users/update_work_details`,
+  //       JSON.stringify(requestData),
+  //       {
+  //         headers: {
+  //           'Content-Type': 'application/json',
+  //           'authorization': token
+  //         },
+  //       }
+  //     );
+  
+  //     if (response.status === 200) {
+  //       console.log('Data submitted successfully:', response.data);
+  //       // Redirect to home page
+  //       window.location.href = '/MyAcount'; // Or use window.location.replace('/home') for replacing the current history entry
+  //     } else {
+  //       console.error('Submission failed:', response.statusText);
+  //     }
+  //   } catch (error) {
+  //     console.error('Error submitting data:', error.message);
+  //   }
+  // };
   
 
 // const handleSubmit = async () => {
@@ -103,67 +176,73 @@ function ProfileUpdate() {
   
 
   return (
-    <Layout navTitle="My Account">
-       <h1 style={{marginLeft: "50px"}}>Add Your Personal Details</h1>
+    <Layout>
       <div className="profile-container">
-       
         <div className="profile-form">
-          {/* <div className="profile-headerr">
-            <div className="profile-image-section">
-              <Image className="profile-image" src={imageSrc} alt="Profile" width={100} height={100} />
-              <input
-                type="file"
-                accept="image/*"
-                id="imageUpload"
-                style={{ display: 'none' }} 
-                onChange={handleImageUpload} 
-              />
-              <button className="update-button" onClick={() => document.getElementById('imageUpload').click()}>
-                ADD
-              </button>
+          <form onSubmit={handleSubmit} style={{ width: "100%" }}>
+            <div>
+              <label htmlFor="jobType">Job Type:</label>
+              <select 
+                id="jobType" 
+                value={jobType} 
+                onChange={(e) => setJobType(e.target.value)} 
+                required
+              >
+                <option value="">Select Job Type</option>
+                <option value="2">Chef</option>
+                <option value="1">Decorator</option>
+              </select>
             </div>
-            <div className="completion-section">
-              <span className="completion-status">0% InComplete</span>
-            </div>
-          </div> */}
-          {/* <div className="input-section">
-            <label htmlFor="experience">Experience (yrs)</label>
-            <input
-              type="number"
-              id="experience"
-              className="input-field"
-              value={experience}
-              onChange={(e) => setExperience(e.target.value)} 
-            />
-          </div> */}
-          {/* <div className="dropdown-section">
-            <label htmlFor="profile">City</label>
-            <select
-              id="profile"
-              className="dropdown"
-              value={profile}
-              onChange={(e) => setProfile(e.target.value)} 
-            >
-              <option value="Delhii">Delhi</option>
-              <option value="Bangalore">Bangalore</option>
-              <option value="Pune">Pune</option>
-            </select>
-          </div> */}
-          <div className="dropdown-section">
-            <label htmlFor="profile">Select Your Profile</label>
-            <select
-              id="profile"
-              className="dropdown"
-              value={profile}
-              onChange={(e) => setProfile(e.target.value)} 
-            >
-              <option value="Decoration">Decoration</option>
-              <option value="Chef">Chef</option>
-            </select>
-          </div>
-          <button className="update-profile-button" onClick={handleSubmit}>
-            UPDATE
-          </button>
+            <button type="submit">Submit</button>
+            {error && <p style={{ color: 'red' }}>{error}</p>}
+          </form>
+
+          {showAdditionalFields && (
+            <form onSubmit={handleAdditionalSubmit} style={{ marginTop: "20px" }}>
+              <div>
+                <label htmlFor="name">Name:</label>
+                <input 
+                  type="text" 
+                  id="name" 
+                  value={userDetails.name} 
+                  onChange={(e) => setUserDetails({ ...userDetails, name: e.target.value })} 
+                  required
+                />
+              </div>
+              <div>
+                <label htmlFor="city">City:</label>
+                <input 
+                  type="text" 
+                  id="city" 
+                  value={userDetails.city} 
+                  onChange={(e) => setUserDetails({ ...userDetails, city: e.target.value })} 
+                  required
+                />
+              </div>
+              <div>
+                <label htmlFor="age">Age:</label>
+                <input 
+                  type="number" 
+                  id="age" 
+                  value={userDetails.age} 
+                  onChange={(e) => setUserDetails({ ...userDetails, age: e.target.value })} 
+                  required
+                />
+              </div>
+              <div>
+                <label htmlFor="experience">Experience:</label>
+                <input 
+                  type="text" 
+                  id="experience" 
+                  value={userDetails.experience} 
+                  onChange={(e) => setUserDetails({ ...userDetails, experience: e.target.value })} 
+                  required
+                />
+              </div>
+              <button type="submit">Submit Additional Info</button>
+              {error && <p style={{ color: 'red' }}>{error}</p>}
+            </form>
+          )}
         </div>
       </div>
     </Layout>

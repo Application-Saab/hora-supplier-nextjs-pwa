@@ -165,7 +165,7 @@ const PersonalDetails = () => {
       if (response.status === 200) {
         console.log('Data submitted successfully:', response.data);
         // Redirect to home page
-        // window.location.href = '/home'; // Or use window.location.replace('/home') for replacing the current history entry
+        window.location.href = '/home'; // Or use window.location.replace('/home') for replacing the current history entry
       }
 
       console.log("Response:", response.data);

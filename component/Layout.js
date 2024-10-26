@@ -11,7 +11,7 @@ const Layout = ({ children, navTitle }) => {
       <Navbar navTitle={navTitle} />
 
       {/* Sidebar and Main content */}
-      <div style={{ display: 'flex' }}>
+      <div>
         {/* <Sidebar isOpen={isSidebarOpen} /> */}
         
         <main >
