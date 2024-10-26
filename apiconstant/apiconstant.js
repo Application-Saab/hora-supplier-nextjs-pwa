@@ -5,3 +5,6 @@ export const OTP_VERIFY_ENDPOINT = "/api/user/otp_verify";
 
 
 export const ORDERLIST_ENDPOINT = "/api/order/order_list";
+
+export const SUPPLIER_DETAILS = "/api/users/supplier_personal_details_update";
+

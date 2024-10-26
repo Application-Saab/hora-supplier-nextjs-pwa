@@ -487,6 +487,7 @@ main.shifted {
   main {
     margin-left: 0;
     padding: 10px;
+    width: 100%;
   }
 
   main.shifted {
@@ -582,7 +583,7 @@ main.shifted {
 
 .profile-form {
   width: 100%;
-  max-width: 400px;
+  max-width: 450px;
   display: flex;
   flex-direction: column;
   align-items: center;
