@@ -5,12 +5,8 @@ import Sidebar from './Sidebar';
 const Layout = ({ children, navTitle }) => {
   return (
     <div>
-      {/* Navbar */}
-      {/* <Navbar /> */}
-      
       <Navbar navTitle={navTitle} />
 
-      {/* Sidebar and Main content */}
       <div>
         {/* <Sidebar isOpen={isSidebarOpen} /> */}
         

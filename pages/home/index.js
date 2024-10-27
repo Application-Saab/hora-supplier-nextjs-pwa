@@ -30,8 +30,7 @@ const Home = () => {
     <>
       <div className="container">
         <Navbar />
-        <div style={{ marginTop: "40px" }}>
-          <h1 style={{ marginLeft: "15px", fontSize: "16px" }}>Main Menu</h1>
+        <div style={{ marginTop: "10px" }}>
           <div className="main-menu-container">
             <div className="menu-grid">
               {menuItems.map((item) => (
