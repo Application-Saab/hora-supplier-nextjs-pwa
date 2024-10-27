@@ -56,7 +56,7 @@ const OrderDetailHeader = ({ orderDetail }) => {
 
   return (
     <div>
-      <div className="order-header">
+      {/* <div className="order-header">
         <div className="order-header-left">
           <h5 className="order-id-h">
             Order Id: {getOrderId(orderDetail?.order_id)}
@@ -77,7 +77,7 @@ const OrderDetailHeader = ({ orderDetail }) => {
             <p>{orderDetail?.no_of_people} People</p>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Booking Details Section */}
       <div style={styles.bookingContainer}>
