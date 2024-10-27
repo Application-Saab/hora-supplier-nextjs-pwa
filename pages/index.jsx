@@ -146,10 +146,16 @@ const Login = () => {
             "Content-Type": "application/json",
           },
         });
-
+  
         console.log(response, "response verify ");
-
-        if (response.data.status === API_SUCCESS_CODE) {
+  
+        // Check if there's an error and handle the specific error
+        if (response.data.error && response.data.message === "The number is used already for Customer login . Please use different number") {
+          alert("This phone number is already used for customer login. Please use a different number.");
+          setOtpError("Phone number already in use. Please use a different number.");
+          setLoginError(true);
+        } else if (response.data.status === API_SUCCESS_CODE) {
+          // Proceed with successful OTP verification
           localStorage.setItem("isLoggedIn", "true");
           localStorage.setItem("mobileNumber", mobileNumber);
           localStorage.setItem("token", response.data.token);
@@ -160,16 +166,16 @@ const Login = () => {
           // localStorage.setItem("supplierName", response.data.data.name);
 
           console.log(response.data.token, "user token");
-
+  
           const hasLoggedInBefore = localStorage.getItem("hasLoggedInBefore");
-
+  
           if (!hasLoggedInBefore) {
             localStorage.setItem("hasLoggedInBefore", "true");
             router.push("/Profile");
           } else {
             router.push("/Profile");
           }
-
+  
           handleOtpSuccess1();
         } else {
           router.push("/Profile");
@@ -186,6 +192,7 @@ const Login = () => {
       setOtpError("Failed to verify OTP. Please try again.");
     }
   };
+  
 
   const handleOtpChange = (e, index) => {
     const { value } = e.target;

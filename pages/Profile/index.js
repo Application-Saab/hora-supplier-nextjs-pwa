@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import axios from 'axios';
+import Image from "next/image";
 import Layout from '../../component/Layout';
 import {
   BASE_URL,
@@ -6,7 +8,6 @@ import {
   SUPPLIER_UPDATE_PERSONAL_DETAILS,
   UPDATE_RESUME_PROFILE 
 } from "../../apiconstant/apiconstant";
-import axios from "axios";
 import { useRouter } from "next/router";
 
 const ProfileUpdate = () => {
@@ -158,6 +159,82 @@ const ProfileUpdate = () => {
     }
   };
 
+
+  // const handleSubmit = async () => {
+  //   const requestData = {
+  //     profile: profile
+  //   };
+
+  //   try {
+  //     const token = await localStorage.getItem('token');
+  
+  //     const response = await axios.post(`${BASE_URL}/api/users/update_work_details`,
+  //       JSON.stringify(requestData),
+  //       {
+  //         headers: {
+  //           'Content-Type': 'application/json',
+  //           'authorization': token
+  //         },
+  //       }
+  //     );
+  
+  //     if (response.status === 200) {
+  //       console.log('Data submitted successfully:', response.data);
+  //       // Redirect to home page
+  //       window.location.href = '/MyAcount'; // Or use window.location.replace('/home') for replacing the current history entry
+  //     } else {
+  //       console.error('Submission failed:', response.statusText);
+  //     }
+  //   } catch (error) {
+  //     console.error('Error submitting data:', error.message);
+  //   }
+  // };
+  
+
+// const handleSubmit = async () => {
+    
+//     const requestData = {
+//       image: imageFile, 
+//       experience: experience,
+//       profile: profile
+//     };
+  
+//     console.log(requestData, "requestData");
+  
+//     try {
+//       const token = await localStorage.getItem('token');
+  
+//       const response = await axios.post(`${BASE_URL}/api/users/update_work_details`, 
+//         JSON.stringify(requestData), 
+//         {
+//           headers: {
+//             'Content-Type': 'application/json',
+//             'authorization': token
+//           },
+//         }
+//       );
+
+//       console.log(`${BASE_URL}/api/users/update_work_details` , "ffksdhfkjdshf");
+
+//       console.log(response, "resdlkfds");
+  
+//       console.log(token, "second token bro");
+//       console.log(response.data, "response data");
+  
+//       if (response.status === 200) {
+//         console.log('Data submitted successfully:', response.data);
+        
+//       } else {
+//         console.error('Submission failed:', response.statusText);
+        
+//       }
+//     } catch (error) {
+//       console.error('Error submitting data:', error.message);
+      
+//     }
+//   };
+  
+
   return (
     <Layout>
       <div className="profile-container" style={{ backgroundColor:"rgba(237, 237, 237, 0.79)"}}>
@@ -236,6 +313,6 @@ const ProfileUpdate = () => {
       </div>
     </Layout>
   );
-};
+}
 
 export default ProfileUpdate;

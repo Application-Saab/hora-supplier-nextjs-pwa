@@ -60,6 +60,12 @@ const Orderlist = () => {
         });
         const responseData = await response.json();
 
+        console.log(responseData, "responsedata");  
+
+        console.log(responseData.data.order[0].addressId, "22responsedata"); 
+        
+        const city = responseData.data.order[0].addressId;
+
         if (responseData && responseData.data && responseData.data.order) {
           const sortedOrders = responseData.data.order.sort(
             (a, b) => new Date(b.order_date) - new Date(a.order_date)
@@ -270,16 +276,21 @@ const Orderlist = () => {
                   </div>
                   <div className="right-details">
                     <div>
-                      <strong style={{ color: "#9252AA" }}>
-                        Total Amount
+                      <strong style={{ color: "#9252AA", fontSize: "13px"  }}>
+                        City
                         <p style={{textAlign: "end" , margin: 0}}>
                           {" "}
-                          ₹{order?.payable_amount}
+                          {order.addressId[0].city}
                         </p>
+
+                        {/* <p style={{textAlign: "end" , margin: 0}}>
+                          {" "}
+                          ₹{order?.payable_amount}
+                        </p> */}
                       </strong>
                     </div>
                     <div>
-                      <strong style={{ color: "#9252AA" }}>
+                      <strong style={{ color: "#9252AA", fontSize: "13px" }}>
                         Balance Amount
                         {order?.type === 2 || order?.type === 3 || order?.type === 4 || order?.type === 5 ? (
                           <p className="mb-0 price-para">

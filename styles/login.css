@@ -1,0 +1,111 @@
+/* General Styles */
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f4f4f4;
+  }
+  
+  .login-background {
+    width: 100%;
+    max-width: 400px;
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    position: relative;
+    text-align: center;
+  }
+  
+  .login-logo img {
+    width: 100px;
+    height: auto;
+    margin-bottom: 20px;
+  }
+  
+  .login-form {
+    margin-top: 20px;
+  }
+  
+  label {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  .input-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #ccc;
+    border-radius: 25px;
+    padding: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .input-container span {
+    padding: 0 10px;
+    font-size: 16px;
+  }
+  
+  .input-container input {
+    border: none;
+    outline: none;
+    font-size: 16px;
+    flex: 1;
+    padding: 0 10px;
+  }
+  
+  .reload-icon {
+    background: url('reload-icon-url') no-repeat center;
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+  }
+  
+  .otp-button {
+    background-color: #e66552;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    padding: 10px 30px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  .otp-button:hover {
+    background-color: #d14e40;
+  }
+  
+  /* Mobile Styles */
+  @media (max-width: 768px) {
+    .login-background {
+      width: 90%;
+      max-width: 350px;
+    }
+  
+    .input-container {
+      font-size: 14px;
+    }
+  
+    .otp-button {
+      width: 100%;
+    }
+  }
+  
+  /* Desktop Styles */
+  @media (min-width: 769px) {
+    .login-container {
+      background-image: url('./horasupplierimage.jpg');
+      background-size: cover;
+      background-position: center;
+      justify-content: center;
+      padding: 100px;
+    }
+  
+    .login-background {
+      width: 400px;
+    }
+  }
+  
