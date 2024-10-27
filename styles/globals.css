@@ -41,6 +41,7 @@ html,
 body {
   max-width: 100vw;
   overflow-x: hidden;
+  font-family: Poppins, sans-serif;
 }
 
 body {
@@ -56,6 +57,7 @@ body {
 a {
   color: inherit;
   text-decoration: none;
+  font-family: Poppins, sans-serif;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -505,7 +507,7 @@ main.shifted {
 
   main {
     margin-left: 0;
-    padding: 10px;
+  
   }
 
   main.shifted {
@@ -779,11 +781,6 @@ main.shifted {
   }
 }
 
-.order-list {
-  width: 80%;
-  margin: 0 auto;
-  text-align: center;
-}
 
 .order-header {
   margin-bottom: 20px;
@@ -2260,10 +2257,6 @@ main.order-list .order-container {
     padding: 0 !important;
   }
 
-  /* My order mobile view */
-  .order-list {
-    width: 100% !important;
-  }
 
   .order-card {
     width: 100% !important;
@@ -3281,11 +3274,6 @@ main.order-list .order-container {
 
 /* My order css */
 
-.order-list {
-  width: 80%;
-  margin: 0 auto;
-  text-align: center;
-}
 
 .order-header {
   margin-bottom: 20px;

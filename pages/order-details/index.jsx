@@ -25,11 +25,7 @@ const OrderDetail = () => {
   const [orderDetail, setOrderDetail] = useState([]);
   const [decorationItems, setDecorationItems] = useState([]);
   const [decorationComments, setDecorationComments] = useState("");
-  const [hospitalityServiceCount, setHospitalityServiceCount] = useState();
-  const [hospitalityServiceTotalAmount, setHospitalityServiceTotalAmount] =
-    useState();
 
-  orderType = parseInt(orderType);
 
   useEffect(() => {
     if (

@@ -6,3 +6,4 @@ export const ORDERLIST_ENDPOINT = "/api/order/order_list";
 export const SUPPLIER_RESUME_WORK_UPDATE = "/api/users/update_resume_profile";
 export const SUPPLIER_UPDATE_PERSONAL_DETAILS = "/api/users/supplier_personal_details_update"
 export const UPDATE_RESUME_PROFILE = "/api/users/update_resume_profile"
+export const GET_USER_DETAIL_ENDPOINT = "/api/users/user_details";

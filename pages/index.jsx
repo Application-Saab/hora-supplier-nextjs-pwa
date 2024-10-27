@@ -160,11 +160,6 @@ const Login = () => {
           localStorage.setItem("mobileNumber", mobileNumber);
           localStorage.setItem("token", response.data.token);
           localStorage.setItem("userID", response.data.data._id);
-          // localStorage.setItem("supplierCity", response.data.data.city);
-          // localStorage.setItem("supplierJobProfile", response.data.data.job_profile);
-          // localStorage.setItem("supplierExperince", response.data.data.experience);
-          // localStorage.setItem("supplierName", response.data.data.name);
-
           console.log(response.data.token, "user token");
   
           const hasLoggedInBefore = localStorage.getItem("hasLoggedInBefore");
