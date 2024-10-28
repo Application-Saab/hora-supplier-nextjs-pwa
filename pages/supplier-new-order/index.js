@@ -16,7 +16,7 @@ const Orderlist = () => {
   const [loading, setLoading] = useState(false);
 
   //const supplierJobType = localStorage.getItem("supplierJobType");
-  const supplierJobType = "1";
+  const supplierJobType = "2";
   let supplierCity = localStorage.getItem("supplierCity");
   
   if (supplierCity === "Bengaluru") {
