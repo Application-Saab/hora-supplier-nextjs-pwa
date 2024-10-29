@@ -19,13 +19,13 @@ const Orderlist = () => {
   const supplierJobType = "1";
   let supplierCity = localStorage.getItem("supplierCity");
   console.log(supplierCity, "suppliercity");
-
-
   
   if (supplierCity === "Bengaluru") {
     supplierCity = "Bangalore"; // Adjusting for city name
   }
 
+  
+  let supplierId = localStorage.getItem("supplierID");
   const userId = localStorage.getItem("userID");
 
   useEffect(() => {
@@ -44,8 +44,12 @@ const Orderlist = () => {
           }),
         });
 
+        console.log(userId, "_idididiuserId");
+
         const responseData = await response.json();
-        console.log(responseData); // Debugging line to check API response
+        console.log(responseData, "responsedaa"); // Debugging line to check API response
+
+        console.log(responseData.data.order[0].toId, "toId accept");
 
         if (responseData && responseData.data && responseData.data.order) {
           const sortedOrders = responseData.data.order.sort(
@@ -166,6 +170,8 @@ const Orderlist = () => {
     );
   }
 
+
+
   return (
     <Layout>
       <main className="order-list">
@@ -175,8 +181,12 @@ const Orderlist = () => {
               console.log(order.addressId[0].city , supplierCity ,  order.type.toString() , supplierJobType)
               const cityMatches = order.addressId[0].city === supplierCity ||
                                   (order.addressId[0].city === "Bengaluru" && supplierCity === "Bangalore");
+              const supplierIdMatches = userId === supplierId;
+              console.log(supplierIdMatches, "supplierIdmatches");
+              console.log(supplierId, "supplierId");
+              
               const typeMatches = order.type.toString() === supplierJobType;
-              return cityMatches && typeMatches;
+              return cityMatches && typeMatches && supplierIdMatches;
             })
             .map((order) => {
               const orderStatus = getOrderStatus(order?.order_status);
@@ -186,6 +196,7 @@ const Orderlist = () => {
                     <div className="order-id">
                       <div style={{ color: "#9252AA" }}>
                         Order Id: #{10800 + order.order_id}
+                        {  console.log(order.toId, "hitoId")}
                       </div>
                       <h6 className="order-otp mt-2" style={{ color: "#9252AA" }}>
                         OTP: {order?.otp}

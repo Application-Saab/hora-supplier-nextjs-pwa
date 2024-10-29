@@ -4034,3 +4034,16 @@ main.order-list .order-container {
   color: purple !important;
   /* Font color when clicked */
 }
+
+
+.acceptOrder {
+  background-color: #fa4e4d;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: Montserrat, sans-serif;
+    font-weight: 500;
+    text-transform: capitalize;
+}

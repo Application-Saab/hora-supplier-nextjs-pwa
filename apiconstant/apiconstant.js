@@ -8,6 +8,8 @@ export const SUPPLIER_UPDATE_PERSONAL_DETAILS = "/api/users/supplier_personal_de
 export const UPDATE_RESUME_PROFILE = "/api/users/update_resume_profile"
 export const GET_USER_DETAIL_ENDPOINT = "/api/users/user_details";
 
-// export const GET_BOOKING_ORDER_DETAILS = "/api/order/order_details";
+export const GET_BOOKING_ORDER_DETAILS = "/api/order/order_details_decoration";
 
-export const ORDER_DETAILS_ENDPOINT = "/api/order/order_details"
+export const ORDER_DETAILS_ENDPOINT = "/api/order/order_details";
+
+export const ACCEPT_ORDER = "/api/order/acceptOrder";

@@ -5,11 +5,14 @@ import OrderDetailsIngre from "../OrderDetailsIngre";
 // import { BASE_URL, ORDER_CANCEL } from "../../utils/apiconstants";
 // import { useNavigate } from "react-router-dom";
 import OrderDetailsAppliances from "../OrderDetailsAppliances";
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
 import Image from "next/image";
 
-const BASE_URL = "";
-const ORDER_CANCEL = "";
+import { useRouter } from "next/router";
+import { BASE_URL, ACCEPT_ORDER } from "../../apiconstant/apiconstant";
+
+// const BASE_URL = "";
+// const ORDER_CANCEL = "";
 // order.type is 2 for chef
 // order.type is 1 for decoration
 // order.type is 3 for waiter
@@ -25,8 +28,17 @@ const OrderDetailTab = ({
   decorationComments,
 }) => {
   const router = useRouter();
+  const { apiOrderId } = router.query;
   const [tab, setTab] = useState("Menu");
   const [orderStatus, setOrderStatus] = useState(orderDetail?.order_status);
+
+  console.log(apiOrderId, "apiOrderid");
+
+  var supplierID = localStorage.getItem('supplierID');
+  console.log(supplierID, "supplierID");
+
+  var otp = localStorage.getItem('otp');
+  console.log(otp, "otpotpotp");
   
 
   const getItemInclusion = (inclusion) => {
@@ -51,22 +63,30 @@ const OrderDetailTab = ({
     try {
       const token = await localStorage.getItem("token");
 
-      const response = await fetch(BASE_URL + ORDER_CANCEL, {
+      const response = await fetch(BASE_URL + ACCEPT_ORDER, {
         method: "POST",
         headers: {
           Accept: "application/json, text/plain, /",
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          _id: orderDetail?._id,
           Authorisation: token,
+          otp: otp,
+          _id: apiOrderId,
+          userId: supplierID
         }),
       }); // Replace with your API endpoint for updating user profile
 
       // Handle success response
 
-      alert("Order cancelled successfully");
-      router.push("/orderlist");
+      console.log(response, "responsedata");
+      
+            // "otp":2980, 
+            // "_id":"643ba8ee71e3056f1a50dc8c", 
+            // "userId":"6413340f549b58e3dc39a035"
+
+      alert("Order accepted successfully");
+      // router.push("/orderlist");
     } catch (error) {
       console.log("cancelOrder error", error);
     }
@@ -234,23 +254,9 @@ const OrderDetailTab = ({
         <button className="rate-us-button">Rate Us</button>
       </div> */}
 
-      {orderStatus === 0 || orderStatus === 1 || orderStatus === 2 ? (
-        <div className="rate-us-footer" onClick={cancelOrder}>
-          <button className="rate-us-button">Cancel Order</button>
+<div onClick={cancelOrder}>
+          <button className="acceptOrder">Accept Order</button>
         </div>
-      ) : null}
-      {orderStatus === 3 ? (
-        <div className="rate-us-footer" onClick={contactUsRedirection}>
-          <button className="rate-us-button">
-            Share Your Feedback With Us
-          </button>
-        </div>
-      ) : null}
-      {orderStatus === 4 ? (
-        <div className="rate-us-footer" onClick={cancelcontactUsRedirection}>
-          <button className="rate-us-button">Initiate Refund</button>
-        </div>
-      ) : null}
     </>
   );
 };
