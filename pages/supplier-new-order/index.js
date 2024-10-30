@@ -17,8 +17,10 @@ const Orderlist = () => {
 
   // const supplierJobType = localStorage.getItem("supplierJobType");
   const supplierJobType = "1";
-  let supplierCity = localStorage.getItem("supplierCity");
-  console.log(supplierCity, "suppliercity");
+  // let supplierCity = localStorage.getItem("supplierCity");
+  // console.log(supplierCity, "suppliercity");
+
+  let supplierCity = "Delhi";
 
 
   

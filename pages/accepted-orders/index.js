@@ -17,8 +17,9 @@ const Orderlist = () => {
 
   // const supplierJobType = localStorage.getItem("supplierJobType");
   const supplierJobType = "1";
-  let supplierCity = localStorage.getItem("supplierCity");
-  console.log(supplierCity, "suppliercity");
+  // let supplierCity = localStorage.getItem("supplierCity");
+  let supplierCity = "Delhi";
+    console.log(supplierCity, "suppliercity");
   
   if (supplierCity === "Bengaluru") {
     supplierCity = "Bangalore"; // Adjusting for city name
@@ -135,7 +136,7 @@ const Orderlist = () => {
     const orderType = type
     const orderId = order_id
     router.push({
-        pathname:`/order-details`, 
+        pathname:`/view-details`, 
       query: { apiOrderId, orderType, orderId },
     });
   };
@@ -181,11 +182,17 @@ const Orderlist = () => {
               console.log(order.addressId[0].city , supplierCity ,  order.type.toString() , supplierJobType)
               const cityMatches = order.addressId[0].city === supplierCity ||
                                   (order.addressId[0].city === "Bengaluru" && supplierCity === "Bangalore");
-              const supplierIdMatches = userId === supplierId;
+              const supplierIdMatches = userId == supplierId;
               console.log(supplierIdMatches, "supplierIdmatches");
               console.log(supplierId, "supplierId");
               
               const typeMatches = order.type.toString() === supplierJobType;
+              
+              
+              console.log(typeMatches, "typeMatches");
+              console.log(cityMatches, "cityMatches");
+              
+              
               return cityMatches && typeMatches && supplierIdMatches;
             })
             .map((order) => {
@@ -233,17 +240,17 @@ const Orderlist = () => {
                         <span>{order.order_time}</span>
                       </div>
                       )}
-                      {order.no_of_people && (
-                      <div>
-                        <Image
-                          className="contact-us-img"
-                          src={people}
-                          height={20}
-                          width={20}
-                        />{" "}
-                        <span>{order?.no_of_people} People</span>
-                      </div>
-                      )}
+{supplierJobType !== "1" && order.no_of_people && (
+  <div>
+    <Image
+      className="contact-us-img"
+      src={people}
+      height={20}
+      width={20}
+    />{" "}
+    <span>{order?.no_of_people}</span>
+  </div>
+)}
                     </div>
                     <div className="right-details">
                       {/* <div>

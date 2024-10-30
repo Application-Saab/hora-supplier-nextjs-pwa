@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Image from "next/image";
 import Layout from '../../component/Layout';
@@ -17,7 +17,7 @@ const ProfileUpdate = () => {
   const [jobExperince , setJobExperince] = useState('');
   const [error, setError] = useState(null);
   const [errorProfessional , setErrorProfessional] = useState(null);
-  const [showAdditionalFields, setShowAdditionalFields] = useState(true);
+  const [showAdditionalFields, setShowAdditionalFields] = useState(false);
   const [userDetails, setUserDetails] = useState({
     name: '',
     city: '',
@@ -50,6 +50,7 @@ const ProfileUpdate = () => {
       console.log(response.data, "response data");
 
       if (response.status === 200) {
+         setShowAdditionalFields(true);
         alert('Details updated successfully. Please fill the below details');
        // setShowAdditionalFields(true); // Show additional fields
       } else {
@@ -99,12 +100,18 @@ const ProfileUpdate = () => {
   //   }
   // };
 
+  useEffect(() => {
+    console.log(userDetails.name); // Logs the updated name value to the console each time it changes
+  }, [userDetails.name]);
+
   const handleAdditionalSubmit = async (event) => {
     event.preventDefault();
 
     try {
       const token = localStorage.getItem('token');
-      const url =  SUPPLIER_UPDATE_PERSONAL_DETAILS; // Define your endpoint
+      const url = BASE_URL + SUPPLIER_UPDATE_PERSONAL_DETAILS; // Define your endpoint
+
+      console.log(url, "urlofcode");
 
       // const requestData = {
       //   age: userDetails.age,
@@ -121,15 +128,15 @@ const ProfileUpdate = () => {
 
 
       const requestData = {
-        "age": "29",
+        "age": userDetails.age,
         "vechicle_type": "Two wheeler",
-        "city": "Jaipur",
+        "city": userDetails.city,
         "aadhar_no": "26353476353",
         "aadhar_front_img": "attachment-1678985056105.jpg",
         "aadhar_back_img": "attachment-1678985062522.jpg",
         "experience": "20",
         "avatar": "attachment-1678985070996.jpg",
-        "name": "Rahul",
+        "name": userDetails.name,
         "userServedLocalities": [
             "646c7995b8ca968c0921d1e0",
             "646c7b08f35e6a415d41bbc9"
@@ -143,6 +150,8 @@ const ProfileUpdate = () => {
           'Authorization': token
         },
       });
+
+      console.log(response, "responsedatas");
 
       console.log(response.data, "additional response data");
 
@@ -239,6 +248,7 @@ const ProfileUpdate = () => {
     <Layout>
       <div className="profile-container" style={{ backgroundColor:"rgba(237, 237, 237, 0.79)"}}>
         <div className="profile-form">
+        {!showAdditionalFields && (
           <div style={{ width:"100%" , marginBottom:20 , backgroundColor:"rgb(255, 255, 255)" , boxShadow:"rgba(0, 0, 0, 0.18) 0px 1px 8px" , padding:"20px" , borderRadius:"20px"}}>
           <h4 style={{ color:"#97538c" , fontSize:"16px" , marginBottom:"10px"}}>Enter Professional Details </h4>
           <form onSubmit={UpdateResumeDetails} style={{ width: "100%" }}>
@@ -269,6 +279,7 @@ const ProfileUpdate = () => {
             {error && <p style={{ color: 'red' }}>{error}</p>}
           </form>
           </div>
+        )}
 
           {showAdditionalFields && (
             <div style={{ width:"100%" , marginBottom:20 , backgroundColor:"rgb(255, 255, 255)" , boxShadow:"rgba(0, 0, 0, 0.18) 0px 1px 8px" , padding:"20px" , borderRadius:"20px"}}>
