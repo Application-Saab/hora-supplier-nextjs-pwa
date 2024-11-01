@@ -1,4 +1,5 @@
-import React from "react";
+
+import React, { useState, useEffect } from "react";
 import { CiCalendar } from "react-icons/ci";
 import { GoClock } from "react-icons/go";
 import { MdPeopleAlt } from "react-icons/md";
@@ -6,10 +7,15 @@ import Layout from "../Layout";
 
 const OrderDetailHeader = ({ orderDetail }) => {
 
-  var name = localStorage.getItem('orderTypelocal');
-  console.log(name, "ordertypename");
+  // var name = localStorage.getItem('orderTypelocal');
+  // console.log(name, "ordertypename");
 
-  
+  useEffect(() => {
+    // Only access localStorage on the client side
+    const name = localStorage.getItem("orderTypelocal");
+    setOrderTypeName(name);
+    console.log(name, "ordertypename");
+  }, []);
 
   const getOrderId = (e) => {
     const orderId1 = 10800 + e;
@@ -58,9 +64,18 @@ const OrderDetailHeader = ({ orderDetail }) => {
   console.log(orderDetail.otp, "otp");
   // console.log(orderDetail.addressId.address1, "aaddressId");
 
-  const otp = orderDetail.otp;
+  // const otp = orderDetail.otp;
+  // console.log(otp, "otp2");
+  // localStorage.setItem("otp", otp);
+
+  let otp; 
   console.log(otp, "otp2");
-  localStorage.setItem("otp", otp);
+  
+  useEffect(() => {
+    otp = orderDetail.otp;
+    // Save OTP to localStorage
+    localStorage.setItem("otp", otp);
+  }, [otp]);
   
 
   // console.log(orderDetail.addressId[0].address1, "2aaddressId");

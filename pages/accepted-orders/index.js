@@ -26,8 +26,18 @@ const Orderlist = () => {
   }
 
   
-  let supplierId = localStorage.getItem("supplierID");
-  const userId = localStorage.getItem("userID");
+  
+  // let supplierId = localStorage.getItem("supplierID");
+  // const userId = localStorage.getItem("userID");
+  let supplierId;
+let userId;
+
+// Check if window and localStorage are available (only on client side)
+if (typeof window !== "undefined" && typeof localStorage !== "undefined") {
+    supplierId = localStorage.getItem("supplierID");
+    userId = localStorage.getItem("userID");
+}
+
 
   useEffect(() => {
     const fetchOrderList = async () => {

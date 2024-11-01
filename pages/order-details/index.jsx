@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {useState, useEffect } from "react";
 import OrderDetailHeader from "../../component/OrderDetailHeader";
 import OrderDetailTab from "../../component/OrderDetailTab";
 import {
@@ -32,7 +32,12 @@ const OrderDetail = () => {
 
   console.log(orderType, "ordert2");
 
-  localStorage.setItem("orderTypelocal",orderType);
+  useEffect(() => {
+    // Run only on the client side and only if orderType has a value
+    if (typeof window !== "undefined" && orderType) {
+      localStorage.setItem("orderTypelocal", orderType);
+    }
+  }, [orderType]);
 
   useEffect(() => {
     if (

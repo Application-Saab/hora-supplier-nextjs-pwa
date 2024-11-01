@@ -28,7 +28,11 @@ const Orderlist = () => {
     supplierCity = "Bangalore"; // Adjusting for city name
   }
 
-  const userId = localStorage.getItem("userID");
+  let userId;
+
+  if (typeof window !== "undefined" && typeof localStorage !== "undefined") {
+  userId = localStorage.getItem("userID");
+  }
 
   useEffect(() => {
     const fetchOrderList = async () => {
@@ -119,12 +123,12 @@ const Orderlist = () => {
     router.push("/");
   };
 
-  const getOrderId = (e) => {
-    const orderId1 = 10800 + e;
-    const updateOrderId = "#" + orderId1;
-    localStorage.setItem("orderId", updateOrderId);
-    return updateOrderId;
-  };
+  // const getOrderId = (e) => {
+  //   const orderId1 = 10800 + e;
+  //   const updateOrderId = "#" + orderId1;
+  //   localStorage.setItem("orderId", updateOrderId);
+  //   return updateOrderId;
+  // };
 
 
   const handleViewDetail = (order) => {

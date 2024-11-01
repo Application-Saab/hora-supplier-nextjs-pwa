@@ -1,4 +1,5 @@
-import React from "react";
+
+import React, { useState, useEffect } from "react";
 import { CiCalendar } from "react-icons/ci";
 import { GoClock } from "react-icons/go";
 import { MdPeopleAlt } from "react-icons/md";
@@ -6,10 +7,15 @@ import Layout from "../../../component/Layout";
 
 const OrderDetailHeader = ({ orderDetail }) => {
 
-  var name = localStorage.getItem('orderTypelocal');
-  console.log(name, "ordertypename");
+  // var name = localStorage.getItem('orderTypelocal');
+  // console.log(name, "ordertypename");
 
-  
+  useEffect(() => {
+    // Only access localStorage on the client side
+    const name = localStorage.getItem("orderTypelocal");
+    setOrderTypeName(name);
+    console.log(name, "ordertypename");
+  }, []);
 
   const getOrderId = (e) => {
     const orderId1 = 10800 + e;
@@ -58,10 +64,19 @@ const OrderDetailHeader = ({ orderDetail }) => {
   console.log(orderDetail.otp, "otp");
   // console.log(orderDetail.addressId.address1, "aaddressId");
 
-  const otp = orderDetail.otp;
-  console.log(otp, "otp2");
-  localStorage.setItem("otp", otp);
+  // const otp = orderDetail.otp;
+  // console.log(otp, "otp2");
+  // localStorage.setItem("otp", otp);
   
+
+  let otp; 
+  console.log(otp, "otp2");
+  
+  useEffect(() => {
+    otp = orderDetail.otp;
+    // Save OTP to localStorage
+    localStorage.setItem("otp", otp);
+  }, [otp]);
 
   // console.log(orderDetail.addressId[0].address1, "2aaddressId");
 
@@ -133,11 +148,20 @@ const OrderDetailHeader = ({ orderDetail }) => {
           <div style={styles.rightColumn}>
             
           
-              <p>
+              {/* <p>
                 <strong>People: </strong> 
                  {orderDetail.no_of_people} 
               </p>
-            
+             */}
+
+<p>
+  <strong>People: </strong> 
+  {orderDetail && orderDetail.no_of_people !== undefined 
+    ? orderDetail.no_of_people 
+    : 'N/A' /* Or any default value you want to display */}
+</p>
+
+
               {orderDetail?.order_locality && (
               <p>
                 <strong>Location:</strong> {orderDetail.order_locality}
@@ -151,14 +175,23 @@ const OrderDetailHeader = ({ orderDetail }) => {
         {/* <div style={styles.centeredAddress}>
           <p><strong>Address:</strong> {orderDetail.addressId?.address1}</p>
         </div> */}
-        {orderDetail.addressId?.address1 && (
+        {/* {orderDetail.addressId?.address1 && (
           <div style={styles.centeredAddress}>
             <p>
               <strong>Address:</strong> {orderDetail.addressId.address1}
-            </p>
+            </p> */}
             {/* <button style={styles.directionsButton}>Get Directions</button> */}
-          </div>
-        )}
+          {/* </div>
+        )} */}
+        {orderDetail?.addressId?.address1 && (
+  <div style={styles.centeredAddress}>
+    <p>
+      <strong>Address:</strong> {orderDetail.addressId.address1}
+    </p>
+    {/* <button style={styles.directionsButton}>Get Directions</button> */}
+  </div>
+)}
+
       </div>
     </div>
     </Layout>

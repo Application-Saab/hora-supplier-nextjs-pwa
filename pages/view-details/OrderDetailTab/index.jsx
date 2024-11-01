@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 // import daal_image from "../../assets/daal_image.png";
 import OrderDetailsMenu from "../OrderDetailsMenu";
 import OrderDetailsIngre from "../OrderDetailsIngre";
@@ -33,13 +33,27 @@ const OrderDetailTab = ({
   const [tab, setTab] = useState("Menu");
   const [orderStatus, setOrderStatus] = useState(orderDetail?.order_status);
 
+  const [supplierID, setSupplierID] = useState(null);
+  const [otp, setOtp] = useState(null);
+
   console.log(apiOrderId, "apiOrderid");
 
-  var supplierID = localStorage.getItem('supplierID');
-  console.log(supplierID, "supplierID");
+  // var supplierID = localStorage.getItem('supplierID');
+  // console.log(supplierID, "supplierID");
 
-  var otp = localStorage.getItem('otp');
-  console.log(otp, "otpotpotp");
+  // var otp = localStorage.getItem('otp');
+  // console.log(otp, "otpotpotp");
+
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setSupplierID(localStorage.getItem('supplierID'));
+      setOtp(localStorage.getItem('otp'));
+    }
+  }, []);
+
+  console.log(supplierID, "supplierID");
+  console.log(otp, "otp");
   
 
   const getItemInclusion = (inclusion) => {

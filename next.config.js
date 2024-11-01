@@ -26,6 +26,7 @@ const nextConfig = {
   swcMinify: true,
   images: {
     domains: ['horaservices.com'],
+    unoptimized: true,
   },
   compiler: {
     removeConsole: process.env.NODE_ENV !== "development",
