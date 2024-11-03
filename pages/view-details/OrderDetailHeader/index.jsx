@@ -7,15 +7,6 @@ import Layout from "../../../component/Layout";
 
 const OrderDetailHeader = ({ orderDetail }) => {
 
-  // var name = localStorage.getItem('orderTypelocal');
-  // console.log(name, "ordertypename");
-
-  useEffect(() => {
-    // Only access localStorage on the client side
-    const name = localStorage.getItem("orderTypelocal");
-    setOrderTypeName(name);
-    console.log(name, "ordertypename");
-  }, []);
 
   const getOrderId = (e) => {
     const orderId1 = 10800 + e;

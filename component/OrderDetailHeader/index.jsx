@@ -7,16 +7,6 @@ import Layout from "../Layout";
 
 const OrderDetailHeader = ({ orderDetail }) => {
 
-  // var name = localStorage.getItem('orderTypelocal');
-  // console.log(name, "ordertypename");
-
-  useEffect(() => {
-    // Only access localStorage on the client side
-    const name = localStorage.getItem("orderTypelocal");
-    setOrderTypeName(name);
-    console.log(name, "ordertypename");
-  }, []);
-
   const getOrderId = (e) => {
     const orderId1 = 10800 + e;
     const updateOrderId = "#" + orderId1;
@@ -62,49 +52,18 @@ const OrderDetailHeader = ({ orderDetail }) => {
   console.log(orderDetail.order_locality, "order locality");
   console.log(orderDetail.chef, "orderdetail chef");
   console.log(orderDetail.otp, "otp");
-  // console.log(orderDetail.addressId.address1, "aaddressId");
-
-  // const otp = orderDetail.otp;
-  // console.log(otp, "otp2");
-  // localStorage.setItem("otp", otp);
-
-  let otp; 
-  console.log(otp, "otp2");
   
-  useEffect(() => {
-    otp = orderDetail.otp;
-    // Save OTP to localStorage
-    localStorage.setItem("otp", otp);
-  }, [otp]);
+  // useEffect(() => {
+  //   otp = orderDetail.otp;
+  //   // Save OTP to localStorage
+  //   localStorage.setItem("orderStartOtp", otp);
+  // }, [otp]);
   
 
-  // console.log(orderDetail.addressId[0].address1, "2aaddressId");
 
   return (
     <Layout navTitle="Order Details">
     <div>
-      {/* <div className="order-header">
-        <div className="order-header-left">
-          <h5 className="order-id-h">
-            Order Id: {getOrderId(orderDetail?.order_id)}
-          </h5>
-          <p className="order-status-button">{orderStatus?.status}</p>
-        </div>
-        <div className="order-header-right">
-          <div className="order-info-div">
-            <CiCalendar className="header-icons" size={20} style={{ marginLeft: "25px" }} />
-            <p>{formatDate(orderDetail?.order_date)}</p>
-          </div>
-          <div className="order-info-div">
-            <GoClock className="header-icons" size={20} style={{ marginLeft: "15px" }} />
-            <p>{orderDetail?.order_time}</p>
-          </div>
-          <div className="order-info-div">
-            <MdPeopleAlt className="header-icons" size={20} style={{ marginLeft: "15px" }} />
-            <p>{orderDetail?.no_of_people} People</p>
-          </div>
-        </div>
-      </div> */}
 
       {/* Booking Details Section */}
       <div style={styles.bookingContainer}>

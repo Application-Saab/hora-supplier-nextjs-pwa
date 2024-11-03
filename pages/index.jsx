@@ -159,8 +159,8 @@ const Login = () => {
           localStorage.setItem("isLoggedIn", "true");
           localStorage.setItem("mobileNumber", mobileNumber);
           localStorage.setItem("token", response.data.token);
-          localStorage.setItem("userID", response.data.data._id);
-          console.log(response.data.token, "user token");
+          localStorage.setItem("supplierID", response.data.data._id);
+  
   
           const hasLoggedInBefore = localStorage.getItem("hasLoggedInBefore");
   

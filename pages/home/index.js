@@ -53,9 +53,7 @@ const Home = () => {
           localStorage.setItem("supplierJobProfile", response.data.data.job_profile);
           localStorage.setItem("supplierExperince", response.data.data.experience);
           localStorage.setItem("supplierName", response.data.data.name);
-          localStorage.setItem("supplierJobType", response.data.data.job_type);
-          localStorage.setItem("supplierID", response.data.data._id);
-         
+          localStorage.setItem("supplierJobType", response.data.data.order_type);
 
         }
       } catch (error) {

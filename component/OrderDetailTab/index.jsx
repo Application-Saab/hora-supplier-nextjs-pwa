@@ -29,30 +29,11 @@ const OrderDetailTab = ({
 }) => {
   const router = useRouter();
   const { apiOrderId } = router.query;
+  var otp = localStorage.getItem('orderOtp');
   const [tab, setTab] = useState("Menu");
   const [orderStatus, setOrderStatus] = useState(orderDetail?.order_status);
-  const [supplierID, setSupplierID] = useState(null);
-  const [otp, setOtp] = useState(null);
   console.log(apiOrderId, "apiOrderid");
-
-  // var supplierID = localStorage.getItem('supplierID');
-  // console.log(supplierID, "supplierID");
-
-  // var otp = localStorage.getItem('otp');
-  // console.log(otp, "otpotpotp");
-
-
-  
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      setSupplierID(localStorage.getItem('supplierID'));
-      setOtp(localStorage.getItem('otp'));
-    }
-  }, []);
-
-  console.log(supplierID, "supplierID");
-  console.log(otp, "otp");
-  
+  var supplierID = localStorage.getItem('supplierID');
 
   const getItemInclusion = (inclusion) => {
     if (!inclusion || !inclusion.length) return "";
@@ -72,7 +53,7 @@ const OrderDetailTab = ({
     return result.trim();
   };
 
-  const cancelOrder = async () => {
+  const acceptOrder = async () => {
     try {
       const token = await localStorage.getItem("token");
 
@@ -90,18 +71,13 @@ const OrderDetailTab = ({
         }),
       }); // Replace with your API endpoint for updating user profile
 
-      // Handle success response
-
       console.log(response, "responsedata");
-      
-            // "otp":2980, 
-            // "_id":"643ba8ee71e3056f1a50dc8c", 
-            // "userId":"6413340f549b58e3dc39a035"
+
 
       alert("Order accepted successfully");
       // router.push("/orderlist");
     } catch (error) {
-      console.log("cancelOrder error", error);
+      console.log("acceptOrder error", error);
     }
   };
 
@@ -127,16 +103,9 @@ const OrderDetailTab = ({
 
   return (
     <>
-      {/* <div className="chef-details">
-        <img src="chef-image.jpg" alt="Chef" className="chef-image" />
-        <div className="chef-info">
-          <h3>Rahul Kumar Gupta</h3>
-          <p>⭐⭐⭐⭐</p>
-          <button className="rate-us-button">Rate Us</button>
-        </div>
-      </div> */}
 
-      {parseInt(orderType) === 2 ? (
+
+      {parseInt(orderType) == 2 ? (
         <div>
           <div className="tabs">
             <button
@@ -171,7 +140,7 @@ const OrderDetailTab = ({
             />
           )}
         </div>
-      ) : orderType === 6 ? (
+      ) : orderType == 6 ? (
         <>
           <OrderDetailsMenu orderDetail={orderDetail} orderType={orderType} />
           <div className="food-delivert-inclusions-container">
@@ -200,7 +169,7 @@ const OrderDetailTab = ({
             </ul>
           </div>
         </>
-      ) : orderType === 7 ? (
+      ) : orderType == 7 ? (
         <>
           <OrderDetailsMenu orderDetail={orderDetail} orderType={orderType} />
           <div class="live-catering-container">
@@ -229,7 +198,7 @@ const OrderDetailTab = ({
             </ul>
           </div>
         </>
-      ) : orderType === 1 ? (
+      ) : orderType == 1 ? (
         <div  className="decoration-container">
           {decorationItems?.map((product, index) => {
             return (
@@ -263,11 +232,9 @@ const OrderDetailTab = ({
         </div>
       ) : null}
 
-      {/* <div className="rate-us-footer">
-        <button className="rate-us-button">Rate Us</button>
-      </div> */}
 
-<div onClick={cancelOrder}>
+
+<div onClick={acceptOrder}>
           <button className="acceptOrder">Accept Order</button>
         </div>
     </>

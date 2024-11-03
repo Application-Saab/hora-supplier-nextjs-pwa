@@ -11,10 +11,10 @@ import {
 import { useRouter } from "next/router";
 
 const ProfileUpdate = () => {
-  const [jobType, setJobType] = useState('');
   const router = useRouter();
   const [jobProfile, setJobProfile] = useState('');
   const [jobExperince , setJobExperince] = useState('');
+  const [jobType , setJobType] = useState('');
   const [error, setError] = useState(null);
   const [errorProfessional , setErrorProfessional] = useState(null);
   const [showAdditionalFields, setShowAdditionalFields] = useState(false);
@@ -35,7 +35,8 @@ const ProfileUpdate = () => {
       const requestData =  {
         "resume":"",
         "experience":jobExperince,
-        "job_profile":jobProfile
+        "job_profile":jobProfile,
+        "order_type": jobType
     }
 
       console.log(requestData, "requestData");
@@ -246,7 +247,7 @@ const ProfileUpdate = () => {
 
   return (
     <Layout>
-      <div className="profile-container" style={{ backgroundColor:"rgba(237, 237, 237, 0.79)"}}>
+      <div className="profile-container" style={{ backgroundColor:"rgba(237, 237, 237, 0.79)" , minHeight:"100vh"}}>
         <div className="profile-form">
         {!showAdditionalFields && (
           <div style={{ width:"100%" , marginBottom:20 , backgroundColor:"rgb(255, 255, 255)" , boxShadow:"rgba(0, 0, 0, 0.18) 0px 1px 8px" , padding:"20px" , borderRadius:"20px"}}>
@@ -267,12 +268,16 @@ const ProfileUpdate = () => {
               <select 
                 id="jobProfile" 
                 value={jobProfile} 
-                onChange={(e) => setJobProfile(e.target.value)} 
+                onChange={(e) => {
+                  const selectedOption = e.target.options[e.target.selectedIndex];
+                  setJobProfile(e.target.value);
+                  setJobType(selectedOption.getAttribute('job_type'));
+                }}  
                 required
               >
                 <option value="">Select Job Profile</option>
-                <option value="Chef">Chef</option>
-                <option value="Decorator">Decorator</option>
+                <option value="Chef" job_type="2">Chef</option>
+                <option value="Decorator" job_type="1">Decorator</option>
               </select>
             </div>
             <button type="submit" className='button-primary'>Continue</button>
