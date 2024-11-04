@@ -15,23 +15,16 @@ const Orderlist = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // const supplierJobType = localStorage.getItem("supplierJobType");
-  const supplierJobType = "1";
-  // let supplierCity = localStorage.getItem("supplierCity");
-  // console.log(supplierCity, "suppliercity");
 
-  let supplierCity = "Delhi";
+  //order_status: { type: Number, default: 0 /* 0-Booking ,1-Accepted ,2-pending/in-progress, 3-delivery/completed, 4-failed, 5- handle -> {1,2,3}, 6- expire  */ }
 
+  const supplierJobType = localStorage.getItem("supplierJobType");
+  const supplierID = localStorage.getItem("supplierID");
+  let supplierCity = localStorage.getItem("supplierCity");
 
   
   if (supplierCity === "Bengaluru") {
     supplierCity = "Bangalore"; // Adjusting for city name
-  }
-
-  let userId;
-
-  if (typeof window !== "undefined" && typeof localStorage !== "undefined") {
-  userId = localStorage.getItem("userID");
   }
 
   useEffect(() => {
@@ -46,7 +39,7 @@ const Orderlist = () => {
           },
           body: JSON.stringify({
             page: "1",
-            _id: userId,
+            _id: supplierID,
           }),
         });
 
@@ -70,7 +63,7 @@ const Orderlist = () => {
     };
 
     fetchOrderList();
-  }, [userId]);
+  }, [supplierID]);
 
   const getOrderStatus = (orderStatusValue) => {
     switch (orderStatusValue) {
@@ -132,12 +125,13 @@ const Orderlist = () => {
 
 
   const handleViewDetail = (order) => {
-    const { _id, order_id, type } = order;
+    const { _id, order_id, type , otp } = order;
+    localStorage.setItem("orderOtp" , otp )
     const apiOrderId = _id
     const orderType = type
     const orderId = order_id
     router.push({
-        pathname:`/order-details`, 
+        pathname:`/new-order-details`, 
       query: { apiOrderId, orderType, orderId },
     });
   };
@@ -179,8 +173,9 @@ const Orderlist = () => {
           {orders
             .filter(order => {
               console.log(order.addressId[0].city , supplierCity ,  order.type.toString() , supplierJobType)
-              const cityMatches = order.addressId[0].city === supplierCity ||
-                                  (order.addressId[0].city === "Bengaluru" && supplierCity === "Bangalore");
+              const cityMatches = 
+                  order.addressId[0].city.toLowerCase() === supplierCity.toLowerCase() ||
+                  (order.addressId[0].city.toLowerCase() === "bengaluru" && supplierCity.toLowerCase() === "bangalore");
               const typeMatches = order.type.toString() === supplierJobType;
               return cityMatches && typeMatches;
             })
@@ -228,29 +223,22 @@ const Orderlist = () => {
                         <span>{order.order_time}</span>
                       </div>
                       )}
-                      {order.no_of_people && (
-                      <div>
-                        <Image
-                          className="contact-us-img"
-                          src={people}
-                          height={20}
-                          width={20}
-                        />{" "}
-                        <span>{order?.no_of_people} People</span>
-                      </div>
-                      )}
+
+
+                    {order.no_of_people && (
+                    <div>
+                    <Image
+                    className="contact-us-img"
+                    src={peopleIcon} // Replace this with the correct image source for number of people
+                    height={20}
+                    width={20}
+                    />{" "}
+                    <span>{order.no_of_people}</span>
+                    </div>
+                    )}
+                    
                     </div>
                     <div className="right-details">
-                      {/* <div>
-                        <strong style={{ color: "#9252AA", fontSize: "13px" }}>
-                          City
-                          <p style={{ textAlign: "end", margin: 0 }}>
-
-                            {order.addressId[0].city}
-                
-                          </p>
-                        </strong>
-                      </div> */}
                       {order.addressId?.[0]?.city && (
                         <div>
                         <strong style={{ color: "#9252AA", fontSize: "13px" }}>

@@ -25,29 +25,17 @@ const OrderDetail = () => {
   const [orderDetail, setOrderDetail] = useState([]);
   const [decorationItems, setDecorationItems] = useState([]);
   const [decorationComments, setDecorationComments] = useState("");
-
-  console.log(orderType, "ordertype");
-
-  orderType = parseInt(orderType);
-
-  console.log(orderType, "ordert2");
-
+ // alert("New Order detils");
   useEffect(() => {
-    // Run only on the client side and only if orderType has a value
-    if (typeof window !== "undefined" && orderType) {
-      localStorage.setItem("orderTypelocal", orderType);
-    }
-  }, [orderType]);
-
-  useEffect(() => {
+    alert(orderType);
     if (
       orderType == 2 ||
-      orderType === 6 ||
-      orderType === 7 ||
-      orderType === 8
+      orderType == 6 ||
+      orderType == 7 ||
+      orderType == 8
     ) {
       fetchOrderDetailsMenu();
-    } else if (orderType === 1) {
+    } else if (orderType == 1) {
       alert("if orderType = 1");
       console.log(orderType, "orderType");
       fetchDecorationOrderDetails();
@@ -55,7 +43,7 @@ const OrderDetail = () => {
   }, [orderType, orderId, apiOrderId]);
 
   useEffect(() => {
-    if (orderType === 3 || orderType === 4 || orderType === 5) {
+    if (orderType == 3 || orderType == 4 || orderType == 5) {
       fetchOrderDetails();
     }
   }, [orderType, orderId, apiOrderId]);
@@ -94,8 +82,6 @@ const OrderDetail = () => {
       console.log(responseData.data, "new jadu");
 
       setOrderDetail(responseData.data._doc);
-      // setOrderDetail(responseData?.data?._doc);
-      // setDecorationItems(responseData?.data?.items[0]?.decoration);
       setDecorationItems(responseData.data.items[0].decoration);
       setDecorationComments(responseData?.data?._doc.decoration_comments);
       setLoading(false);

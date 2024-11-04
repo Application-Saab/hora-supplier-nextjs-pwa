@@ -32,14 +32,6 @@ const OrderDetail = () => {
 
   console.log(orderType, "ordert2");
 
-  // localStorage.setItem("orderTypelocal",orderType);
-
-   // Use localStorage safely in the browser
-   useEffect(() => {
-    if (typeof window !== "undefined" && typeof localStorage !== "undefined") {
-      localStorage.setItem("orderTypelocal", orderType);
-    }
-  }, [orderType]);
 
 
   useEffect(() => {

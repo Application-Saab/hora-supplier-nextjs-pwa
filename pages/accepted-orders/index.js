@@ -15,28 +15,15 @@ const Orderlist = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // const supplierJobType = localStorage.getItem("supplierJobType");
-  const supplierJobType = "1";
-  // let supplierCity = localStorage.getItem("supplierCity");
-  let supplierCity = "Delhi";
-    console.log(supplierCity, "suppliercity");
+  const supplierJobType = localStorage.getItem("supplierJobType");
+  const supplierID = localStorage.getItem("supplierID");
+
+ let supplierCity = localStorage.getItem("supplierCity");
+
   
   if (supplierCity === "Bengaluru") {
     supplierCity = "Bangalore"; // Adjusting for city name
   }
-
-  
-  
-  // let supplierId = localStorage.getItem("supplierID");
-  // const userId = localStorage.getItem("userID");
-  let supplierId;
-let userId;
-
-// Check if window and localStorage are available (only on client side)
-if (typeof window !== "undefined" && typeof localStorage !== "undefined") {
-    supplierId = localStorage.getItem("supplierID");
-    userId = localStorage.getItem("userID");
-}
 
 
   useEffect(() => {
@@ -51,11 +38,11 @@ if (typeof window !== "undefined" && typeof localStorage !== "undefined") {
           },
           body: JSON.stringify({
             page: "1",
-            _id: userId,
+            _id: supplierID,
           }),
         });
 
-        console.log(userId, "_idididiuserId");
+        
 
         const responseData = await response.json();
         console.log(responseData, "responsedaa"); // Debugging line to check API response
@@ -79,7 +66,7 @@ if (typeof window !== "undefined" && typeof localStorage !== "undefined") {
     };
 
     fetchOrderList();
-  }, [userId]);
+  }, [supplierID]);
 
   const getOrderStatus = (orderStatusValue) => {
     switch (orderStatusValue) {
@@ -146,7 +133,7 @@ if (typeof window !== "undefined" && typeof localStorage !== "undefined") {
     const orderType = type
     const orderId = order_id
     router.push({
-        pathname:`/view-details`, 
+        pathname:`/accept-order-view-details`, 
       query: { apiOrderId, orderType, orderId },
     });
   };
@@ -189,19 +176,12 @@ if (typeof window !== "undefined" && typeof localStorage !== "undefined") {
         <div className="order-container">
           {orders
             .filter(order => {
-              console.log(order.addressId[0].city , supplierCity ,  order.type.toString() , supplierJobType)
-              const cityMatches = order.addressId[0].city === supplierCity ||
-                                  (order.addressId[0].city === "Bengaluru" && supplierCity === "Bangalore");
-              const supplierIdMatches = userId == supplierId;
-              console.log(supplierIdMatches, "supplierIdmatches");
-              console.log(supplierId, "supplierId");
-              
+              console.log(order.addressId[0].city , supplierCity ,  order.type.toString() , supplierJobType , order.toId)
+              const cityMatches = 
+              order.addressId[0].city.toLowerCase() === supplierCity.toLowerCase() ||
+              (order.addressId[0].city.toLowerCase() === "bengaluru" && supplierCity.toLowerCase() === "bangalore");
+              const supplierIdMatches = order.toId == supplierID;
               const typeMatches = order.type.toString() === supplierJobType;
-              
-              
-              console.log(typeMatches, "typeMatches");
-              console.log(cityMatches, "cityMatches");
-              
               
               return cityMatches && typeMatches && supplierIdMatches;
             })
