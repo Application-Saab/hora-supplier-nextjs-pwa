@@ -1,5 +1,4 @@
-
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 // import daal_image from "../../assets/daal_image.png";
 import OrderDetailsMenu from "../OrderDetailsMenu";
 import OrderDetailsIngre from "../OrderDetailsIngre";
@@ -8,9 +7,9 @@ import OrderDetailsIngre from "../OrderDetailsIngre";
 import OrderDetailsAppliances from "../OrderDetailsAppliances";
 // import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { Form } from 'react-bootstrap';
+import { Form } from "react-bootstrap";
 import { useRouter } from "next/router";
-import { BASE_URL, ACCEPT_ORDER } from "../../../apiconstant/apiconstant";
+import { BASE_URL, ACCEPT_ORDER, START_ORDER } from "../../../apiconstant/apiconstant";
 
 // const BASE_URL = "";
 // const ORDER_CANCEL = "";
@@ -38,23 +37,23 @@ const OrderDetailTab = ({
 
   console.log(apiOrderId, "apiOrderid");
 
-  // var supplierID = localStorage.getItem('supplierID');
-  // console.log(supplierID, "supplierID");
+  const [otp1, setOtp1] = useState(["", "", "", ""]);
+  const [isOtpMatched, setIsOtpMatched] = useState(false);
+  const inputRefs = useRef([]);
+  const [errorMessage, setErrorMessage] = useState("");
 
-  // var otp = localStorage.getItem('otp');
-  // console.log(otp, "otpotpotp");
-
+  const orderOtp = localStorage.getItem("orderOtp");
+  console.log(orderOtp, "orderOTPT");
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      setSupplierID(localStorage.getItem('supplierID'));
-      setOtp(localStorage.getItem('otp'));
+      setSupplierID(localStorage.getItem("supplierID"));
+      setOtp(localStorage.getItem("otp"));
     }
   }, []);
 
   console.log(supplierID, "supplierID");
   console.log(otp, "otp");
-  
 
   const getItemInclusion = (inclusion) => {
     if (!inclusion || !inclusion.length) return "";
@@ -88,17 +87,17 @@ const OrderDetailTab = ({
           Authorisation: token,
           otp: otp,
           _id: apiOrderId,
-          userId: supplierID
+          userId: supplierID,
         }),
       }); // Replace with your API endpoint for updating user profile
 
       // Handle success response
 
       console.log(response, "responsedata");
-      
-            // "otp":2980, 
-            // "_id":"643ba8ee71e3056f1a50dc8c", 
-            // "userId":"6413340f549b58e3dc39a035"
+
+      // "otp":2980,
+      // "_id":"643ba8ee71e3056f1a50dc8c",
+      // "userId":"6413340f549b58e3dc39a035"
 
       alert("Order accepted successfully");
       // router.push("/orderlist");
@@ -127,9 +126,6 @@ const OrderDetailTab = ({
     }
   };
 
-  const [showOtpInputs, setShowOtpInputs] = useState(false);
-  const [otp1, setOtp1] = useState(["", "", "", ""]); // State to store each OTP digit
-
   const handleDivClick = () => {
     setShowOtpInputs(true);
   };
@@ -138,12 +134,58 @@ const OrderDetailTab = ({
     const newOtp = [...otp1];
     newOtp[index] = value;
     setOtp1(newOtp);
+
+    console.log(newOtp, "newotp");
+
+    if (value && index < otp1.length - 1) {
+      inputRefs.current[index + 1].focus();
+    }
+
+    if (newOtp.join("") === orderOtp) {
+      setIsOtpMatched(true);
+      setErrorMessage("");
+    } else {
+      setIsOtpMatched(false);
+      if (newOtp.join("").length === otp1.length) {
+        setErrorMessage("Wrong OTP, please try again.");
+      } else {
+        setErrorMessage("");
+      }
+    }
   };
 
   const handleSubmit = () => {
-    const otpValue = otp1.join(""); // Concatenate OTP values
-    alert(`Entered OTP: ${otpValue}`);
-    router.push('/images-upload');  
+    const currDate = new Date().toLocaleDateString();
+    const currTime = new Date().toLocaleTimeString();
+
+    const currDateTime = currDate + currTime;
+console.log(currDate,currTime, "currTimecurrDate");
+    try {
+      const token =  localStorage.getItem("token");
+
+      const response =  fetch(BASE_URL + START_ORDER, {
+        method: "POST",
+        headers: {
+          Accept: "application/json, text/plain, /",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          // Authorisation: token,
+          otp: otp,
+          _id: apiOrderId,
+          userId: supplierID,
+          job_start_time: currDateTime
+        }),
+      }); 
+
+      console.log(response, "responsedata");
+      router.push({
+        pathname:`/job-complete`, 
+      query: { apiOrderId },
+    });
+    } catch (error) {
+      console.log("acceptOrder error", error);
+    }
   };
 
   return (
@@ -183,7 +225,10 @@ const OrderDetailTab = ({
             <OrderDetailsMenu orderDetail={orderDetail} orderType={orderType} />
           )}
           {tab === "Appliances" && (
-           <OrderDetailsAppliances orderDetail={orderDetail} orderType={orderType}/>
+            <OrderDetailsAppliances
+              orderDetail={orderDetail}
+              orderType={orderType}
+            />
           )}
           {tab === "Ingredients" && (
             <OrderDetailsIngre
@@ -251,7 +296,7 @@ const OrderDetailTab = ({
           </div>
         </>
       ) : orderType === 1 ? (
-        <div  className="decoration-container">
+        <div className="decoration-container">
           {decorationItems?.map((product, index) => {
             return (
               <div key={product?.id} className="product-container">
@@ -262,7 +307,7 @@ const OrderDetailTab = ({
                     className="product-image"
                     height={300}
                     width={300}
-                    style={{height:"auto", width:"auto"}}
+                    style={{ height: "auto", width: "auto" }}
                   />
                 </div>
                 <div className="product-info">
@@ -275,54 +320,54 @@ const OrderDetailTab = ({
               </div>
             );
           })}
-            {decorationComments && (
+          {decorationComments && (
             <div className="comment-container">
               <p className="comments-header">Additional Comments:</p>
               <p className="comments-text">{decorationComments}</p>
             </div>
           )}
 
-          
-<div>
-{!showOtpInputs && (
-        <div onClick={handleDivClick}>
+          <div>
+            {/* <div onClick={handleDivClick}>
           <button className="acceptOrder">Start Your Task</button>
-        </div>
-      )}
+        </div> */}
 
-      {showOtpInputs && (
-       <div className="otp-container">
-       <h2 className="otp-title">Enter OTP</h2>
-       <p className="otp-instructions">Please enter the OTP sent to your number</p>
-       <div className="otp-inputs">
-         {otp1.map((_, index) => (
-           <Form.Control
-             key={index}
-             type="text"
-             maxLength="1"
-             value={otp1[index]}
-             onChange={(e) => handleChange(e.target.value, index)}
-             className="otp-input"
-           />
-         ))}
-       </div>
-       <button onClick={handleSubmit} className="startbutton" >Start Order</button>
-     </div>
-      )}
-    </div>
+            <div className="otp-container">
+              <h2 className="otp-title">Enter OTP</h2>
+              <p className="otp-instructions">
+                Please enter the OTP sent to your number
+              </p>
+              <div className="otp-inputs">
+                {otp1.map((_, index) => (
+                  <Form.Control
+                    key={index}
+                    type="text"
+                    maxLength="1"
+                    value={otp1[index]}
+                    onChange={(e) => handleChange(e.target.value, index)}
+                    className="otp-input"
+                    ref={(el) => (inputRefs.current[index] = el)}
+                  />
+                ))}
+              </div>
+              {errorMessage && <p className="error-message">{errorMessage}</p>}
+              {isOtpMatched && (
+                <button onClick={handleSubmit} className="startbutton">
+                  Start Order
+                </button>
+              )}
+            </div>
+          </div>
         </div>
       ) : null}
 
       {/* <div className="rate-us-footer">
         <button className="rate-us-button">Rate Us</button>
       </div> */}
-{/* 
+      {/* 
 <div onClick={cancelOrder}>
           <button className="acceptOrder">Job Started</button>
         </div> */}
-
-
-
     </>
   );
 };

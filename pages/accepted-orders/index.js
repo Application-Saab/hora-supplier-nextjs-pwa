@@ -182,8 +182,9 @@ const Orderlist = () => {
               (order.addressId[0].city.toLowerCase() === "bengaluru" && supplierCity.toLowerCase() === "bangalore");
               const supplierIdMatches = order.toId == supplierID;
               const typeMatches = order.type.toString() === supplierJobType;
-              
-              return cityMatches && typeMatches && supplierIdMatches;
+              const isBooked = order.order_status === 1 || order.order_status === 2 || order.order_status === 3;
+              console.log(isBooked, "isbooked");
+              return cityMatches && typeMatches && supplierIdMatches && isBooked;
             })
             .map((order) => {
               const orderStatus = getOrderStatus(order?.order_status);

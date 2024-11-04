@@ -13,3 +13,9 @@ export const GET_BOOKING_ORDER_DETAILS = "/api/order/order_details_decoration";
 export const ORDER_DETAILS_ENDPOINT = "/api/order/order_details";
 
 export const ACCEPT_ORDER = "/api/order/acceptOrder";
+
+export const START_ORDER = "/api/order/startOrder";
+
+export const IMAGE_UPLOAD = "/api/image_upload";
+
+export const COMPLETE_ORDER = "/api/order/completeOrder";

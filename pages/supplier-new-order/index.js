@@ -21,6 +21,7 @@ const Orderlist = () => {
   const supplierJobType = localStorage.getItem("supplierJobType");
   const supplierID = localStorage.getItem("supplierID");
   let supplierCity = localStorage.getItem("supplierCity");
+  console.log(supplierCity, "icity");
 
   
   if (supplierCity === "Bengaluru") {
@@ -177,7 +178,10 @@ const Orderlist = () => {
                   order.addressId[0].city.toLowerCase() === supplierCity.toLowerCase() ||
                   (order.addressId[0].city.toLowerCase() === "bengaluru" && supplierCity.toLowerCase() === "bangalore");
               const typeMatches = order.type.toString() === supplierJobType;
-              return cityMatches && typeMatches;
+              const isBooked = order.order_status === 0;
+              console.log(isBooked, typeMatches, "both", cityMatches);
+              console.log(order.order_status, "status");
+              return cityMatches && typeMatches && isBooked;
             })
             .map((order) => {
               const orderStatus = getOrderStatus(order?.order_status);
@@ -271,8 +275,11 @@ const Orderlist = () => {
                     </button>
                   </div>
                 </div>
-              );
+             );
             })}
+            {/* .length === 0 ? (
+              <p className="no-orders-message">No orders available</p>
+            ) : null} */}
         </div>
       </main>
     </Layout>
