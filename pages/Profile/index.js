@@ -41,6 +41,9 @@ const ProfileUpdate = () => {
 
       console.log(requestData, "requestData");
 
+      localStorage.setItem("UserJobExperience", jobExperince);
+      localStorage.setItem("UserJobProfile", jobProfile);
+
       const response = await axios.post(url, requestData, {
         headers: {
           "Content-Type": "application/json",
@@ -145,6 +148,10 @@ const ProfileUpdate = () => {
     }
       console.log(requestData, "additionalRequestData");
 
+      localStorage.setItem("UserName", userDetails.name);
+      localStorage.setItem("UserAge", userDetails.age);
+      localStorage.setItem("UserCity", userDetails.city);
+
       const response = await axios.post(url, requestData, {
         headers: {
           "Content-Type": "application/json",
@@ -168,82 +175,6 @@ const ProfileUpdate = () => {
       setErrorProfessional(error.message);
     }
   };
-
-
-  // const handleSubmit = async () => {
-  //   const requestData = {
-  //     profile: profile
-  //   };
-
-  //   try {
-  //     const token = await localStorage.getItem('token');
-  
-  //     const response = await axios.post(`${BASE_URL}/api/users/update_work_details`,
-  //       JSON.stringify(requestData),
-  //       {
-  //         headers: {
-  //           'Content-Type': 'application/json',
-  //           'authorization': token
-  //         },
-  //       }
-  //     );
-  
-  //     if (response.status === 200) {
-  //       console.log('Data submitted successfully:', response.data);
-  //       // Redirect to home page
-  //       window.location.href = '/MyAcount'; // Or use window.location.replace('/home') for replacing the current history entry
-  //     } else {
-  //       console.error('Submission failed:', response.statusText);
-  //     }
-  //   } catch (error) {
-  //     console.error('Error submitting data:', error.message);
-  //   }
-  // };
-  
-
-// const handleSubmit = async () => {
-    
-//     const requestData = {
-//       image: imageFile, 
-//       experience: experience,
-//       profile: profile
-//     };
-  
-//     console.log(requestData, "requestData");
-  
-//     try {
-//       const token = await localStorage.getItem('token');
-  
-//       const response = await axios.post(`${BASE_URL}/api/users/update_work_details`, 
-//         JSON.stringify(requestData), 
-//         {
-//           headers: {
-//             'Content-Type': 'application/json',
-//             'authorization': token
-//           },
-//         }
-//       );
-
-//       console.log(`${BASE_URL}/api/users/update_work_details` , "ffksdhfkjdshf");
-
-//       console.log(response, "resdlkfds");
-  
-//       console.log(token, "second token bro");
-//       console.log(response.data, "response data");
-  
-//       if (response.status === 200) {
-//         console.log('Data submitted successfully:', response.data);
-        
-//       } else {
-//         console.error('Submission failed:', response.statusText);
-        
-//       }
-//     } catch (error) {
-//       console.error('Error submitting data:', error.message);
-      
-//     }
-//   };
-  
 
   return (
     <Layout>

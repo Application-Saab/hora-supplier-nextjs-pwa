@@ -1,16 +1,36 @@
-import React from 'react';
-import Navbar from './Navbar'; 
-import Sidebar from './Sidebar'; 
+// import React from 'react';
+// import Navbar from './Navbar'; 
+// import Sidebar from './Sidebar'; 
 
-const Layout = ({ children, navTitle }) => {
+// const Layout = ({ children, navTitle }) => {
+//   return (
+//     <div>
+//       <Navbar navTitle={navTitle} />
+
+//       <div>
+//         {/* <Sidebar isOpen={isSidebarOpen} /> */}
+        
+//         <main >
+//           {children}
+//         </main>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default Layout;
+
+// components/Layout.js
+import React from 'react';
+import Navbar from './Navbar';
+
+const Layout = ({ children, navTitle, backLink, showBackButton = true }) => {
   return (
     <div>
-      <Navbar navTitle={navTitle} />
+      <Navbar backLink={backLink} navTitle={navTitle} showBackButton={showBackButton} />
 
       <div>
-        {/* <Sidebar isOpen={isSidebarOpen} /> */}
-        
-        <main >
+        <main>
           {children}
         </main>
       </div>

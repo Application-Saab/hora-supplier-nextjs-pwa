@@ -11,8 +11,9 @@ import axios from 'axios';
 ;import Image from "next/image";
 import Navbar from "../../component/Navbar";
 import Link from "next/link";
+import Layout from "../../component/Layout";
 
-const Home = () => {
+const home = () => {
 
   const menuItems = [
     { id: 1, name: "New Orders", icon: bellLogo, path: "/supplier-new-order" },
@@ -66,8 +67,8 @@ const Home = () => {
 
   return (
     <>
+    <Layout showBackButton={false}>
       <div className="container">
-        <Navbar />
         <div style={{ marginTop: "10px" }}>
           <div className="main-menu-container">
             <div className="menu-grid">
@@ -88,8 +89,9 @@ const Home = () => {
           </div>
         </div>
       </div>
+      </Layout>
     </>
   );
 };
 
-export default Home;
+export default home;
