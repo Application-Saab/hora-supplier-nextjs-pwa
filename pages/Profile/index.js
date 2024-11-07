@@ -66,44 +66,6 @@ const ProfileUpdate = () => {
     }
   };
 
-
-  // const userRestaurant = [{ name: "Planet of the Crepes", profile: "Bartender" }];
-
-  // const handleSubmit = async (event) => {
-  //   event.preventDefault();
-
-  //   try {
-  //     const token = localStorage.getItem('token');
-  //     const url = BASE_URL + SUPPLIER_WORK_UPDATE;
-
-  //     const requestData = {
-  //       job_type: jobType,
-  //       userRestaurant: userRestaurant
-  //     };
-
-  //     console.log(requestData, "requestData");
-
-  //     const response = await axios.post(url, requestData, {
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         'Authorization': token
-  //       },
-  //     });
-
-  //     console.log(response.data, "response data");
-
-  //     if (response.status === 200) {
-  //       console.log('Data submitted successfully:', response.data);
-  //       setShowAdditionalFields(true); // Show additional fields
-  //     } else {
-  //       console.error('Submission failed:', response.status);
-  //     }
-  //   } catch (error) {
-  //     console.error('Error submitting data:', error.message);
-  //     setError(error.message);
-  //   }
-  // };
-
   useEffect(() => {
     console.log(userDetails.name); // Logs the updated name value to the console each time it changes
   }, [userDetails.name]);
@@ -116,20 +78,6 @@ const ProfileUpdate = () => {
       const url = BASE_URL + SUPPLIER_UPDATE_PERSONAL_DETAILS; // Define your endpoint
 
       console.log(url, "urlofcode");
-
-      // const requestData = {
-      //   age: userDetails.age,
-      //   city: userDetails.city,
-      //   experience: userDetails.experience,
-      //   name: userDetails.name,
-      //   vechicle_type: "", // Add other fields as necessary
-      //   aadhar_no: "", // Placeholder, you can modify as needed
-      //   aadhar_front_img: "",
-      //   aadhar_back_img: "",
-      //   avatar: "",
-      //   userServedLocalities: [] // Modify this as necessary
-      // };
-
 
       const requestData = {
         "age": userDetails.age,
@@ -160,6 +108,8 @@ const ProfileUpdate = () => {
       });
 
       console.log(response, "responsedatas");
+
+      console.log(response.data.data.phone, "additional response data phone");
 
       console.log(response.data, "additional response data");
 
