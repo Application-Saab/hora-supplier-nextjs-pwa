@@ -34,7 +34,7 @@ const Navbar = ({ backLink = "/home", navTitle, showBackButton = true }) => {
       {showBackButton && (
         <div style={{ display: 'flex', alignItems: 'center' }}>
           <Link href={backLink}>
-              <span style={{ fontSize: '20px', marginRight: '5px' }}>←</span>
+              {/* <span style={{ fontSize: '20px', marginRight: '5px' }}>←</span> */}
               <span>Back</span>
             
           </Link>

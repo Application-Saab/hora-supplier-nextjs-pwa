@@ -18,10 +18,17 @@ const Orderlist = () => {
 
   //order_status: { type: Number, default: 0 /* 0-Booking ,1-Accepted ,2-pending/in-progress, 3-delivery/completed, 4-failed, 5- handle -> {1,2,3}, 6- expire  */ }
 
-  const supplierJobType = localStorage.getItem("supplierJobType");
-  const supplierID = localStorage.getItem("supplierID");
-  let supplierCity = localStorage.getItem("supplierCity");
+
+  let supplierJobType;
+  let supplierID;
+  let supplierCity
+
+  if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
+  supplierJobType = localStorage.getItem("supplierJobType");
+  supplierID = localStorage.getItem("supplierID");
+  supplierCity = localStorage.getItem("supplierCity");
   console.log(supplierCity, "icity");
+  }	
 
   
   if (supplierCity === "Bengaluru") {
@@ -127,7 +134,11 @@ const Orderlist = () => {
 
   const handleViewDetail = (order) => {
     const { _id, order_id, type , otp } = order;
-    localStorage.setItem("orderOtp" , otp )
+    // localStorage.setItem("orderOtp" , otp )
+
+    if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
+      localStorage.setItem("orderOtp" , otp );
+    }	
     const apiOrderId = _id
     const orderType = type
     const orderId = order_id

@@ -6,6 +6,8 @@ import {BASE_URL, COMPLETE_ORDER} from '../../apiconstant/apiconstant';
 import { useRouter } from "next/router";
 
 const PictureUpload = () => {
+  
+
   const [images, setImages] = useState({
     slab: null,
     sink: null,
@@ -17,7 +19,11 @@ const PictureUpload = () => {
 
   const router = useRouter();
   const { apiOrderId } = router.query;
-  const supplierID = localStorage.getItem("supplierID");
+  let supplierID;
+
+  if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
+    supplierID = localStorage.getItem("supplierID");
+  }	
 
   const [uploadSuccess, setUploadSuccess] = useState(false);
 

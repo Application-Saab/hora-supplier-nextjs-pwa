@@ -125,11 +125,19 @@ import Image from "next/image";
 const PersonalDetails = () => {
   const router = useRouter();
 
-  const userName = localStorage.getItem("UserName");
-  const userAge = localStorage.getItem("UserAge");
-  const userCity = localStorage.getItem("UserCity");
-  const userJobExperience = localStorage.getItem("UserJobExperience");
-  const userJobProfile = localStorage.getItem("UserJobProfile");
+  let userName;
+  let userAge;
+  let userCity;
+  let userJobExperience;
+  let userJobProfile;
+
+  if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
+    userName = localStorage.getItem("UserName");
+    userAge = localStorage.getItem("UserAge");
+    userCity = localStorage.getItem("UserCity");
+    userJobExperience = localStorage.getItem("UserJobExperience");
+    userJobProfile = localStorage.getItem("UserJobProfile");
+  }	
 
   const UpdateDetailFunction = () => {
     router.push('./Profile');

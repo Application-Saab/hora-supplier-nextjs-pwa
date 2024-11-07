@@ -29,11 +29,14 @@ const OrderDetailTab = ({
 }) => {
   const router = useRouter();
   const { apiOrderId } = router.query;
-  var otp = localStorage.getItem('orderOtp');
+  if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
+      var otp = localStorage.getItem('orderOtp');
+      
+  var supplierID = localStorage.getItem('supplierID');
+    }	
   const [tab, setTab] = useState("Menu");
   const [orderStatus, setOrderStatus] = useState(orderDetail?.order_status);
   console.log(apiOrderId, "apiOrderid");
-  var supplierID = localStorage.getItem('supplierID');
 
   const getItemInclusion = (inclusion) => {
     if (!inclusion || !inclusion.length) return "";

@@ -11,7 +11,10 @@ const OrderDetailHeader = ({ orderDetail }) => {
   const getOrderId = (e) => {
     const orderId1 = 10800 + e;
     const updateOrderId = "#" + orderId1;
-    localStorage.setItem("orderId", updateOrderId);
+
+    if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
+      localStorage.setItem("orderId", updateOrderId);
+    }	
     console.log(updateOrderId, "header");
     return updateOrderId;
   };

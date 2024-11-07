@@ -15,10 +15,16 @@ const Orderlist = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const supplierJobType = localStorage.getItem("supplierJobType");
-  const supplierID = localStorage.getItem("supplierID");
+  let supplierJobType;
+  let supplierID;
 
- let supplierCity = localStorage.getItem("supplierCity");
+ let supplierCity;
+
+ if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
+  supplierJobType = localStorage.getItem("supplierJobType");
+  supplierID = localStorage.getItem("supplierID");
+  supplierCity = localStorage.getItem("supplierCity");
+}	
 
   
   if (supplierCity === "Bengaluru") {

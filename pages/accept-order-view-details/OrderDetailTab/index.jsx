@@ -42,8 +42,14 @@ const OrderDetailTab = ({
   const inputRefs = useRef([]);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const orderOtp = localStorage.getItem("orderOtp");
+
+  let orderOtp;
+
+  if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
+    
+  orderOtp = localStorage.getItem("orderOtp");
   console.log(orderOtp, "orderOTPT");
+  }	
 
   useEffect(() => {
     if (typeof window !== "undefined") {

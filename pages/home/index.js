@@ -13,7 +13,7 @@ import Navbar from "../../component/Navbar";
 import Link from "next/link";
 import Layout from "../../component/Layout";
 
-const home = () => {
+const Home = () => {
 
   const menuItems = [
     { id: 1, name: "New Orders", icon: bellLogo, path: "/supplier-new-order" },
@@ -30,8 +30,13 @@ const home = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    const mobileNumber = localStorage.getItem('mobileNumber');
+    let token;
+    let mobileNumber;
+
+    if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
+      token = localStorage.getItem('token');
+      mobileNumber = localStorage.getItem('mobileNumber');
+    }	
     const fetchData = async () => {
       const url = `${BASE_URL}${GET_USER_DETAIL_ENDPOINT}`;
       const requestData = {
@@ -50,11 +55,14 @@ const home = () => {
         });
 
         if (response.status === 200) {
-          localStorage.setItem("supplierCity", response.data.data.city);
-          localStorage.setItem("supplierJobProfile", response.data.data.job_profile);
-          localStorage.setItem("supplierExperince", response.data.data.experience);
-          localStorage.setItem("supplierName", response.data.data.name);
-          localStorage.setItem("supplierJobType", response.data.data.order_type);
+          if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
+            localStorage.setItem("supplierCity", response.data.data.city);
+            localStorage.setItem("supplierJobProfile", response.data.data.job_profile);
+            localStorage.setItem("supplierExperince", response.data.data.experience);
+            localStorage.setItem("supplierName", response.data.data.name);
+            localStorage.setItem("supplierJobType", response.data.data.order_type);
+          }	
+
 
         }
       } catch (error) {
@@ -94,4 +102,4 @@ const home = () => {
   );
 };
 
-export default home;
+export default Home;

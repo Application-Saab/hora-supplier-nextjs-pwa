@@ -29,7 +29,10 @@ const ProfileUpdate = () => {
     event.preventDefault();
 
     try {
-      const token = localStorage.getItem('token');
+      let token;
+      if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
+        token = localStorage.getItem('token');
+      }	
       const url = BASE_URL + UPDATE_RESUME_PROFILE;
 
       const requestData =  {
@@ -41,8 +44,12 @@ const ProfileUpdate = () => {
 
       console.log(requestData, "requestData");
 
+      if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
+        
       localStorage.setItem("UserJobExperience", jobExperince);
       localStorage.setItem("UserJobProfile", jobProfile);
+
+      }	
 
       const response = await axios.post(url, requestData, {
         headers: {
@@ -74,7 +81,10 @@ const ProfileUpdate = () => {
     event.preventDefault();
 
     try {
-      const token = localStorage.getItem('token');
+      let token;
+      if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
+        token = localStorage.getItem('token');
+      }	
       const url = BASE_URL + SUPPLIER_UPDATE_PERSONAL_DETAILS; // Define your endpoint
 
       console.log(url, "urlofcode");
@@ -96,9 +106,14 @@ const ProfileUpdate = () => {
     }
       console.log(requestData, "additionalRequestData");
 
+      if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
+       
       localStorage.setItem("UserName", userDetails.name);
       localStorage.setItem("UserAge", userDetails.age);
       localStorage.setItem("UserCity", userDetails.city);
+
+
+      }	
 
       const response = await axios.post(url, requestData, {
         headers: {
@@ -181,7 +196,7 @@ const ProfileUpdate = () => {
                   required
                 />
               </div>
-              <div>
+              {/* <div>
                 <label htmlFor="city">City:</label>
                 <input 
                   type="text" 
@@ -190,7 +205,23 @@ const ProfileUpdate = () => {
                   onChange={(e) => setUserDetails({ ...userDetails, city: e.target.value })} 
                   required
                 />
-              </div>
+              </div> */}
+              <div>
+  <label htmlFor="city">City:</label>
+  <select 
+    id="city" 
+    value={userDetails.city} 
+    onChange={(e) => setUserDetails({ ...userDetails, city: e.target.value })} 
+    required
+  >
+    <option value="" disabled>Select City</option>
+    <option value="Mumbai">Mumbai</option>
+    <option value="Bangalore">Bangalore</option>
+    <option value="Delhi">Delhi</option>
+    <option value="Hyderabad">Hyderabad</option>  
+  </select>
+</div>
+
               <div>
                 <label htmlFor="age">Age:</label>
                 <input 
