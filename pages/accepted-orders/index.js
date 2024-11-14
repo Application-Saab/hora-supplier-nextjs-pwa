@@ -182,14 +182,14 @@ const Orderlist = () => {
         <div className="order-container">
           {orders
             .filter(order => {
-              console.log(order.addressId[0].city , supplierCity ,  order.type.toString() , supplierJobType , order.toId)
+              // console.log(order.addressId[0].city , supplierCity ,  order.type.toString() , supplierJobType , order.toId)
               const cityMatches = 
               order.addressId[0].city.toLowerCase() === supplierCity.toLowerCase() ||
               (order.addressId[0].city.toLowerCase() === "bengaluru" && supplierCity.toLowerCase() === "bangalore");
               const supplierIdMatches = order.toId == supplierID;
               const typeMatches = order.type.toString() === supplierJobType;
               const isBooked = order.order_status === 1 || order.order_status === 2 || order.order_status === 3;
-              console.log(isBooked, "isbooked");
+              // console.log(isBooked, "isbooked");
               return cityMatches && typeMatches && supplierIdMatches && isBooked;
             })
             .map((order) => {
@@ -201,6 +201,7 @@ const Orderlist = () => {
                       <div style={{ color: "#9252AA" }}>
                         Order Id: #{10800 + order.order_id}
                         {  console.log(order.toId, "hitoId")}
+                        {  console.log(order.order_id, "order_id")}
                       </div>
                       <h6 className="order-otp mt-2" style={{ color: "#9252AA" }}>
                         OTP: {order?.otp}

@@ -147,14 +147,11 @@ const OrderDetailHeader = ({ orderDetail }) => {
                  {orderDetail.no_of_people} 
               </p>
              */}
-
-<p>
-  <strong>People: </strong> 
-  {orderDetail && orderDetail.no_of_people !== undefined 
-    ? orderDetail.no_of_people 
-    : 'N/A' /* Or any default value you want to display */}
-</p>
-
+          {orderDetail && orderDetail.no_of_people > 0 && (
+            <p>
+              <strong>People: </strong> {orderDetail.no_of_people}
+            </p>
+          )}
 
               {orderDetail?.order_locality && (
               <p>

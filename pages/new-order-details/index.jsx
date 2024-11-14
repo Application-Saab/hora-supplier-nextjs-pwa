@@ -27,7 +27,7 @@ const OrderDetail = () => {
   const [decorationComments, setDecorationComments] = useState("");
  // alert("New Order detils");
   useEffect(() => {
-    alert(orderType);
+    // alert(orderType);
     if (
       orderType == 2 ||
       orderType == 6 ||
@@ -36,7 +36,7 @@ const OrderDetail = () => {
     ) {
       fetchOrderDetailsMenu();
     } else if (orderType == 1) {
-      alert("if orderType = 1");
+      // alert("if orderType = 1");
       console.log(orderType, "orderType");
       fetchDecorationOrderDetails();
     }

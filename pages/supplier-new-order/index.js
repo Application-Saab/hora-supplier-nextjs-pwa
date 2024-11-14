@@ -15,22 +15,22 @@ const Orderlist = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
 
-
   //order_status: { type: Number, default: 0 /* 0-Booking ,1-Accepted ,2-pending/in-progress, 3-delivery/completed, 4-failed, 5- handle -> {1,2,3}, 6- expire  */ }
-
 
   let supplierJobType;
   let supplierID;
-  let supplierCity
+  let supplierCity;
 
-  if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
-  supplierJobType = localStorage.getItem("supplierJobType");
-  supplierID = localStorage.getItem("supplierID");
-  supplierCity = localStorage.getItem("supplierCity");
-  console.log(supplierCity, "icity");
-  }	
+  if (
+    typeof window !== "undefined" &&
+    typeof window.localStorage !== "undefined"
+  ) {
+    supplierJobType = localStorage.getItem("supplierJobType");
+    supplierID = localStorage.getItem("supplierID");
+    supplierCity = localStorage.getItem("supplierCity");
+    console.log(supplierCity, "icity");
+  }
 
-  
   if (supplierCity === "Bengaluru") {
     supplierCity = "Bangalore"; // Adjusting for city name
   }
@@ -131,19 +131,22 @@ const Orderlist = () => {
   //   return updateOrderId;
   // };
 
-
   const handleViewDetail = (order) => {
-    const { _id, order_id, type , otp } = order;
+    const { _id, order_id, type, otp } = order;
     // localStorage.setItem("orderOtp" , otp )
 
-    if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
-      localStorage.setItem("orderOtp" , otp );
-    }	
-    const apiOrderId = _id
-    const orderType = type
-    const orderId = order_id
+    if (
+      typeof window !== "undefined" &&
+      typeof window.localStorage !== "undefined"
+    ) {
+      localStorage.setItem("orderOtp", otp);
+    }
+    const apiOrderId = _id;
+    const orderType = type;
+    const orderId = order_id;
+    console.log(orderId,"orderIdpata");
     router.push({
-        pathname:`/new-order-details`, 
+      pathname: `/new-order-details`,
       query: { apiOrderId, orderType, orderId },
     });
   };
@@ -183,15 +186,22 @@ const Orderlist = () => {
       <main className="order-list">
         <div className="order-container">
           {orders
-            .filter(order => {
-              console.log(order.addressId[0].city , supplierCity ,  order.type.toString() , supplierJobType)
-              const cityMatches = 
-                  order.addressId[0].city.toLowerCase() === supplierCity.toLowerCase() ||
-                  (order.addressId[0].city.toLowerCase() === "bengaluru" && supplierCity.toLowerCase() === "bangalore");
+            .filter((order) => {
+              // console.log(
+              //   order.addressId[0].city,
+              //   supplierCity,
+              //   order.type.toString(),
+              //   supplierJobType
+              // );
+              const cityMatches =
+                order.addressId[0]?.city.toLowerCase() ===
+                  supplierCity.toLowerCase() ||
+                (order.addressId[0]?.city.toLowerCase() === "bengaluru" &&
+                  supplierCity.toLowerCase() === "bangalore");
               const typeMatches = order.type.toString() === supplierJobType;
               const isBooked = order.order_status === 0;
-              console.log(isBooked, typeMatches, "both", cityMatches);
-              console.log(order.order_status, "status");
+              // console.log(isBooked, typeMatches, "both", cityMatches);
+              // console.log(order.order_status, "status");
               return cityMatches && typeMatches && isBooked;
             })
             .map((order) => {
@@ -202,8 +212,12 @@ const Orderlist = () => {
                     <div className="order-id">
                       <div style={{ color: "#9252AA" }}>
                         Order Id: #{10800 + order.order_id}
+                        {  console.log(order.order_id, "order_id")}
                       </div>
-                      <h6 className="order-otp mt-2" style={{ color: "#9252AA" }}>
+                      <h6
+                        className="order-otp mt-2"
+                        style={{ color: "#9252AA" }}
+                      >
                         OTP: {order?.otp}
                       </h6>
                     </div>
@@ -228,49 +242,57 @@ const Orderlist = () => {
                         <span>{formatDate(order.order_date)}</span>
                       </div>
                       {order.order_time && (
-                      <div>
-                        <Image
-                          className="contact-us-img"
-                          src={clock}
-                          height={20}
-                          width={20}
-                        />{" "}
-                        <span>{order.order_time}</span>
-                      </div>
+                        <div>
+                          <Image
+                            className="contact-us-img"
+                            src={clock}
+                            height={20}
+                            width={20}
+                          />{" "}
+                          <span>{order.order_time}</span>
+                        </div>
                       )}
 
+                      {order.no_of_people > 0 && (
+                        <div>
+                          <Image
+                            className="contact-us-img"
+                            src={peopleIcon}
+                            height={20}
+                            width={20}
+                          />{" "}
+                          <span>{order.no_of_people}</span>
+                        </div>
+                      )}
+                    </div>
 
-                    {order.no_of_people && (
-                    <div>
-                    <Image
-                    className="contact-us-img"
-                    src={peopleIcon} // Replace this with the correct image source for number of people
-                    height={20}
-                    width={20}
-                    />{" "}
-                    <span>{order.no_of_people}</span>
-                    </div>
-                    )}
-                    
-                    </div>
                     <div className="right-details">
                       {order.addressId?.[0]?.city && (
                         <div>
-                        <strong style={{ color: "#9252AA", fontSize: "13px" }}>
-                          City
-                          <p style={{ textAlign: "end", margin: 0 }}>
-
-                            {order.addressId[0].city}
-                
-                          </p>
-                        </strong>
-                      </div>
+                          <strong
+                            style={{ color: "#9252AA", fontSize: "13px" }}
+                          >
+                            City
+                            <p style={{ textAlign: "end", margin: 0 }}>
+                              {order.addressId[0].city}
+                            </p>
+                          </strong>
+                        </div>
                       )}
                       <div>
                         <strong style={{ color: "#9252AA", fontSize: "13px" }}>
                           Balance Amount
                           <p className="mb-0 price-para">
-                            {'₹' + Math.round(order?.payable_amount * (order?.type === 2 || order?.type === 3 || order?.type === 4 || order?.type === 5 ? 0.8 : 0.7))}
+                            {"₹" +
+                              Math.round(
+                                order?.payable_amount *
+                                  (order?.type === 2 ||
+                                  order?.type === 3 ||
+                                  order?.type === 4 ||
+                                  order?.type === 5
+                                    ? 0.8
+                                    : 0.7)
+                              )}
                           </p>
                         </strong>
                       </div>
@@ -286,9 +308,9 @@ const Orderlist = () => {
                     </button>
                   </div>
                 </div>
-             );
+              );
             })}
-            {/* .length === 0 ? (
+          {/* .length === 0 ? (
               <p className="no-orders-message">No orders available</p>
             ) : null} */}
         </div>

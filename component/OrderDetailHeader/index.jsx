@@ -109,10 +109,16 @@ const OrderDetailHeader = ({ orderDetail }) => {
           <div style={styles.rightColumn}>
             
           
-              <p>
+              {/* <p>
                 <strong>People: </strong> 
                  {orderDetail.no_of_people} 
-              </p>
+              </p> */}
+
+{orderDetail && orderDetail.no_of_people > 0 && (
+            <p>
+              <strong>People: </strong> {orderDetail.no_of_people}
+            </p>
+          )}
             
               {orderDetail?.order_locality && (
               <p>

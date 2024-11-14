@@ -43,7 +43,7 @@ const OrderDetail = () => {
     ) {
       fetchOrderDetailsMenu();
     } else if (orderType === 1) {
-      alert("if orderType = 1");
+      // alert("if orderType = 1");
       console.log(orderType, "orderType");
       fetchDecorationOrderDetails();
     }
