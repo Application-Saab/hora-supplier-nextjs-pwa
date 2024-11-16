@@ -46,8 +46,8 @@ const ProfileUpdate = () => {
 
       if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
         
-      localStorage.setItem("UserJobExperience", jobExperince);
-      localStorage.setItem("UserJobProfile", jobProfile);
+      localStorage.setItem("supplierExperince", jobExperince);
+      localStorage.setItem("supplierJobProfile", jobProfile);
 
       }	
 
@@ -108,9 +108,9 @@ const ProfileUpdate = () => {
 
       if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
        
-      localStorage.setItem("UserName", userDetails.name);
-      localStorage.setItem("UserAge", userDetails.age);
-      localStorage.setItem("UserCity", userDetails.city);
+      localStorage.setItem("supplierName", userDetails.name);
+      localStorage.setItem("supplierAge", userDetails.age);
+      localStorage.setItem("supplierCity", userDetails.city);
 
 
       }	

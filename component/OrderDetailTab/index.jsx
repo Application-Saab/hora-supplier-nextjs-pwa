@@ -26,6 +26,7 @@ const OrderDetailTab = ({
   orderType,
   decorationItems,
   decorationComments,
+  decorationAddon
 }) => {
   const router = useRouter();
   const { apiOrderId } = router.query;
@@ -78,7 +79,7 @@ const OrderDetailTab = ({
 
 
       alert("Order accepted successfully");
-      // router.push("/orderlist");
+      router.push("/accepted-orders");
     } catch (error) {
       console.log("acceptOrder error", error);
     }
@@ -222,7 +223,16 @@ const OrderDetailTab = ({
                   <h6 className="product-inclusion">
                     {getItemInclusion(product?.inclusion)}
                   </h6>
+                  <p className="product-inclusion">
+                  <p className="comments-header">AddOn:</p>
+                {decorationAddon.map((item, index) => (
+                      <li key={index}>
+                        <strong>{item.name}</strong>: ${item.price}
+                      </li>
+                    ))}
+                </p>
                 </div>
+               
               </div>
             );
           })}
@@ -238,7 +248,7 @@ const OrderDetailTab = ({
 
 
 <div onClick={acceptOrder}>
-          <button className="acceptOrder">Accept Order</button>
+          <button className="acceptOrder acceptbutton">Accept Order</button>
         </div>
     </>
   );

@@ -13,8 +13,7 @@ const PictureUpload = () => {
     sink: null,
     gasBurner: null,
     kitchen: null,
-    floor: null,
-    family: null,
+    
   });
 
   const router = useRouter();
@@ -71,96 +70,96 @@ const PictureUpload = () => {
   // };
 
 
-  // const uploadAllImages = async () => {
-  //   const firstImageType = Object.keys(images).find(type => images[type] !== null);
-    
-  //   if (!firstImageType) {
-  //     alert("Please upload at least one image before submitting."); 
-  //     return; 
-  //   }
-  
-  //   const formData = new FormData();
-  
-  //   const imageToUpload = images[firstImageType];
-  //   if (imageToUpload) {
-  //     formData.append("file", imageToUpload); 
-  //   }
-  
-  //   console.log("FormData being sent:", formData);
-  //   console.log("Image to upload:", imageToUpload);
-  //   console.log("Image type being uploaded:", firstImageType);
-  
-  //   try {
-  //     const response = await fetch("https://horaservices.com:3000/api/image_upload", {
-  //       method: "POST",
-  //       body: formData, 
-  //     });
-  
-  //     if (!response.ok) {
-  //       throw new Error("Failed to upload image");
-  //     }
-  
-  //     const data = await response.json();
-  //     console.log("Successfully uploaded the image:", data);
-  //     alert("Successfully uploaded the image!");
-  //     setUploadSuccess(true); 
-  //   } catch (error) {
-  //     console.error("Error uploading image:", error);
-  //     alert("Error uploading image: " + error.message);
-  //     setUploadSuccess(false); 
-  //   }
-  // };
-
-
   const uploadAllImages = async () => {
-    const allImagesUploaded = Object.keys(images).every(type => images[type] !== null);
-  
-    if (!allImagesUploaded) {
-      alert("Please upload all images before submitting."); 
+    const firstImageType = Object.keys(images).find(type => images[type] !== null);
+    
+    if (!firstImageType) {
+      alert("Please upload at least one image before submitting."); 
       return; 
     }
   
-    const imageNamesArray = [];
+    const formData = new FormData();
   
-    Object.keys(images).forEach(type => {
-      const imageToUpload = images[type];
-      if (imageToUpload) {
-        imageNamesArray.push(imageToUpload.name); 
-        console.log(`Preparing to upload ${type}:`, imageToUpload.name);
-      } else {
-        console.log(`No image uploaded for ${type}`);
-      }
-    });
+    const imageToUpload = images[firstImageType];
+    if (imageToUpload) {
+      formData.append("file", imageToUpload); 
+    }
   
-    console.log("Image names array to be uploaded:", imageNamesArray);
-  
-    const dataToSend = {
-      file: imageNamesArray, 
-    };
+    console.log("FormData being sent:", formData);
+    console.log("Image to upload:", imageToUpload);
+    console.log("Image type being uploaded:", firstImageType);
   
     try {
       const response = await fetch("https://horaservices.com:3000/api/image_upload", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(dataToSend), 
+        body: formData, 
       });
   
       if (!response.ok) {
-        throw new Error("Failed to upload images");
+        throw new Error("Failed to upload image");
       }
   
       const data = await response.json();
-      console.log("Successfully uploaded all image names:", data);
-      alert("Successfully uploaded all image names!");
+      console.log("Successfully uploaded the image:", data);
+      alert("Successfully uploaded the image!");
       setUploadSuccess(true); 
     } catch (error) {
-      console.error("Error uploading image names:", error);
-      alert("Error uploading image names: " + error.message);
+      console.error("Error uploading image:", error);
+      alert("Error uploading image: " + error.message);
       setUploadSuccess(false); 
     }
   };
+
+
+  // const uploadAllImages = async () => {
+  //   const allImagesUploaded = Object.keys(images).every(type => images[type] !== null);
+  
+  //   if (!allImagesUploaded) {
+  //     alert("Please upload all images before submitting."); 
+  //     return; 
+  //   }
+  
+  //   const imageNamesArray = [];
+  
+  //   Object.keys(images).forEach(type => {
+  //     const imageToUpload = images[type];
+  //     if (imageToUpload) {
+  //       imageNamesArray.push(imageToUpload.name); 
+  //       console.log(`Preparing to upload ${type}:`, imageToUpload.name);
+  //     } else {
+  //       console.log(`No image uploaded for ${type}`);
+  //     }
+  //   });
+  
+  //   console.log("Image names array to be uploaded:", imageNamesArray);
+  
+  //   const dataToSend = {
+  //     file: imageNamesArray, 
+  //   };
+  
+  //   try {
+  //     const response = await fetch("https://horaservices.com:3000/api/image_upload", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify(dataToSend), 
+  //     });
+  
+  //     if (!response.ok) {
+  //       throw new Error("Failed to upload images");
+  //     }
+  
+  //     const data = await response.json();
+  //     console.log("Successfully uploaded all image names:", data);
+  //     alert("Successfully uploaded all image names!");
+  //     setUploadSuccess(true); 
+  //   } catch (error) {
+  //     console.error("Error uploading image names:", error);
+  //     alert("Error uploading image names: " + error.message);
+  //     setUploadSuccess(false); 
+  //   }
+  // };
     
   
   
@@ -189,6 +188,7 @@ console.log(currDate,currTime, "currTimecurrDate");
       }); 
 
       console.log(response, "responsedata");
+      alert("Job Completed");
     } catch (error) {
       console.log("acceptOrder error", error);
     }
@@ -204,8 +204,6 @@ console.log(currDate,currTime, "currTimecurrDate");
           { label: "Picture", type: "sink" },
           { label: "Picture", type: "gasBurner" },
           { label: "Picture", type: "kitchen" },
-          { label: "Picture", type: "floor" },
-          { label: "Picture", type: "family" }
         ].map((item) => (
           <div
             key={item.type}

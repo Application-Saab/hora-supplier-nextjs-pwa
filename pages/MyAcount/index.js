@@ -125,18 +125,18 @@ import Image from "next/image";
 const PersonalDetails = () => {
   const router = useRouter();
 
-  let userName;
-  let userAge;
-  let userCity;
-  let userJobExperience;
-  let userJobProfile;
+  let supplierName;
+  let supplierAge;
+  let supplierCity;
+  let supplierExperince;
+  let supplierJobProfile;
 
   if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
-    userName = localStorage.getItem("UserName");
-    userAge = localStorage.getItem("UserAge");
-    userCity = localStorage.getItem("UserCity");
-    userJobExperience = localStorage.getItem("UserJobExperience");
-    userJobProfile = localStorage.getItem("UserJobProfile");
+    supplierName = localStorage.getItem("supplierName");
+    supplierAge = localStorage.getItem("supplierAge");
+    supplierCity = localStorage.getItem("supplierCity");
+    supplierExperince = localStorage.getItem("supplierExperince");
+    supplierJobProfile = localStorage.getItem("supplierJobProfile");
   }	
 
   const UpdateDetailFunction = () => {
@@ -174,11 +174,11 @@ const PersonalDetails = () => {
 
         {/* Details section */}
         <div style={{ textAlign: "left" }}>
-          <DetailItem icon={<FaBriefcase />} label="Job Experience" value={userJobExperience} />
-          <DetailItem icon={<FaPen />} label="Job Profile" value={userJobProfile} />
-          <DetailItem icon={<FaUser />} label="Name" value={userName} />
-          <DetailItem icon={<FaCalendarAlt />} label="Age" value={userAge} />
-          <DetailItem icon={<FaCity />} label="City" value={userCity} />
+          <DetailItem icon={<FaBriefcase />} label="Job Experience" value={supplierExperince} />
+          <DetailItem icon={<FaPen />} label="Job Profile" value={supplierJobProfile} />
+          <DetailItem icon={<FaUser />} label="Name" value={supplierName} />
+          <DetailItem icon={<FaCalendarAlt />} label="Age" value={supplierAge} />
+          <DetailItem icon={<FaCity />} label="City" value={supplierCity} />
         </div>
 
         {/* Update Details Button */}

@@ -75,7 +75,7 @@ const OrderDetailHeader = ({ orderDetail }) => {
   // console.log(orderDetail.addressId[0].address1, "2aaddressId");
 
   return (
-    <Layout navTitle="Order Details">
+    // <Layout navTitle="Order Details">
     <div>
       {/* <div className="order-header">
         <div className="order-header-left">
@@ -185,7 +185,7 @@ const OrderDetailHeader = ({ orderDetail }) => {
 
       </div>
     </div>
-    </Layout>
+    // </Layout>
   );
 };
 

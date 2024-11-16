@@ -26,6 +26,7 @@ const OrderDetailTab = ({
   orderType,
   decorationItems,
   decorationComments,
+  decorationAddon
 }) => {
   const router = useRouter();
   const { apiOrderId } = router.query;
@@ -322,6 +323,14 @@ console.log(currDate,currTime, "currTimecurrDate");
                   <h6 className="product-inclusion">
                     {getItemInclusion(product?.inclusion)}
                   </h6>
+                  <p>
+          <p className="comments-header">AddOn:</p>
+                    {decorationAddon.map((item, index) => 
+                      <li key={index}>
+ <strong>{item.name}</strong>: ${item.price}
+                      </li>
+                    )}
+                  </p>
                 </div>
               </div>
             );

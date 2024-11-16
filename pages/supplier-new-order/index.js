@@ -56,7 +56,7 @@ const Orderlist = () => {
 
         if (responseData && responseData.data && responseData.data.order) {
           const sortedOrders = responseData.data.order.sort(
-            (a, b) => new Date(b.order_date) - new Date(a.order_date)
+            (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
           );
 
           setOrders(sortedOrders);
@@ -280,7 +280,7 @@ const Orderlist = () => {
                         </div>
                       )}
                       <div>
-                        <strong style={{ color: "#9252AA", fontSize: "13px" }}>
+                        {/* <strong style={{ color: "#9252AA", fontSize: "13px" }}>
                           Balance Amount
                           <p className="mb-0 price-para">
                             {"₹" +
@@ -294,7 +294,32 @@ const Orderlist = () => {
                                     : 0.7)
                               )}
                           </p>
-                        </strong>
+                        </strong> */}
+
+
+                        {
+                         
+                         order.phone_no ? order.total_amount - order.advance_amount : 
+                          <strong style={{ color: "#9252AA" }}>
+                         Balance Amount
+                         {order?.type === 2 || order?.type === 3 || order?.type === 4 || order?.type === 5 ? (
+                         <p className="mb-0 price-para">
+                         {'₹' + Math.round((order?.payable_amount * 4) / 5)}
+                         </p>
+                         ) : order?.type === 6 || order?.type === 7 ? (
+                         <p className="mb-0 price-para">
+                         {'₹' + Math.round(order?.payable_amount * 0.35)}
+                         </p>
+                         ) : (
+                         <p className="mb-0 price-para">
+                         {'₹' + Math.round(order?.payable_amount * 0.65)}
+                         </p>
+                         )} 
+ 
+                       </strong>
+
+                        }
+
                       </div>
                     </div>
                   </div>

@@ -166,14 +166,14 @@ const Login = () => {
   
           if (!hasLoggedInBefore) {
             localStorage.setItem("hasLoggedInBefore", "true");
-            router.push("/Profile");
+            router.push("/home");
           } else {
-            router.push("/Profile");
+            router.push("/home");
           }
   
           handleOtpSuccess1();
         } else {
-          router.push("/Profile");
+          router.push("/home");
         }
       } else {
         setLoginMsg("");

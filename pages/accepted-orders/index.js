@@ -211,7 +211,7 @@ const Orderlist = () => {
                       <span className={orderStatus.className}>
                         {orderStatus.status}
                       </span>
-                      <h6 className="mt-2" style={{ color: "#9252AA" }}>
+                      <h6 className="mt-2" style={{ color: "#9252AA", marginTop: "10px", marginLeft: "10px" }}>
                         {getOrderType(order?.type)}
                       </h6>
                     </div>
@@ -274,12 +274,34 @@ const Orderlist = () => {
                       </div>
                       )}
                       <div>
-                        <strong style={{ color: "#9252AA", fontSize: "13px" }}>
+                        {/* <strong style={{ color: "#9252AA", fontSize: "13px" }}>
                           Balance Amount
                           <p className="mb-0 price-para">
                             {'₹' + Math.round(order?.payable_amount * (order?.type === 2 || order?.type === 3 || order?.type === 4 || order?.type === 5 ? 0.8 : 0.7))}
                           </p>
-                        </strong>
+                        </strong> */}
+                          {
+                         
+                         order.phone_no ? order.total_amount - order.advance_amount : 
+                          <strong style={{ color: "#9252AA" }}>
+                         Balance Amount
+                         {order?.type === 2 || order?.type === 3 || order?.type === 4 || order?.type === 5 ? (
+                         <p className="mb-0 price-para">
+                         {'₹' + Math.round((order?.payable_amount * 4) / 5)}
+                         </p>
+                         ) : order?.type === 6 || order?.type === 7 ? (
+                         <p className="mb-0 price-para">
+                         {'₹' + Math.round(order?.payable_amount * 0.35)}
+                         </p>
+                         ) : (
+                         <p className="mb-0 price-para">
+                         {'₹' + Math.round(order?.payable_amount * 0.65)}
+                         </p>
+                         )} 
+ 
+                       </strong>
+
+                        }
                       </div>
                     </div>
                   </div>

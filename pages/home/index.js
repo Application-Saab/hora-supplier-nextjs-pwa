@@ -61,6 +61,7 @@ const Home = () => {
             localStorage.setItem("supplierExperince", response.data.data.experience);
             localStorage.setItem("supplierName", response.data.data.name);
             localStorage.setItem("supplierJobType", response.data.data.order_type);
+            localStorage.setItem("supplierAge", response.data.data.age);
           }	
 
 

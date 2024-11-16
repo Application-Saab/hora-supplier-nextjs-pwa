@@ -8,6 +8,7 @@ import {
   GET_BOOKING_ORDER_DETAILS
 } from "../../apiconstant/apiconstant";
 import { useRouter } from "next/router";
+import Layout from "../../component/Layout";
 
 // order.type is 2 for chef
 // order.type is 1 for decoration
@@ -25,6 +26,7 @@ const OrderDetail = () => {
   const [orderDetail, setOrderDetail] = useState([]);
   const [decorationItems, setDecorationItems] = useState([]);
   const [decorationComments, setDecorationComments] = useState("");
+  const [decorationAddon, setDecorationAddon] = useState("");
  // alert("New Order detils");
   useEffect(() => {
     // alert(orderType);
@@ -84,6 +86,7 @@ const OrderDetail = () => {
       setOrderDetail(responseData.data._doc);
       setDecorationItems(responseData.data.items[0].decoration);
       setDecorationComments(responseData?.data?._doc.decoration_comments);
+      setDecorationAddon(responseData.data._doc.add_on);
       setLoading(false);
     } catch (error) {
       console.log("fetchDecorationOrderDetails error", error);
@@ -129,6 +132,7 @@ const OrderDetail = () => {
 
   return (
     <>
+    <Layout backLink = "/supplier-new-order">
       <div className="orderheader-orderdetail">
         <OrderDetailHeader orderDetail={orderDetail} />
         <div className="order-detail-page-decoration">
@@ -137,9 +141,11 @@ const OrderDetail = () => {
             orderType={orderType}
             decorationItems={decorationItems}
             decorationComments={decorationComments}
+            decorationAddon={decorationAddon}
           />
         </div>
       </div>
+      </Layout>
     </>
   );
 };

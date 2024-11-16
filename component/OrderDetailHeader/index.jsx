@@ -64,7 +64,7 @@ const OrderDetailHeader = ({ orderDetail }) => {
 
 
   return (
-    <Layout navTitle="Order Details">
+    // <Layout navTitle="Order Details">
     <div>
 
       {/* Booking Details Section */}
@@ -143,7 +143,7 @@ const OrderDetailHeader = ({ orderDetail }) => {
         )}
       </div>
     </div>
-    </Layout>
+    // </Layout>
   );
 };
 
