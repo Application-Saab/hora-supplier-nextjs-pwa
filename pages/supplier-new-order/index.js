@@ -56,7 +56,7 @@ const Orderlist = () => {
 
         if (responseData && responseData.data && responseData.data.order) {
           const sortedOrders = responseData.data.order.sort(
-            (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+            (a, b) => new Date(a.order_date) - new Date(b.order_date)
           );
 
           setOrders(sortedOrders);

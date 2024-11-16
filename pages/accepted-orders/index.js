@@ -14,23 +14,38 @@ const Orderlist = () => {
   const router = useRouter();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [selectedDate, setSelectedDate] = useState("");
+  const [availableDates, setAvailableDates] = useState([]);
+  const [expandedDate, setExpandedDate] = useState(null);
 
   let supplierJobType;
   let supplierID;
 
- let supplierCity;
+  let supplierCity;
 
- if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
-  supplierJobType = localStorage.getItem("supplierJobType");
-  supplierID = localStorage.getItem("supplierID");
-  supplierCity = localStorage.getItem("supplierCity");
-}	
-
-  
-  if (supplierCity === "Bengaluru") {
-    supplierCity = "Bangalore"; // Adjusting for city name
+  if (
+    typeof window !== "undefined" &&
+    typeof window.localStorage !== "undefined"
+  ) {
+    supplierJobType = localStorage.getItem("supplierJobType");
+    supplierID = localStorage.getItem("supplierID");
+    supplierCity = localStorage.getItem("supplierCity");
   }
 
+  if (supplierCity === "Bengaluru") {
+    supplierCity = "Bangalore";
+  }
+
+  useEffect(() => {
+    const today = new Date();
+    const dates = Array.from({ length: 7 }, (_, index) => {
+      const date = new Date();
+      date.setDate(today.getDate() + index);
+      return date.toISOString().split("T")[0];
+    });
+    setAvailableDates(dates);
+    setSelectedDate(dates[0]);
+  }, []);
 
   useEffect(() => {
     const fetchOrderList = async () => {
@@ -48,10 +63,8 @@ const Orderlist = () => {
           }),
         });
 
-        
-
         const responseData = await response.json();
-        console.log(responseData, "responsedaa"); // Debugging line to check API response
+        console.log(responseData, "responsedaa");
 
         console.log(responseData.data.order[0].toId, "toId accept");
 
@@ -132,14 +145,40 @@ const Orderlist = () => {
     return updateOrderId;
   };
 
+  const handleDateChange = (event) => {
+    setSelectedDate(event.target.value);
+  };
+
+  const filteredOrdersByDate = (date) => {
+    return orders.filter((order) => {
+      const cityMatches =
+        order.addressId[0].city.toLowerCase() === supplierCity.toLowerCase() ||
+        (order.addressId[0].city.toLowerCase() === "bengaluru" &&
+          supplierCity.toLowerCase() === "bangalore");
+      const supplierIdMatches = order.toId == supplierID;
+      const typeMatches = order.type.toString() === supplierJobType;
+      const isBooked =
+        order.order_status === 1 ||
+        order.order_status === 2 ||
+        order.order_status === 3;
+      const dateMatches = order.order_date.split("T")[0] === date; 
+      return (
+        cityMatches &&
+        typeMatches &&
+        supplierIdMatches &&
+        isBooked &&
+        dateMatches
+      );
+    });
+  };
 
   const handleViewDetail = (order) => {
     const { _id, order_id, type } = order;
-    const apiOrderId = _id
-    const orderType = type
-    const orderId = order_id
+    const apiOrderId = _id;
+    const orderType = type;
+    const orderId = order_id;
     router.push({
-        pathname:`/accept-order-view-details`, 
+      pathname: `/accept-order-view-details`,
       query: { apiOrderId, orderType, orderId },
     });
   };
@@ -174,149 +213,180 @@ const Orderlist = () => {
     );
   }
 
-
-
   return (
     <Layout>
       <main className="order-list">
-        <div className="order-container">
-          {orders
-            .filter(order => {
-              // console.log(order.addressId[0].city , supplierCity ,  order.type.toString() , supplierJobType , order.toId)
-              const cityMatches = 
-              order.addressId[0].city.toLowerCase() === supplierCity.toLowerCase() ||
-              (order.addressId[0].city.toLowerCase() === "bengaluru" && supplierCity.toLowerCase() === "bangalore");
-              const supplierIdMatches = order.toId == supplierID;
-              const typeMatches = order.type.toString() === supplierJobType;
-              const isBooked = order.order_status === 1 || order.order_status === 2 || order.order_status === 3;
-              // console.log(isBooked, "isbooked");
-              return cityMatches && typeMatches && supplierIdMatches && isBooked;
-            })
-            .map((order) => {
-              const orderStatus = getOrderStatus(order?.order_status);
-              return (
-                <div key={order.order_id} className="order-card">
-                  <div className="order-div">
-                    <div className="order-id">
-                      <div style={{ color: "#9252AA" }}>
-                        Order Id: #{10800 + order.order_id}
-                        {  console.log(order.toId, "hitoId")}
-                        {  console.log(order.order_id, "order_id")}
-                      </div>
-                      <h6 className="order-otp mt-2" style={{ color: "#9252AA" }}>
-                        OTP: {order?.otp}
-                      </h6>
-                    </div>
-                    <div className="order-status">
-                      <span className={orderStatus.className}>
-                        {orderStatus.status}
-                      </span>
-                      <h6 className="mt-2" style={{ color: "#9252AA", marginTop: "10px", marginLeft: "10px" }}>
-                        {getOrderType(order?.type)}
-                      </h6>
-                    </div>
-                  </div>
-                  <div className="order-details">
-                    <div className="left-details">
-                      <div>
-                        <Image
-                          className="contact-us-img"
-                          src={date_time_icon}
-                          height={20}
-                          width={20}
-                        />{" "}
-                        <span>{formatDate(order.order_date)}</span>
-                      </div>
-                      {order.order_time && (
-                      <div>
-                        <Image
-                          className="contact-us-img"
-                          src={clock}
-                          height={20}
-                          width={20}
-                        />{" "}
-                        <span>{order.order_time}</span>
-                      </div>
-                      )}
-{supplierJobType !== "1" && order.no_of_people && (
-  <div>
-    <Image
-      className="contact-us-img"
-      src={people}
-      height={20}
-      width={20}
-    />{" "}
-    <span>{order?.no_of_people}</span>
-  </div>
-)}
-                    </div>
-                    <div className="right-details">
-                      {/* <div>
-                        <strong style={{ color: "#9252AA", fontSize: "13px" }}>
-                          City
-                          <p style={{ textAlign: "end", margin: 0 }}>
-
-                            {order.addressId[0].city}
-                
-                          </p>
-                        </strong>
-                      </div> */}
-                      {order.addressId?.[0]?.city && (
-                        <div>
-                        <strong style={{ color: "#9252AA", fontSize: "13px" }}>
-                          City
-                          <p style={{ textAlign: "end", margin: 0 }}>
-
-                            {order.addressId[0].city}
-                
-                          </p>
-                        </strong>
-                      </div>
-                      )}
-                      <div>
-                        {/* <strong style={{ color: "#9252AA", fontSize: "13px" }}>
-                          Balance Amount
-                          <p className="mb-0 price-para">
-                            {'₹' + Math.round(order?.payable_amount * (order?.type === 2 || order?.type === 3 || order?.type === 4 || order?.type === 5 ? 0.8 : 0.7))}
-                          </p>
-                        </strong> */}
-                          {
-                         
-                         order.phone_no ? order.total_amount - order.advance_amount : 
-                          <strong style={{ color: "#9252AA" }}>
-                         Balance Amount
-                         {order?.type === 2 || order?.type === 3 || order?.type === 4 || order?.type === 5 ? (
-                         <p className="mb-0 price-para">
-                         {'₹' + Math.round((order?.payable_amount * 4) / 5)}
-                         </p>
-                         ) : order?.type === 6 || order?.type === 7 ? (
-                         <p className="mb-0 price-para">
-                         {'₹' + Math.round(order?.payable_amount * 0.35)}
-                         </p>
-                         ) : (
-                         <p className="mb-0 price-para">
-                         {'₹' + Math.round(order?.payable_amount * 0.65)}
-                         </p>
-                         )} 
- 
-                       </strong>
-
-                        }
-                      </div>
-                    </div>
-                  </div>
-                  <hr className="m-0" />
-                  <div className="d-flex button-div">
-                    <button
-                      className="view-details"
-                      onClick={() => handleViewDetail(order)}
-                    >
-                      View Details
-                    </button>
-                  </div>
+        <div className="orders-by-date">
+          {availableDates.map((date) => {
+            const ordersForDate = filteredOrdersByDate(date);
+            const isExpanded = expandedDate === date;
+            return (
+              <div key={date} className="date-section">
+                <div
+                  className="date-header-container"
+                  onClick={() => setExpandedDate(isExpanded ? null : date)}
+                >
+                  <h3 className="date-header">{formatDate(date)}</h3>
+                  <span className="order-count">
+                    {ordersForDate.length}{" "}
+                    {ordersForDate.length === 1 ? "order" : "orders"}
+                  </span>
                 </div>
-              );
-            })}
+
+                {isExpanded && (
+                  <div className="order-container">
+                    {ordersForDate.length === 0 ? (
+                      <p>No orders for this date</p>
+                    ) : (
+                      ordersForDate.map((order) => {
+                        const orderStatus = getOrderStatus(order?.order_status);
+                        return (
+                          <div key={order.order_id} className="order-card">
+                            <div className="order-div">
+                              <div className="order-id">
+                                <div style={{ color: "#9252AA" }}>
+                                  Order Id: {order.order_id}
+                                </div>
+                                <h6
+                                  className="order-otp mt-2"
+                                  style={{ color: "#9252AA" }}
+                                >
+                                  OTP: {order?.otp}
+                                </h6>
+                              </div>
+
+                              {/* Order Status Section */}
+                              <div className="order-status">
+                                <span className={orderStatus.className}>
+                                  {orderStatus.status}
+                                </span>
+                                <h6
+                                  className="mt-2"
+                                  style={{
+                                    color: "#9252AA",
+                                    marginTop: "10px",
+                                    marginLeft: "10px",
+                                  }}
+                                >
+                                  {getOrderType(order?.type)}
+                                </h6>
+                              </div>
+                            </div>
+
+                            {/* Order Details Section */}
+                            <div className="order-details">
+                              <div className="left-details">
+                                <div>
+                                  <Image
+                                    className="contact-us-img"
+                                    src={date_time_icon}
+                                    height={20}
+                                    width={20}
+                                  />{" "}
+                                  <span>{formatDate(order.order_date)}</span>
+                                </div>
+                                {order.order_time && (
+                                  <div>
+                                    <Image
+                                      className="contact-us-img"
+                                      src={clock}
+                                      height={20}
+                                      width={20}
+                                    />{" "}
+                                    <span>{order.order_time}</span>
+                                  </div>
+                                )}
+                                {supplierJobType !== "1" &&
+                                  order.no_of_people && (
+                                    <div>
+                                      <Image
+                                        className="contact-us-img"
+                                        src={people}
+                                        height={20}
+                                        width={20}
+                                      />{" "}
+                                      <span>{order?.no_of_people}</span>
+                                    </div>
+                                  )}
+                              </div>
+                              <div className="right-details">
+                                {order.addressId?.[0]?.city && (
+                                  <div>
+                                    <strong
+                                      style={{
+                                        color: "#9252AA",
+                                        fontSize: "13px",
+                                      }}
+                                    >
+                                      City
+                                      <p
+                                        style={{ textAlign: "end", margin: 0 }}
+                                      >
+                                        {order.addressId[0].city}
+                                      </p>
+                                    </strong>
+                                  </div>
+                                )}
+                                <div>
+                                  {order.phone_no ? (
+                                    order.total_amount - order.advance_amount
+                                  ) : (
+                                    <strong
+                                      style={{
+                                        color: "#9252AA",
+                                        fontSize: "13px",
+                                      }}
+                                    >
+                                      Balance Amount
+                                      {order?.type === 2 ||
+                                      order?.type === 3 ||
+                                      order?.type === 4 ||
+                                      order?.type === 5 ? (
+                                        <p className="mb-0 price-para">
+                                          {"₹" +
+                                            Math.round(
+                                              (order?.payable_amount * 4) / 5
+                                            )}
+                                        </p>
+                                      ) : order?.type === 6 ||
+                                        order?.type === 7 ? (
+                                        <p className="mb-0 price-para">
+                                          {"₹" +
+                                            Math.round(
+                                              order?.payable_amount * 0.35
+                                            )}
+                                        </p>
+                                      ) : (
+                                        <p className="mb-0 price-para">
+                                          {"₹" +
+                                            Math.round(
+                                              order?.payable_amount * 0.65
+                                            )}
+                                        </p>
+                                      )}
+                                    </strong>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                            <hr className="m-0" />
+                            <div className="d-flex button-div">
+                              <button
+                                className="view-details"
+                                onClick={() => handleViewDetail(order)}
+                              >
+                                View Details
+                              </button>
+                            </div>
+                          </div>
+                        );
+                      })
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       </main>
     </Layout>

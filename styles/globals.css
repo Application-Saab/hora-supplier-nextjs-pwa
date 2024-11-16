@@ -4121,3 +4121,60 @@ main.order-list .order-container {
   right: 0;
   margin-left: 17px;
 }
+
+
+.filter-container {
+  margin: 20px;
+}
+#filter {
+  margin-left: 10px;
+  padding: 5px;
+}
+
+
+/* faltu */
+.date-section {
+  margin-bottom: 20px;
+}
+
+.date-header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  border-radius: 8px;
+  padding: 12px;
+  background: linear-gradient(to right, #9252aa, #7a1f9d);
+  color: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 88%;
+  margin-left: 23px;
+  margin-top: 15px;
+}
+
+.no-orders {
+  padding: 30px;
+  text-align: center;
+}
+
+.no-orders h4 {
+  font-size: 20px;
+  color: #6c757d;
+}
+
+.no-orders .button-style {
+  background-color: #9252aa;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.no-orders .button-style:hover {
+  background-color: #703b80;
+  transform: translateY(-3px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}

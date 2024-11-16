@@ -1,186 +1,163 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import { useRouter } from 'next/router';
-import Layout from '../../component/Layout';
-import {
-  BASE_URL,
-  SUPPLIER_UPDATE_PERSONAL_DETAILS,
-  UPDATE_RESUME_PROFILE 
-} from "../../apiconstant/apiconstant";
 
-const ProfileUpdate = () => {
-  const [jobType, setJobType] = useState('');
-  const router = useRouter();
-  const [jobProfile, setJobProfile] = useState('');
-  const [jobExperince, setJobExperince] = useState('');
-  const [error, setError] = useState(null);
-  const [errorProfessional, setErrorProfessional] = useState(null);
-  const [showAdditionalFields, setShowAdditionalFields] = useState(false);
-  const [userDetails, setUserDetails] = useState({
-    name: '',
-    city: '',
-    age: '',
-    experience: ''
-  });
-
-  const UpdateResumeDetails = async (event) => {
-    event.preventDefault();
-
-    try {
-      const token = localStorage.getItem('token');
-      const url = BASE_URL + UPDATE_RESUME_PROFILE;
-
-      const requestData = {
-        "resume": "",
-        "experience": jobExperince,
-        "job_profile": jobProfile
-      };
-
-      const response = await axios.post(url, requestData, {
-        headers: {
-          "Content-Type": "application/json",
-          'Authorization': token
-        },
-      });
-
-      if (response.status === 200) {
-        alert('Details updated successfully. Please fill the below details');
-        setShowAdditionalFields(true); // Show additional fields and hide main form
-      } else {
-        console.error('Submission failed:', response.status);
-      }
-    } catch (error) {
-      console.error('Error submitting data:', error.message);
-      setError(error.message);
-    }
-  };
-
-  const handleAdditionalSubmit = async (event) => {
-    event.preventDefault();
-
-    try {
-      const token = localStorage.getItem('token');
-      const url = SUPPLIER_UPDATE_PERSONAL_DETAILS;
-
-      const requestData = {
-        "age": "29",
-        "vechicle_type": "Two wheeler",
-        "city": "Jaipur",
-        "aadhar_no": "26353476353",
-        "aadhar_front_img": "attachment-1678985056105.jpg",
-        "aadhar_back_img": "attachment-1678985062522.jpg",
-        "experience": "20",
-        "avatar": "attachment-1678985070996.jpg",
-        "name": "Rahul",
-        "userServedLocalities": [
-          "646c7995b8ca968c0921d1e0",
-          "646c7b08f35e6a415d41bbc9"
-        ]
-      };
-
-      const response = await axios.post(url, requestData, {
-        headers: {
-          "Content-Type": "application/json",
-          'Authorization': token
-        },
-      });
-
-      if (response.status === 200) {
-        router.push("/home");
-      } else {
-        router.push("/home");
-      }
-    } catch (error) {
-      router.push("/home");
-      console.error('Error submitting additional data:', error.message);
-      setErrorProfessional(error.message);
-    }
-  };
-
-  return (
     <Layout>
-      <div className="profile-container" style={{ backgroundColor: "rgba(237, 237, 237, 0.79)" }}>
-        <div className="profile-form">
-
-          {/* Additional Fields Section */}
-          {showAdditionalFields && (
-            <div style={{ width: "100%", marginBottom: 20, backgroundColor: "rgb(255, 255, 255)", boxShadow: "rgba(0, 0, 0, 0.18) 0px 1px 8px", padding: "20px", borderRadius: "20px" }}>
-              <h3 style={{ color: "#97538c", fontSize: "16px", marginBottom: "10px" }}>Enter Professional Details</h3>
-              <form onSubmit={handleAdditionalSubmit} style={{ marginTop: "20px" }}>
-                <div>
-                  <label htmlFor="name">Name:</label>
-                  <input
-                    type="text"
-                    id="name"
-                    value={userDetails.name}
-                    onChange={(e) => setUserDetails({ ...userDetails, name: e.target.value })}
-                    required
-                  />
-                </div>
-                <div>
-                  <label htmlFor="city">City:</label>
-                  <input
-                    type="text"
-                    id="city"
-                    value={userDetails.city}
-                    onChange={(e) => setUserDetails({ ...userDetails, city: e.target.value })}
-                    required
-                  />
-                </div>
-                <div>
-                  <label htmlFor="age">Age:</label>
-                  <input
-                    type="number"
-                    id="age"
-                    value={userDetails.age}
-                    onChange={(e) => setUserDetails({ ...userDetails, age: e.target.value })}
-                    required
-                  />
-                </div>
-                <button type="submit" className='button-primary'>Submit</button>
-                {errorProfessional && <p style={{ color: 'red' }}>{errorProfessional}</p>}
-              </form>
-            </div>
-          )}
-
-          {/* Main Form Section */}
-          {!showAdditionalFields && (
-            <div style={{ width: "100%", marginBottom: 20, backgroundColor: "rgb(255, 255, 255)", boxShadow: "rgba(0, 0, 0, 0.18) 0px 1px 8px", padding: "20px", borderRadius: "20px" }}>
-              <h4 style={{ color: "#97538c", fontSize: "16px", marginBottom: "10px" }}>Enter Professional Details</h4>
-              <form onSubmit={UpdateResumeDetails} style={{ width: "100%" }}>
-                <div className='input-type'>
-                  <label htmlFor="name">Experience:</label>
-                  <input
-                    type="text"
-                    id="name"
-                    value={jobExperince}
-                    onChange={(e) => setJobExperince(e.target.value)}
-                    required
-                  />
-                </div>
-                <div>
-                  <label htmlFor="jobProfile">Select Job Profile:</label>
-                  <select
-                    id="jobProfile"
-                    value={jobProfile}
-                    onChange={(e) => setJobProfile(e.target.value)}
-                    required
-                  >
-                    <option value="">Select Job Profile</option>
-                    <option value="Chef">Chef</option>
-                    <option value="Decorator">Decorator</option>
-                  </select>
-                </div>
-                <button type="submit" className='button-primary'>Continue</button>
-                {error && <p style={{ color: 'red' }}>{error}</p>}
-              </form>
-            </div>
-          )}
-
+      <main className="order-list">
+        <div className="filter-container">
+          <label htmlFor="date-filter">Filter by Date:</label>
+          <select
+            id="date-filter"
+            value={selectedDate}
+            onChange={handleDateChange}
+          >
+            {availableDates.map((date) => {
+              const userOrdersForDate = orders.filter(
+                (order) =>
+                  order.toId === supplierID && 
+                  order.order_date.split("T")[0] === date 
+              );
+              const orderCount = userOrdersForDate.length;
+              return (
+                <option key={date} value={date}>
+                  {new Date(date).toLocaleDateString("en-GB", {
+                    day: "numeric",
+                    month: "short",
+                    year: "numeric",
+                  })}
+                  {orderCount > 0 && ` (${orderCount} Orders)`}
+                </option>
+              );
+            })}
+          </select>
         </div>
-      </div>
-    </Layout>
-  );
-}
 
-export default ProfileUpdate;
+        <div className="order-container">
+          {filteredOrders.length === 0 ? (
+            <h1>No Orders</h1> 
+          ) : (
+            filteredOrders.map((order) => {
+              const orderStatus = getOrderStatus(order?.order_status);
+              return (
+                <div key={order.order_id} className="order-card">
+                  <div className="order-div">
+                    <div className="order-id">
+                      <div style={{ color: "#9252AA" }}>
+                        Order Id: {getOrderId(order.order_id)}
+                      </div>
+                      <h6
+                        className="order-otp mt-2"
+                        style={{ color: "#9252AA" }}
+                      >
+                        OTP: {order?.otp}
+                      </h6>
+                    </div>
+
+                    {/* Order Status Section */}
+                    <div className="order-status">
+                      <span className={orderStatus.className}>
+                        {orderStatus.status}
+                      </span>
+                      <h6
+                        className="mt-2"
+                        style={{
+                          color: "#9252AA",
+                          marginTop: "10px",
+                          marginLeft: "10px",
+                        }}
+                      >
+                        {getOrderType(order?.type)}
+                      </h6>
+                    </div>
+                  </div>
+
+                  {/* Order Details Section */}
+                  <div className="order-details">
+                    <div className="left-details">
+                      <div>
+                        <Image
+                          className="contact-us-img"
+                          src={date_time_icon}
+                          height={20}
+                          width={20}
+                        />{" "}
+                        <span>{formatDate(order.order_date)}</span>
+                      </div>
+                      {order.order_time && (
+                        <div>
+                          <Image
+                            className="contact-us-img"
+                            src={clock}
+                            height={20}
+                            width={20}
+                          />{" "}
+                          <span>{order.order_time}</span>
+                        </div>
+                      )}
+                      {supplierJobType !== "1" && order.no_of_people && (
+                        <div>
+                          <Image
+                            className="contact-us-img"
+                            src={people}
+                            height={20}
+                            width={20}
+                          />{" "}
+                          <span>{order?.no_of_people}</span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="right-details">
+                      {order.addressId?.[0]?.city && (
+                        <div>
+                          <strong
+                            style={{ color: "#9252AA", fontSize: "13px" }}
+                          >
+                            City
+                            <p style={{ textAlign: "end", margin: 0 }}>
+                              {order.addressId[0].city}
+                            </p>
+                          </strong>
+                        </div>
+                      )}
+                      <div>
+                       
+                      {
+                         
+                         order.phone_no ? order.total_amount - order.advance_amount : 
+                          <strong style={{ color: "#9252AA", fontSize: "13px" }}>
+                         Balance Amount
+                         {order?.type === 2 || order?.type === 3 || order?.type === 4 || order?.type === 5 ? (
+                         <p className="mb-0 price-para">
+                         {'₹' + Math.round((order?.payable_amount * 4) / 5)}
+                         </p>
+                         ) : order?.type === 6 || order?.type === 7 ? (
+                         <p className="mb-0 price-para">
+                         {'₹' + Math.round(order?.payable_amount * 0.35)}
+                         </p>
+                         ) : (
+                         <p className="mb-0 price-para">
+                         {'₹' + Math.round(order?.payable_amount * 0.65)}
+                         </p>
+                         )} 
+ 
+                       </strong>
+
+                        }
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* View Details Button */}
+                  <hr className="m-0" />
+                  <div className="d-flex button-div">
+                    <button
+                      className="view-details"
+                      onClick={() => handleViewDetail(order)}
+                    >
+                      View Details
+                    </button>
+                  </div>
+                </div>
+              );
+            })
+          )}
+        </div>
+      </main>
+    </Layout>
