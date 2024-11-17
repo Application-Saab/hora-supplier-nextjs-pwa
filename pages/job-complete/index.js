@@ -189,6 +189,7 @@ console.log(currDate,currTime, "currTimecurrDate");
 
       console.log(response, "responsedata");
       alert("Job Completed");
+      router.push("/home");
     } catch (error) {
       console.log("acceptOrder error", error);
     }

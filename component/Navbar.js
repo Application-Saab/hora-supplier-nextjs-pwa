@@ -26,6 +26,7 @@ import React from 'react';
 import Image from "next/image";
 import Link from 'next/link';
 import logo from '../assets/hora-logo-light.png';
+import backArr from '../assets/back_arrow1.png';
 
 const Navbar = ({ backLink = "/home", navTitle, showBackButton = true }) => {
   return (
@@ -34,10 +35,13 @@ const Navbar = ({ backLink = "/home", navTitle, showBackButton = true }) => {
       {showBackButton && (
         <div style={{ display: 'flex', alignItems: 'center' }}>
           <Link href={backLink}>
-              {/* <span style={{ fontSize: '20px', marginRight: '5px' }}>←</span> */}
-              <span>Back</span>
-            
-          </Link>
+          <Image
+        src={backArr}
+        width={30}
+        height={30}
+        style={{ margin: "0 auto" }}
+      />
+        </Link>
         </div>
       )}
       

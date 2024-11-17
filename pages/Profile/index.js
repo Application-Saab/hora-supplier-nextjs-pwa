@@ -87,10 +87,10 @@ const ProfileUpdate = () => {
       }	
       const url = BASE_URL + SUPPLIER_UPDATE_PERSONAL_DETAILS; // Define your endpoint
 
-      console.log(url, "urlofcode");
 
       const requestData = {
         "age": userDetails.age,
+        // "isPersonalStatus": "1",
         "vechicle_type": "Two wheeler",
         "city": userDetails.city,
         "aadhar_no": "26353476353",
@@ -104,7 +104,8 @@ const ProfileUpdate = () => {
             "646c7b08f35e6a415d41bbc9"
         ]
     }
-      console.log(requestData, "additionalRequestData");
+
+    console.log("userData" , requestData);
 
       if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
        

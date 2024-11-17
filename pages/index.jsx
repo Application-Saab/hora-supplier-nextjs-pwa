@@ -160,17 +160,18 @@ const Login = () => {
           localStorage.setItem("mobileNumber", mobileNumber);
           localStorage.setItem("token", response.data.token);
           localStorage.setItem("supplierID", response.data.data._id);
-  
-  
-          const hasLoggedInBefore = localStorage.getItem("hasLoggedInBefore");
-  
-          if (!hasLoggedInBefore) {
-            localStorage.setItem("hasLoggedInBefore", "true");
-            router.push("/home");
+          localStorage.setItem("supplierIsPersonalStatus", response.data.data.isPersonalStatus);
+          localStorage.setItem("supplierJobProfile", response.data.data.job_profile);
+          const supplierIsPersonalStatus =  localStorage.getItem("supplierIsPersonalStatus");
+          const supplierJobProfile =  localStorage.getItem("supplierJobProfile");
+          // if (supplierIsPersonalStatus == 1) {
+          if(supplierJobProfile != ""){
+            console.log("logged in false")
+           router.push("/home");
           } else {
-            router.push("/home");
+            router.push("/Profile");
+           console.log("logged in true")
           }
-  
           handleOtpSuccess1();
         } else {
           router.push("/home");

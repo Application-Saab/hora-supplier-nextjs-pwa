@@ -168,177 +168,108 @@ const Orderlist = () => {
     );
   }
 
-  if (orders.length === 0) {
-    return (
-      <center>
-        <div className="no-orders">
-          <h4>No Orders. Please continue shopping with Hora.</h4>
-          <button className="button-style" onClick={openContinueShopping}>
-            Continue Shopping
-          </button>
-        </div>
-      </center>
-    );
-  }
+  
 
   return (
     <Layout>
       <main className="order-list">
-        <div className="order-container">
-          {orders
-            .filter((order) => {
-              // console.log(
-              //   order.addressId[0].city,
-              //   supplierCity,
-              //   order.type.toString(),
-              //   supplierJobType
-              // );
-              const cityMatches =
-                order.addressId[0]?.city.toLowerCase() ===
-                  supplierCity.toLowerCase() ||
-                (order.addressId[0]?.city.toLowerCase() === "bengaluru" &&
-                  supplierCity.toLowerCase() === "bangalore");
-              const typeMatches = order.type.toString() === supplierJobType;
-              const isBooked = order.order_status === 0;
-              // console.log(isBooked, typeMatches, "both", cityMatches);
-              // console.log(order.order_status, "status");
-              return cityMatches && typeMatches && isBooked;
-            })
-            .map((order) => {
-              const orderStatus = getOrderStatus(order?.order_status);
-              return (
-                <div key={order.order_id} className="order-card">
-                  <div className="order-div">
-                    <div className="order-id">
-                      <div style={{ color: "#9252AA" }}>
-                        Order Id: #{10800 + order.order_id}
-                        {  console.log(order.order_id, "order_id")}
-                      </div>
-                      <h6
-                        className="order-otp mt-2"
-                        style={{ color: "#9252AA" }}
-                      >
-                        OTP: {order?.otp}
-                      </h6>
-                    </div>
-                    <div className="order-status">
-                      <span className={orderStatus.className}>
-                        {orderStatus.status}
-                      </span>
-                      <h6 className="mt-2" style={{ color: "#9252AA" }}>
-                        {getOrderType(order?.type)}
-                      </h6>
-                    </div>
-                  </div>
-                  <div className="order-details">
-                    <div className="left-details">
-                      <div>
-                        <Image
-                          className="contact-us-img"
-                          src={date_time_icon}
-                          height={20}
-                          width={20}
-                        />{" "}
-                        <span>{formatDate(order.order_date)}</span>
-                      </div>
-                      {order.order_time && (
-                        <div>
-                          <Image
-                            className="contact-us-img"
-                            src={clock}
-                            height={20}
-                            width={20}
-                          />{" "}
-                          <span>{order.order_time}</span>
-                        </div>
-                      )}
+      <div className="order-container">
+  {orders.filter((order) => {
+    const cityMatches = order.addressId[0]?.city.toLowerCase() === supplierCity.toLowerCase() ||
+      (order.addressId[0]?.city.toLowerCase() === "bengaluru" && supplierCity.toLowerCase() === "bangalore");
+    const typeMatches = order.type.toString() === supplierJobType;
+    const isBooked = order.order_status === 0;
 
-                      {order.no_of_people > 0 && (
-                        <div>
-                          <Image
-                            className="contact-us-img"
-                            src={peopleIcon}
-                            height={20}
-                            width={20}
-                          />{" "}
-                          <span>{order.no_of_people}</span>
-                        </div>
-                      )}
-                    </div>
+    return cityMatches && typeMatches && isBooked;
+  }).length === 0 ? (
+    <p className="no-orders-message">No orders available</p>
+  ) : (
+    orders.filter((order) => {
+      const cityMatches = order.addressId[0]?.city.toLowerCase() === supplierCity.toLowerCase() ||
+        (order.addressId[0]?.city.toLowerCase() === "bengaluru" && supplierCity.toLowerCase() === "bangalore");
+      const typeMatches = order.type.toString() === supplierJobType;
+      const isBooked = order.order_status === 0;
 
-                    <div className="right-details">
-                      {order.addressId?.[0]?.city && (
-                        <div>
-                          <strong
-                            style={{ color: "#9252AA", fontSize: "13px" }}
-                          >
-                            City
-                            <p style={{ textAlign: "end", margin: 0 }}>
-                              {order.addressId[0].city}
-                            </p>
-                          </strong>
-                        </div>
-                      )}
-                      <div>
-                        {/* <strong style={{ color: "#9252AA", fontSize: "13px" }}>
-                          Balance Amount
-                          <p className="mb-0 price-para">
-                            {"₹" +
-                              Math.round(
-                                order?.payable_amount *
-                                  (order?.type === 2 ||
-                                  order?.type === 3 ||
-                                  order?.type === 4 ||
-                                  order?.type === 5
-                                    ? 0.8
-                                    : 0.7)
-                              )}
-                          </p>
-                        </strong> */}
+      return cityMatches && typeMatches && isBooked;
+    }).map((order) => {
+      const orderStatus = getOrderStatus(order?.order_status);
+      const balanceAmount = order.phone_no
+        ? order.total_amount - order.advance_amount
+        : order.type === 2 || order.type === 3 || order.type === 4 || order.type === 5
+        ? Math.round((order?.payable_amount * 4) / 5)
+        : order.type === 6 || order.type === 7
+        ? Math.round(order?.payable_amount * 0.35)
+        : Math.round(order?.payable_amount * 0.65);
 
-
-                        {
-                         
-                         order.phone_no ? order.total_amount - order.advance_amount : 
-                          <strong style={{ color: "#9252AA" }}>
-                         Balance Amount
-                         {order?.type === 2 || order?.type === 3 || order?.type === 4 || order?.type === 5 ? (
-                         <p className="mb-0 price-para">
-                         {'₹' + Math.round((order?.payable_amount * 4) / 5)}
-                         </p>
-                         ) : order?.type === 6 || order?.type === 7 ? (
-                         <p className="mb-0 price-para">
-                         {'₹' + Math.round(order?.payable_amount * 0.35)}
-                         </p>
-                         ) : (
-                         <p className="mb-0 price-para">
-                         {'₹' + Math.round(order?.payable_amount * 0.65)}
-                         </p>
-                         )} 
- 
-                       </strong>
-
-                        }
-
-                      </div>
-                    </div>
-                  </div>
-                  <hr className="m-0" />
-                  <div className="d-flex button-div">
-                    <button
-                      className="view-details"
-                      onClick={() => handleViewDetail(order)}
-                    >
-                      View Details
-                    </button>
-                  </div>
+      return (
+        <div key={order.order_id} className="order-card">
+          <div className="order-div">
+            <div className="order-id">
+              <div style={{ color: "#9252AA" }}>
+                Order Id: #{10800 + order.order_id}
+              </div>
+              <h6 className="order-otp mt-2" style={{ color: "#9252AA" }}>
+                OTP: {order?.otp}
+              </h6>
+            </div>
+            <div className="order-status">
+              <span className={orderStatus.className}>{orderStatus.status}</span>
+              <h6 className="mt-2" style={{ color: "#9252AA" }}>
+                {getOrderType(order?.type)}
+              </h6>
+            </div>
+          </div>
+          <div className="order-details">
+            <div className="left-details">
+              <div>
+                <Image className="contact-us-img" src={date_time_icon} height={20} width={20} />{" "}
+                <span>{formatDate(order.order_date)}</span>
+              </div>
+              {order.order_time && (
+                <div>
+                  <Image className="contact-us-img" src={clock} height={20} width={20} />{" "}
+                  <span>{order.order_time}</span>
                 </div>
-              );
-            })}
-          {/* .length === 0 ? (
-              <p className="no-orders-message">No orders available</p>
-            ) : null} */}
+              )}
+              {order.no_of_people > 0 && (
+                <div>
+                  <Image className="contact-us-img" src={peopleIcon} height={20} width={20} />{" "}
+                  <span>{order.no_of_people}</span>
+                </div>
+              )}
+            </div>
+
+            <div className="right-details">
+              {order.addressId?.[0]?.city && (
+                <div>
+                  <strong style={{ color: "#9252AA", fontSize: "13px" }}>
+                    City
+                    <p style={{ textAlign: "end", margin: 0 }}>
+                      {order.addressId[0].city}
+                    </p>
+                  </strong>
+                </div>
+              )}
+              <div>
+                <strong style={{ color: "#9252AA" }}>
+                  Balance Amount
+                  <p className="mb-0 price-para">{"₹" + balanceAmount}</p>
+                </strong>
+              </div>
+            </div>
+          </div>
+          <hr className="m-0" />
+          <div className="d-flex button-div">
+            <button className="view-details" onClick={() => handleViewDetail(order)}>
+              View Details
+            </button>
+          </div>
         </div>
+      );
+    })
+  )}
+</div>
+
       </main>
     </Layout>
   );
