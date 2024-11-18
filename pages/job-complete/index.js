@@ -182,6 +182,7 @@ const PictureUpload = () => {
       }); 
 
       alert("Job Completed");
+      router.push("/home");
     } catch (error) {
       console.log("acceptOrder error", error);
     }

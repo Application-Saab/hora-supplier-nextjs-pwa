@@ -44,6 +44,14 @@ body {
   font-family: Poppins, sans-serif;
 }
 
+p.no-orders-message {
+  padding: 100px 0;
+  min-height: 100vh;
+  font-size: 26px;
+  color: #97538c;
+  font-weight: 800;
+}
+
 body {
   color: rgb(var(--foreground-rgb));
   background: linear-gradient(
@@ -807,19 +815,25 @@ main.shifted {
   justify-content: space-between;
   background-color: rgb(224, 219, 219);
   border-radius: 10px;
-  align-items: flex-start;
+  align-items: center;
   padding: 10px;
 }
 
 .order-id {
   font-size: 1.2em;
-  margin-bottom: 10px;
+  margin-bottom: 0;
+  gap: 10px;
+  justify-content: center;
+  display: flex
+;
+  flex-direction: column;
 }
 
 .order-otp {
   align-items: flex-start;
   margin: 0;
   text-align: start;
+  font-size: 17px;
 }
 
 .order-details {
@@ -881,60 +895,65 @@ main.shifted {
   color: green;
 }
 
+
+.status.cancelled {
+  color: red;
+}
+
+.status.fooddelivery {
+  color: orange;
+}
+
+.status.livecatering {
+  color: green;
+}
+
+/* order status */
+.order-status h6.mt-2 {
+  margin: 0 !important;
+  font-size: 16px;
+}
+.order-status {
+  display: flex
+;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  flex-direction: column;
+}
 .status-booked {
   color: orange;
-  background-color: #fff7e6;
-
-  border-radius: 13px;
-  padding: 3px 13px;
+  font-weight: 600;
 }
 
 .status-accepted {
   color: blue;
-  background-color: #e6f0ff;
-
-  border-radius: 13px;
-  padding: 3px 13px;
+  font-weight: 600;
 }
 
 .status-in-progress {
   color: yellow;
-  background-color: #ffffe6;
-
-  border-radius: 13px;
-  padding: 3px 13px;
+  font-weight: 600;
 }
 
 .status-completed {
   color: green;
-  background-color: #e6ffe6;
-
-  border-radius: 13px;
-  padding: 3px 13px;
+  font-weight: 600;
 }
 
 .status-cancelled {
   color: red;
-  background-color: #ffe6e6;
-
-  border-radius: 13px;
-  padding: 3px 13px;
+  font-weight: 600;
 }
 
 .status-empty {
   color: grey;
-  background-color: #f0f0f0;
-
-  border-radius: 13px;
-  padding: 3px 13px;
+  font-weight: 600;
 }
 
 .status-expired {
   color: rgb(245, 111, 111);
-  background-color: #ffe6e6;
-
-  border-radius: 13px;
-  padding: 3px 13px;
+ font-weight: 600;
 }
 
 .no-record-heading {
@@ -3295,26 +3314,6 @@ main.order-list .order-container {
   position: relative;
 }
 
-.order-div {
-  display: flex;
-  justify-content: space-between;
-  background-color: rgb(224, 219, 219);
-  border-radius: 10px;
-  align-items: flex-start;
-  padding: 10px;
-}
-
-.order-id {
-  font-size: 1.2em;
-  margin-bottom: 10px;
-}
-
-.order-otp {
-  align-items: flex-start;
-  margin: 0;
-  text-align: start;
-}
-
 .order-details {
   display: flex;
   justify-content: space-between;
@@ -3372,79 +3371,6 @@ main.order-list .order-container {
   background-color: #5753d6;
 } */
 
-.status.cancelled {
-  color: red;
-}
-
-.status.fooddelivery {
-  color: orange;
-}
-
-.status.livecatering {
-  color: green;
-}
-
-/* order status */
-
-.status-booked {
-  color: orange;
-  background-color: #fff7e6;
-  /* border: 1px solid orange; */
-  border-radius: 13px;
-  padding: 3px 13px;
-}
-
-.status-accepted {
-  color: blue;
-  background-color: #e6f0ff;
-  /* border: 1px solid blue; */
-  border-radius: 13px;
-  padding: 3px 13px;
-}
-
-.status-in-progress {
-  color: yellow;
-  background-color: #ffffe6;
-  /* border: 1px solid yellow; */
-  border-radius: 13px;
-  padding: 3px 13px;
-}
-
-.status-completed {
-  color: green;
-  background-color: #e6ffe6;
-  /* border: 1px solid green; */
-  border-radius: 13px;
-  padding: 3px 13px;
-}
-
-.status-cancelled {
-  color: red;
-  background-color: #ffe6e6;
-  /* border: 1px solid red; */
-  border-radius: 13px;
-  padding: 3px 13px;
-}
-
-.status-empty {
-  color: grey;
-  background-color: #f0f0f0;
-  /* border: 1px solid grey; */
-  border-radius: 13px;
-  padding: 3px 13px;
-}
-
-.status-expired {
-  color: rgb(245, 111, 111);
-  background-color: #ffe6e6;
-  /* border: 1px solid grey; */
-  border-radius: 13px;
-  padding: 3px 13px;
-}
-
-.no-record-heading {
-  color: #9252aa;
-}
 
 /* Order detail css */
 
