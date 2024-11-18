@@ -42,8 +42,6 @@ const ProfileUpdate = () => {
         "order_type": jobType
     }
 
-      console.log(requestData, "requestData");
-
       if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
         
       localStorage.setItem("supplierExperince", jobExperince);
@@ -57,8 +55,6 @@ const ProfileUpdate = () => {
           'Authorization': token
         },
       });
-
-      console.log(response.data, "response data");
 
       if (response.status === 200) {
          setShowAdditionalFields(true);
@@ -87,8 +83,6 @@ const ProfileUpdate = () => {
       }	
       const url = BASE_URL + SUPPLIER_UPDATE_PERSONAL_DETAILS; // Define your endpoint
 
-      console.log(url, "urlofcode");
-
       const requestData = {
         "age": userDetails.age,
         "vechicle_type": "Two wheeler",
@@ -104,7 +98,6 @@ const ProfileUpdate = () => {
             "646c7b08f35e6a415d41bbc9"
         ]
     }
-      console.log(requestData, "additionalRequestData");
 
       if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
        
@@ -121,12 +114,6 @@ const ProfileUpdate = () => {
           'Authorization': token
         },
       });
-
-      console.log(response, "responsedatas");
-
-      console.log(response.data.data.phone, "additional response data phone");
-
-      console.log(response.data, "additional response data");
 
       if (response.status === 200) {
         router.push("/home");

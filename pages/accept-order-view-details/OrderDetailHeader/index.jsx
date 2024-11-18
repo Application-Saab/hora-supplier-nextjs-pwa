@@ -15,7 +15,6 @@ const OrderDetailHeader = ({ orderDetail }) => {
     if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
       localStorage.setItem("orderId", updateOrderId);
     }	
-    console.log(updateOrderId, "header");
     return updateOrderId;
   };
   const getOrderStatus = (orderStatusValue) => {
@@ -43,28 +42,13 @@ const OrderDetailHeader = ({ orderDetail }) => {
   };
 
   const orderStatus = getOrderStatus(orderDetail?.order_status);
-  console.log(orderStatus, "orderstatus");
 
   const formatDate = (dateString) => {
     const options = { day: "numeric", month: "short", year: "numeric" };
     return new Date(dateString).toLocaleDateString("en-GB", options);
   };
 
-  console.log(orderDetail.order_id, "id");
-  console.log(orderDetail.order_date, "orderdate");
-  console.log(orderDetail.no_of_people, "no_of_people");
-  console.log(orderDetail.order_locality, "order locality");
-  console.log(orderDetail.chef, "orderdetail chef");
-  console.log(orderDetail.otp, "otp");
-  // console.log(orderDetail.addressId.address1, "aaddressId");
-
-  // const otp = orderDetail.otp;
-  // console.log(otp, "otp2");
-  // localStorage.setItem("otp", otp);
-  
-
   let otp; 
-  console.log(otp, "otp2");
   
   useEffect(() => {
     otp = orderDetail.otp;
@@ -72,7 +56,6 @@ const OrderDetailHeader = ({ orderDetail }) => {
     localStorage.setItem("otp", otp);
   }, [otp]);
 
-  // console.log(orderDetail.addressId[0].address1, "2aaddressId");
 
   return (
     // <Layout navTitle="Order Details">

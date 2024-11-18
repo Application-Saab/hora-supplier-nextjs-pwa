@@ -36,8 +36,6 @@ const OrderDetailTab = ({
   const [supplierID, setSupplierID] = useState(null);
   const [otp, setOtp] = useState(null);
 
-  console.log(apiOrderId, "apiOrderid");
-
   const [otp1, setOtp1] = useState(["", "", "", ""]);
   const [isOtpMatched, setIsOtpMatched] = useState(false);
   const inputRefs = useRef([]);
@@ -49,7 +47,6 @@ const OrderDetailTab = ({
   if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
     
   orderOtp = localStorage.getItem("orderOtp");
-  console.log(orderOtp, "orderOTPT");
   }	
 
   useEffect(() => {
@@ -59,8 +56,6 @@ const OrderDetailTab = ({
     }
   }, []);
 
-  console.log(supplierID, "supplierID");
-  console.log(otp, "otp");
 
   const getItemInclusion = (inclusion) => {
     if (!inclusion || !inclusion.length) return "";
@@ -96,15 +91,7 @@ const OrderDetailTab = ({
           _id: apiOrderId,
           userId: supplierID,
         }),
-      }); // Replace with your API endpoint for updating user profile
-
-      // Handle success response
-
-      console.log(response, "responsedata");
-
-      // "otp":2980,
-      // "_id":"643ba8ee71e3056f1a50dc8c",
-      // "userId":"6413340f549b58e3dc39a035"
+      }); 
 
       alert("Order accepted successfully");
       // router.push("/orderlist");
@@ -142,8 +129,6 @@ const OrderDetailTab = ({
     newOtp[index] = value;
     setOtp1(newOtp);
 
-    console.log(newOtp, "newotp");
-
     if (value && index < otp1.length - 1) {
       inputRefs.current[index + 1].focus();
     }
@@ -166,7 +151,6 @@ const OrderDetailTab = ({
     const currTime = new Date().toLocaleTimeString();
 
     const currDateTime = currDate + currTime;
-console.log(currDate,currTime, "currTimecurrDate");
     try {
       const token =  localStorage.getItem("token");
 
@@ -185,7 +169,6 @@ console.log(currDate,currTime, "currTimecurrDate");
         }),
       }); 
 
-      console.log(response, "responsedata");
       router.push({
         pathname:`/job-complete`, 
       query: { apiOrderId },

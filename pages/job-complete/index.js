@@ -85,10 +85,6 @@ const PictureUpload = () => {
       formData.append("file", imageToUpload); 
     }
   
-    console.log("FormData being sent:", formData);
-    console.log("Image to upload:", imageToUpload);
-    console.log("Image type being uploaded:", firstImageType);
-  
     try {
       const response = await fetch("https://horaservices.com:3000/api/image_upload", {
         method: "POST",
@@ -100,7 +96,6 @@ const PictureUpload = () => {
       }
   
       const data = await response.json();
-      console.log("Successfully uploaded the image:", data);
       alert("Successfully uploaded the image!");
       setUploadSuccess(true); 
     } catch (error) {
@@ -169,7 +164,6 @@ const PictureUpload = () => {
     const currTime = new Date().toLocaleTimeString();
 
     const currDateTime = currDate +"  " +currTime;
-console.log(currDate,currTime, "currTimecurrDate");
     try {
       const token =  localStorage.getItem("token");
 
@@ -187,7 +181,6 @@ console.log(currDate,currTime, "currTimecurrDate");
         }),
       }); 
 
-      console.log(response, "responsedata");
       alert("Job Completed");
     } catch (error) {
       console.log("acceptOrder error", error);

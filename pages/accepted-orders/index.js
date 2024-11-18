@@ -64,9 +64,6 @@ const Orderlist = () => {
         });
 
         const responseData = await response.json();
-        console.log(responseData, "responsedaa");
-
-        console.log(responseData.data.order[0].toId, "toId accept");
 
         if (responseData && responseData.data && responseData.data.order) {
           const sortedOrders = responseData.data.order.sort(

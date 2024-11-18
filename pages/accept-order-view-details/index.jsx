@@ -28,13 +28,7 @@ const OrderDetail = () => {
   const [decorationComments, setDecorationComments] = useState("");
   const [decorationAddon, setDecorationAddon] = useState("");
 
-  console.log(orderType, "ordertype");
-
   orderType = parseInt(orderType);
-
-  console.log(orderType, "ordert2");
-
-
 
   useEffect(() => {
     if (
@@ -46,7 +40,6 @@ const OrderDetail = () => {
       fetchOrderDetailsMenu();
     } else if (orderType === 1) {
       // alert("if orderType = 1");
-      console.log(orderType, "orderType");
       fetchDecorationOrderDetails();
     }
   }, [orderType, orderId, apiOrderId]);
@@ -64,10 +57,7 @@ const OrderDetail = () => {
         BASE_URL + ORDER_DETAILS_ENDPOINT + "/v1/" + apiOrderId
       );
       const responseData = await response.json();
-      console.log(responseData, "order11");
-      console.log(apiOrderId, "apiordersdf");
       setOrderDetail(responseData.data);
-      console.log(responseData)
       setLoading(false);
     } catch (error) {
       console.log("error", error);
@@ -81,14 +71,6 @@ const OrderDetail = () => {
         BASE_URL + GET_BOOKING_ORDER_DETAILS + "/" + orderId
       );
       const responseData = await response.json();
-
-
-      console.log(responseData, "Response data");
-      
-      console.log(responseData.data.order_id);
-
-      
-      console.log(responseData.data, "new jadu");
 
       setOrderDetail(responseData.data._doc);
       // setOrderDetail(responseData?.data?._doc);

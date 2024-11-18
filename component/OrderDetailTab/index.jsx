@@ -37,7 +37,6 @@ const OrderDetailTab = ({
     }	
   const [tab, setTab] = useState("Menu");
   const [orderStatus, setOrderStatus] = useState(orderDetail?.order_status);
-  console.log(apiOrderId, "apiOrderid");
 
   const getItemInclusion = (inclusion) => {
     if (!inclusion || !inclusion.length) return "";
@@ -73,10 +72,7 @@ const OrderDetailTab = ({
           _id: apiOrderId,
           userId: supplierID
         }),
-      }); // Replace with your API endpoint for updating user profile
-
-      console.log(response, "responsedata");
-
+      }); 
 
       alert("Order accepted successfully");
       router.push("/accepted-orders");

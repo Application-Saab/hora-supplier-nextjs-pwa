@@ -42,7 +42,6 @@ const Login = () => {
   const { time, isTimeUp, resetTimer } = useTimer(25);
   const [showPopup, setShowPopup] = useState(false);
   const [popupMessage, setPopupMessage] = useState({});
-  console.log(router);
   const handleLogout = () => {
     localStorage.setItem("isLoggedIn", "false");
     localStorage.clear();
@@ -140,16 +139,12 @@ const Login = () => {
           role: "supplier",
           otp: enteredOtp,
         };
-        console.log(requestData, "requestData");
         const response = await axios.post(url, requestData, {
           headers: {
             "Content-Type": "application/json",
           },
         });
   
-        console.log(response, "response verify ");
-  
-        // Check if there's an error and handle the specific error
         if (response.data.error && response.data.message === "The number is used already for Customer login . Please use different number") {
           alert("This phone number is already used for customer login. Please use a different number.");
           setOtpError("Phone number already in use. Please use a different number.");
@@ -228,7 +223,6 @@ const Login = () => {
         phone: mobileNumber,
         role: "supplier",
       };
-      console.log(requestData, "requestData1234");
       const response = await axios.post(url, requestData, {
         headers: {
           "Content-Type": "application/json",
@@ -240,7 +234,6 @@ const Login = () => {
         resetTimer();
         setOtp(["", "", "", ""]);
         setOtpError("");
-        console.log("OTP sent successfully");
       } else {
         console.log("OTP sending failed");
       }

@@ -13,7 +13,6 @@ const OrderDetailHeader = ({ orderDetail }) => {
     if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
       localStorage.setItem("orderId", updateOrderId);
     }	
-    console.log(updateOrderId, "header");
     return updateOrderId;
   };
   const getOrderStatus = (orderStatusValue) => {
@@ -41,20 +40,11 @@ const OrderDetailHeader = ({ orderDetail }) => {
   };
 
   const orderStatus = getOrderStatus(orderDetail?.order_status);
-  console.log(orderStatus, "orderstatus");
 
   const formatDate = (dateString) => {
     const options = { day: "numeric", month: "short", year: "numeric" };
     return new Date(dateString).toLocaleDateString("en-GB", options);
   };
-
-  console.log(orderDetail.order_id, "id");
-  console.log(orderDetail.order_date, "orderdate");
-  console.log(orderDetail.no_of_people, "no_of_people");
-  console.log(orderDetail.order_locality, "order locality");
-  console.log(orderDetail.chef, "orderdetail chef");
-  console.log(orderDetail.otp, "otp");
-  
   // useEffect(() => {
   //   otp = orderDetail.otp;
   //   // Save OTP to localStorage

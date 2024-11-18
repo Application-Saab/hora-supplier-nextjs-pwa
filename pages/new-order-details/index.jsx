@@ -39,7 +39,6 @@ const OrderDetail = () => {
       fetchOrderDetailsMenu();
     } else if (orderType == 1) {
       // alert("if orderType = 1");
-      console.log(orderType, "orderType");
       fetchDecorationOrderDetails();
     }
   }, [orderType, orderId, apiOrderId]);
@@ -57,10 +56,7 @@ const OrderDetail = () => {
         BASE_URL + ORDER_DETAILS_ENDPOINT + "/v1/" + apiOrderId
       );
       const responseData = await response.json();
-      console.log(responseData, "order11");
-      console.log(apiOrderId, "apiordersdf");
       setOrderDetail(responseData.data);
-      console.log(responseData)
       setLoading(false);
     } catch (error) {
       console.log("error", error);
@@ -74,14 +70,6 @@ const OrderDetail = () => {
         BASE_URL + GET_BOOKING_ORDER_DETAILS + "/" + orderId
       );
       const responseData = await response.json();
-
-
-      console.log(responseData, "Response data");
-      
-      console.log(responseData.data.order_id);
-
-      
-      console.log(responseData.data, "new jadu");
 
       setOrderDetail(responseData.data._doc);
       setDecorationItems(responseData.data.items[0].decoration);

@@ -28,7 +28,6 @@ const Orderlist = () => {
     supplierJobType = localStorage.getItem("supplierJobType");
     supplierID = localStorage.getItem("supplierID");
     supplierCity = localStorage.getItem("supplierCity");
-    console.log(supplierCity, "icity");
   }
 
   if (supplierCity === "Bengaluru") {
@@ -52,7 +51,7 @@ const Orderlist = () => {
         });
 
         const responseData = await response.json();
-        console.log(responseData); // Debugging line to check API response
+        console.log(responseData, "responsedata");
 
         if (responseData && responseData.data && responseData.data.order) {
           const sortedOrders = responseData.data.order.sort(
@@ -124,13 +123,6 @@ const Orderlist = () => {
     router.push("/");
   };
 
-  // const getOrderId = (e) => {
-  //   const orderId1 = 10800 + e;
-  //   const updateOrderId = "#" + orderId1;
-  //   localStorage.setItem("orderId", updateOrderId);
-  //   return updateOrderId;
-  // };
-
   const handleViewDetail = (order) => {
     const { _id, order_id, type, otp } = order;
     // localStorage.setItem("orderOtp" , otp )
@@ -144,7 +136,6 @@ const Orderlist = () => {
     const apiOrderId = _id;
     const orderType = type;
     const orderId = order_id;
-    console.log(orderId,"orderIdpata");
     router.push({
       pathname: `/new-order-details`,
       query: { apiOrderId, orderType, orderId },
@@ -187,12 +178,6 @@ const Orderlist = () => {
         <div className="order-container">
           {orders
             .filter((order) => {
-              // console.log(
-              //   order.addressId[0].city,
-              //   supplierCity,
-              //   order.type.toString(),
-              //   supplierJobType
-              // );
               const cityMatches =
                 order.addressId[0]?.city.toLowerCase() ===
                   supplierCity.toLowerCase() ||
@@ -200,9 +185,8 @@ const Orderlist = () => {
                   supplierCity.toLowerCase() === "bangalore");
               const typeMatches = order.type.toString() === supplierJobType;
               const isBooked = order.order_status === 0;
-              // console.log(isBooked, typeMatches, "both", cityMatches);
-              // console.log(order.order_status, "status");
-              return cityMatches && typeMatches && isBooked;
+              const isStatus = order.status === 1;
+              return cityMatches && typeMatches && isBooked && isStatus;
             })
             .map((order) => {
               const orderStatus = getOrderStatus(order?.order_status);
