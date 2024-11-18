@@ -103,11 +103,7 @@ const ProfileUpdate = () => {
             "646c7b08f35e6a415d41bbc9"
         ]
     }
-<<<<<<< HEAD
-=======
 
-    console.log("userData" , requestData);
->>>>>>> af37669c5e560cfe4b4c3ab847c7f19437bcf056
 
       if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
        

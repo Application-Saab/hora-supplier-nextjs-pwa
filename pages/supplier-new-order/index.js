@@ -51,7 +51,6 @@ const Orderlist = () => {
         });
 
         const responseData = await response.json();
-        console.log(responseData, "responsedata");
 
         if (responseData && responseData.data && responseData.data.order) {
           const sortedOrders = responseData.data.order.sort(
@@ -164,78 +163,14 @@ const Orderlist = () => {
   return (
     <Layout>
       <main className="order-list">
-<<<<<<< HEAD
-        <div className="order-container">
-          {orders
-            .filter((order) => {
-              const cityMatches =
-                order.addressId[0]?.city.toLowerCase() ===
-                  supplierCity.toLowerCase() ||
-                (order.addressId[0]?.city.toLowerCase() === "bengaluru" &&
-                  supplierCity.toLowerCase() === "bangalore");
-              const typeMatches = order.type.toString() === supplierJobType;
-              const isBooked = order.order_status === 0;
-              const isStatus = order.status === 1;
-              return cityMatches && typeMatches && isBooked && isStatus;
-            })
-            .map((order) => {
-              const orderStatus = getOrderStatus(order?.order_status);
-              return (
-                <div key={order.order_id} className="order-card">
-                  <div className="order-div">
-                    <div className="order-id">
-                      <div style={{ color: "#9252AA" }}>
-                        Order Id: #{10800 + order.order_id}
-                        {  console.log(order.order_id, "order_id")}
-                      </div>
-                      <h6
-                        className="order-otp mt-2"
-                        style={{ color: "#9252AA" }}
-                      >
-                        OTP: {order?.otp}
-                      </h6>
-                    </div>
-                    <div className="order-status">
-                      <span className={orderStatus.className}>
-                        {orderStatus.status}
-                      </span>
-                      <h6 className="mt-2" style={{ color: "#9252AA" }}>
-                        {getOrderType(order?.type)}
-                      </h6>
-                    </div>
-                  </div>
-                  <div className="order-details">
-                    <div className="left-details">
-                      <div>
-                        <Image
-                          className="contact-us-img"
-                          src={date_time_icon}
-                          height={20}
-                          width={20}
-                        />{" "}
-                        <span>{formatDate(order.order_date)}</span>
-                      </div>
-                      {order.order_time && (
-                        <div>
-                          <Image
-                            className="contact-us-img"
-                            src={clock}
-                            height={20}
-                            width={20}
-                          />{" "}
-                          <span>{order.order_time}</span>
-                        </div>
-                      )}
-=======
       <div className="order-container">
   {orders.filter((order) => {
     const cityMatches = order.addressId[0]?.city.toLowerCase() === supplierCity.toLowerCase() ||
       (order.addressId[0]?.city.toLowerCase() === "bengaluru" && supplierCity.toLowerCase() === "bangalore");
     const typeMatches = order.type.toString() === supplierJobType;
     const isBooked = order.order_status === 0;
->>>>>>> af37669c5e560cfe4b4c3ab847c7f19437bcf056
-
-    return cityMatches && typeMatches && isBooked;
+    const isStatus = order.status === 1;
+    return cityMatches && typeMatches && isBooked && isStatus;
   }).length === 0 ? (
     <p className="no-orders-message">No orders available</p>
   ) : (
