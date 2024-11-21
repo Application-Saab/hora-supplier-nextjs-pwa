@@ -17,7 +17,7 @@ const Home = () => {
 
   const menuItems = [
     { id: 1, name: "New Orders", icon: bellLogo, path: "/supplier-new-order" },
-    { id: 2, name: "My Wallet", icon: walletLogo, path: "/my-wallet" },
+    { id: 2, name: "My Wallet", icon: walletLogo, path: "/home" },
     { id: 3, name: "My Account", icon: myAccountLogo, path: "/MyAcount" },
     {
       id: 4,
@@ -25,7 +25,7 @@ const Home = () => {
       icon: trackingLogo,
       path: "/accepted-orders",
     },
-    { id: 5, name: "My Ratings", icon: ratingLogo, path: "/my-ratings" },
+    { id: 5, name: "My Ratings", icon: ratingLogo, path: "/home" },
   ];
   const [error, setError] = useState(null);
 

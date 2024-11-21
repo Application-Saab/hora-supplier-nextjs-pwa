@@ -83,10 +83,6 @@ const ProfileUpdate = () => {
       }	
       const url = BASE_URL + SUPPLIER_UPDATE_PERSONAL_DETAILS; // Define your endpoint
 
-<<<<<<< HEAD
-=======
-
->>>>>>> af37669c5e560cfe4b4c3ab847c7f19437bcf056
       const requestData = {
         "age": userDetails.age,
         // "isPersonalStatus": "1",

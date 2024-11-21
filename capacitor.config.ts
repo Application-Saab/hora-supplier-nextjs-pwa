@@ -1,10 +1,9 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.example.app',
-  appName: 'PWA',
-  webDir: 'out',
-  // bundledWebRuntime: false,
+  appId: 'horaservices.com',
+  appName: ' HORA',
+  webDir: 'out'
 };
 
 export default config;
