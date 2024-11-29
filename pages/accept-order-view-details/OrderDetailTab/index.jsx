@@ -26,7 +26,8 @@ const OrderDetailTab = ({
   orderType,
   decorationItems,
   decorationComments,
-  decorationAddon
+  decorationAddon,
+  balanceAmount
 }) => {
   const router = useRouter();
   const { apiOrderId } = router.query;
@@ -57,22 +58,40 @@ const OrderDetailTab = ({
   }, []);
 
 
+  // const getItemInclusion = (inclusion) => {
+  //   if (!inclusion || !inclusion.length) return "";
+
+  //   const parser = new DOMParser();
+  //   const doc = parser.parseFromString(inclusion[0], "text/html");
+  //   const items = doc.body.childNodes;
+
+  //   let result = "";
+
+  //   items.forEach((item, index) => {
+  //     if (item.nodeName === "DIV" || item.nodeName === "BR") {
+  //       result += `${index + 1}: ${item.textContent.trim()}\n`;
+  //     }
+  //   });
+
+  //   return result.trim();
+  // };
+
+
   const getItemInclusion = (inclusion) => {
-    if (!inclusion || !inclusion.length) return "";
+    if (!inclusion || !inclusion.length) return [];
 
     const parser = new DOMParser();
     const doc = parser.parseFromString(inclusion[0], "text/html");
     const items = doc.body.childNodes;
 
-    let result = "";
-
-    items.forEach((item, index) => {
+    const result = [];
+    items.forEach((item) => {
       if (item.nodeName === "DIV" || item.nodeName === "BR") {
-        result += `${index + 1}: ${item.textContent.trim()}\n`;
+        result.push(item.textContent.trim());
       }
     });
 
-    return result.trim();
+    return result;
   };
 
   const cancelOrder = async () => {
@@ -302,34 +321,67 @@ const OrderDetailTab = ({
                 </div>
                 <div className="product-info">
                   <p className="product-name">{product?.name}</p>
-                  <p className="product-price">₹{product?.price}</p>
+                  {/* <p className="product-price">₹{product?.price}</p> */}
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                      margin: "7px 0 15px",
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontWeight: "bold",
+                        fontSize: "1rem",
+                        color: "#333",
+                      }}
+                    >
+                      Balance Amount:
+                    </span>
+                    <p
+                      style={{
+                        fontSize: "1rem",
+                        color: "#555",
+                        margin: "0",
+                      }}
+                    >
+                      ₹{balanceAmount}
+                    </p>
+                  </div>
+
                   <h6 className="product-inclusion">
-                    {getItemInclusion(product?.inclusion)}
+                    <ul>
+                      {getItemInclusion(product?.inclusion).map(
+                        (item, index) => (
+                          <li key={index}>{item}</li>
+                        )
+                      )}
+                    </ul>
                   </h6>
-                  <p>
-          <p className="comments-header">AddOn:</p>
-                    {decorationAddon.map((item, index) => 
+
+                  <p className="product-inclusion">
+                    <p className="comments-header">AddOn:</p>
+                    {decorationAddon.map((item, index) => (
                       <li key={index}>
- <strong>{item.name}</strong>: ${item.price}
+                        <strong>{item.name}</strong>
+                        {/* : ₹{item.price} */}
                       </li>
-                    )}
+                    ))}
                   </p>
-                </div>
-              </div>
-            );
-          })}
-          {decorationComments && (
+                  {decorationComments && (
             <div className="comment-container">
               <p className="comments-header">Additional Comments:</p>
               <p className="comments-text">{decorationComments}</p>
             </div>
           )}
-
+                </div>
+              </div>
+            );
+          })}
+          
+          
           <div>
-            {/* <div onClick={handleDivClick}>
-          <button className="acceptOrder">Start Your Task</button>
-        </div> */}
-
             <div className="otp-container">
               <h2 className="otp-title">Enter OTP</h2>
               <p className="otp-instructions">

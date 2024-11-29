@@ -27,6 +27,8 @@ const OrderDetail = () => {
   const [decorationItems, setDecorationItems] = useState([]);
   const [decorationComments, setDecorationComments] = useState("");
   const [decorationAddon, setDecorationAddon] = useState("");
+  const [balanceAmount, setBalanceAmount] = useState("");
+
  // alert("New Order detils");
   useEffect(() => {
     // alert(orderType);
@@ -75,6 +77,7 @@ const OrderDetail = () => {
       setDecorationItems(responseData.data.items[0].decoration);
       setDecorationComments(responseData?.data?._doc.decoration_comments);
       setDecorationAddon(responseData.data._doc.add_on);
+      setBalanceAmount(responseData.data._doc.balance_amount);
       setLoading(false);
     } catch (error) {
       console.log("fetchDecorationOrderDetails error", error);
@@ -130,6 +133,7 @@ const OrderDetail = () => {
             decorationItems={decorationItems}
             decorationComments={decorationComments}
             decorationAddon={decorationAddon}
+            balanceAmount={balanceAmount}
           />
         </div>
       </div>

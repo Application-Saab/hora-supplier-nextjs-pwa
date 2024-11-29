@@ -91,12 +91,6 @@ const OrderDetailHeader = ({ orderDetail }) => {
 
         {/* Left and Right Column for Details */}
         <div style={styles.detailsRow}>
-          {/* Left Column */}
-          {/* <div style={styles.leftColumn}>
-            <p><strong>Id:</strong> {getOrderId(orderDetail?.order_id)}</p>
-            <p><strong>Name:</strong> Smith Jacobs</p>
-            <p><strong>Date:</strong> {formatDate(orderDetail?.order_date)}</p>
-          </div> */}
           <div style={styles.leftColumn}>
             {orderDetail?.order_id && (
               <p>
@@ -113,56 +107,24 @@ const OrderDetailHeader = ({ orderDetail }) => {
   <strong>Time:
   </strong>{orderDetail?.order_time}
   </p>
-          </div>
-          
-          {/* Right Column */}
-          {/* <div style={styles.rightColumn}>
-            <p><strong>People:</strong> {orderDetail?.no_of_people} Ppl</p>
-            <p><strong>Location:</strong> {orderDetail?.order_locality}</p>
-            <p><strong>Chef:</strong> {orderDetail?.chef} Chef</p>
-          </div> */}
 
-          <div style={styles.rightColumn}>
-            
-          
-              {/* <p>
-                <strong>People: </strong> 
-                 {orderDetail.no_of_people} 
-              </p>
-             */}
-          {orderDetail && orderDetail.no_of_people > 0 && (
-            <p>
-              <strong>People: </strong> {orderDetail.no_of_people}
-            </p>
-          )}
-
-              {orderDetail?.order_locality && (
+  {orderDetail?.order_locality && (
               <p>
                 <strong>Location:</strong> {orderDetail.order_locality}
               </p>
             )}
-            
           </div>
         </div>
 
-        {/* Centered Address */}
-        {/* <div style={styles.centeredAddress}>
-          <p><strong>Address:</strong> {orderDetail.addressId?.address1}</p>
-        </div> */}
-        {/* {orderDetail.addressId?.address1 && (
-          <div style={styles.centeredAddress}>
-            <p>
-              <strong>Address:</strong> {orderDetail.addressId.address1}
-            </p> */}
-            {/* <button style={styles.directionsButton}>Get Directions</button> */}
-          {/* </div>
-        )} */}
         {orderDetail?.addressId?.address1 && (
   <div style={styles.centeredAddress}>
     <p>
       <strong>Address:</strong> {orderDetail.addressId.address1}
     </p>
-    {/* <button style={styles.directionsButton}>Get Directions</button> */}
+    <p>
+              <strong>Google Map Location:</strong>{" "}
+              {orderDetail.addressId.address2}
+            </p>
   </div>
 )}
 

@@ -11,49 +11,42 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import { BASE_URL, ACCEPT_ORDER } from "../../apiconstant/apiconstant";
 
-// const BASE_URL = "";
-// const ORDER_CANCEL = "";
-// order.type is 2 for chef
-// order.type is 1 for decoration
-// order.type is 3 for waiter
-// order type 4 bar tender
-// order type 5 cleaner
-// order type 6 Food Delivery
-// order type 7 Live Catering
-
 const OrderDetailTab = ({
   orderDetail,
   orderType,
   decorationItems,
   decorationComments,
-  decorationAddon
+  decorationAddon,
+  balanceAmount,
 }) => {
   const router = useRouter();
   const { apiOrderId } = router.query;
-  if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
-      var otp = localStorage.getItem('orderOtp');
-      
-  var supplierID = localStorage.getItem('supplierID');
-    }	
+  if (
+    typeof window !== "undefined" &&
+    typeof window.localStorage !== "undefined"
+  ) {
+    var otp = localStorage.getItem("orderOtp");
+
+    var supplierID = localStorage.getItem("supplierID");
+  }
   const [tab, setTab] = useState("Menu");
   const [orderStatus, setOrderStatus] = useState(orderDetail?.order_status);
 
   const getItemInclusion = (inclusion) => {
-    if (!inclusion || !inclusion.length) return "";
+    if (!inclusion || !inclusion.length) return [];
 
     const parser = new DOMParser();
     const doc = parser.parseFromString(inclusion[0], "text/html");
     const items = doc.body.childNodes;
 
-    let result = "";
-
-    items.forEach((item, index) => {
+    const result = [];
+    items.forEach((item) => {
       if (item.nodeName === "DIV" || item.nodeName === "BR") {
-        result += `${index + 1}: ${item.textContent.trim()}\n`;
+        result.push(item.textContent.trim());
       }
     });
 
-    return result.trim();
+    return result;
   };
 
   const acceptOrder = async () => {
@@ -70,9 +63,9 @@ const OrderDetailTab = ({
           Authorisation: token,
           otp: otp,
           _id: apiOrderId,
-          userId: supplierID
+          userId: supplierID,
         }),
-      }); 
+      });
 
       alert("Order accepted successfully");
       router.push("/accepted-orders");
@@ -103,8 +96,6 @@ const OrderDetailTab = ({
 
   return (
     <>
-
-
       {parseInt(orderType) == 2 ? (
         <div>
           <div className="tabs">
@@ -131,7 +122,10 @@ const OrderDetailTab = ({
             <OrderDetailsMenu orderDetail={orderDetail} orderType={orderType} />
           )}
           {tab === "Appliances" && (
-           <OrderDetailsAppliances orderDetail={orderDetail} orderType={orderType}/>
+            <OrderDetailsAppliances
+              orderDetail={orderDetail}
+              orderType={orderType}
+            />
           )}
           {tab === "Ingredients" && (
             <OrderDetailsIngre
@@ -199,7 +193,7 @@ const OrderDetailTab = ({
           </div>
         </>
       ) : orderType == 1 ? (
-        <div  className="decoration-container">
+        <div className="decoration-container">
           {decorationItems?.map((product, index) => {
             return (
               <div key={product?.id} className="product-container">
@@ -210,42 +204,76 @@ const OrderDetailTab = ({
                     className="product-image"
                     height={300}
                     width={300}
-                    style={{height:"auto", width:"auto"}}
+                    style={{ height: "auto", width: "auto" }}
                   />
                 </div>
                 <div className="product-info">
                   <p className="product-name">{product?.name}</p>
-                  <p className="product-price">₹{product?.price}</p>
+                  {/* <p className="product-price">₹{product?.price}</p> */}
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                      margin: "7px 0 15px",
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontWeight: "bold",
+                        fontSize: "1rem",
+                        color: "#333",
+                      }}
+                    >
+                      Balance Amount:
+                    </span>
+                    <p
+                      style={{
+                        fontSize: "1rem",
+                        color: "#555",
+                        margin: "0",
+                      }}
+                    >
+                      ₹{balanceAmount}
+                    </p>
+                  </div>
+
                   <h6 className="product-inclusion">
-                    {getItemInclusion(product?.inclusion)}
+                    <ul>
+                      {getItemInclusion(product?.inclusion).map(
+                        (item, index) => (
+                          <li key={index}>{item}</li>
+                        )
+                      )}
+                    </ul>
                   </h6>
+
                   <p className="product-inclusion">
-                  <p className="comments-header">AddOn:</p>
-                {decorationAddon.map((item, index) => (
+                    <p className="comments-header">AddOn:</p>
+                    {decorationAddon.map((item, index) => (
                       <li key={index}>
-                        <strong>{item.name}</strong>: ${item.price}
+                        <strong>{item.name}</strong>
+                        {/* : ₹{item.price} */}
                       </li>
                     ))}
-                </p>
-                </div>
-               
-              </div>
-            );
-          })}
-            {decorationComments && (
+                  </p>
+                  {decorationComments && (
             <div className="comment-container">
               <p className="comments-header">Additional Comments:</p>
               <p className="comments-text">{decorationComments}</p>
             </div>
           )}
+                </div>
+              </div>
+            );
+          })}
+          
         </div>
       ) : null}
 
-
-
-<div onClick={acceptOrder}>
-          <button className="acceptOrder acceptbutton">Accept Order</button>
-        </div>
+      <div onClick={acceptOrder}>
+        <button className="acceptOrder acceptbutton">Accept Order</button>
+      </div>
     </>
   );
 };

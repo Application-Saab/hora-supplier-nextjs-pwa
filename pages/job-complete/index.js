@@ -9,10 +9,7 @@ const PictureUpload = () => {
   
 
   const [images, setImages] = useState({
-    slab: null,
-    sink: null,
-    gasBurner: null,
-    kitchen: null,
+    slab: null
     
   });
 
@@ -195,9 +192,6 @@ const PictureUpload = () => {
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
         {[
           { label: "Picture", type: "slab" },
-          { label: "Picture", type: "sink" },
-          { label: "Picture", type: "gasBurner" },
-          { label: "Picture", type: "kitchen" },
         ].map((item) => (
           <div
             key={item.type}
@@ -206,6 +200,7 @@ const PictureUpload = () => {
               flexDirection: "column",
               alignItems: "center",
               textAlign: "center",
+              marginLeft: "90px",
             }}
           >
             <label style={styles.title}>{item.label}</label>

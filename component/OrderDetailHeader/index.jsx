@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { CiCalendar } from "react-icons/ci";
 import { GoClock } from "react-icons/go";
@@ -6,13 +5,15 @@ import { MdPeopleAlt } from "react-icons/md";
 import Layout from "../Layout";
 
 const OrderDetailHeader = ({ orderDetail }) => {
-
   const getOrderId = (e) => {
     const orderId1 = 10800 + e;
     const updateOrderId = "#" + orderId1;
-    if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
+    if (
+      typeof window !== "undefined" &&
+      typeof window.localStorage !== "undefined"
+    ) {
       localStorage.setItem("orderId", updateOrderId);
-    }	
+    }
     return updateOrderId;
   };
   const getOrderStatus = (orderStatusValue) => {
@@ -50,13 +51,10 @@ const OrderDetailHeader = ({ orderDetail }) => {
   //   // Save OTP to localStorage
   //   localStorage.setItem("orderStartOtp", otp);
   // }, [otp]);
-  
-
 
   return (
     // <Layout navTitle="Order Details">
     <div>
-
       {/* Booking Details Section */}
       <div style={styles.bookingContainer}>
         <div style={styles.bookingHeader}>
@@ -65,12 +63,6 @@ const OrderDetailHeader = ({ orderDetail }) => {
 
         {/* Left and Right Column for Details */}
         <div style={styles.detailsRow}>
-          {/* Left Column */}
-          {/* <div style={styles.leftColumn}>
-            <p><strong>Id:</strong> {getOrderId(orderDetail?.order_id)}</p>
-            <p><strong>Name:</strong> Smith Jacobs</p>
-            <p><strong>Date:</strong> {formatDate(orderDetail?.order_date)}</p>
-          </div> */}
           <div style={styles.leftColumn}>
             {orderDetail?.order_id && (
               <p>
@@ -83,50 +75,37 @@ const OrderDetailHeader = ({ orderDetail }) => {
               </p>
             )}
 
-<p>
-  <strong>Time:
-  </strong>{orderDetail?.order_time}
-  </p>
-          </div>
-          
-          {/* Right Column */}
-          {/* <div style={styles.rightColumn}>
-            <p><strong>People:</strong> {orderDetail?.no_of_people} Ppl</p>
-            <p><strong>Location:</strong> {orderDetail?.order_locality}</p>
-            <p><strong>Chef:</strong> {orderDetail?.chef} Chef</p>
-          </div> */}
-
-          <div style={styles.rightColumn}>
-            
-          
-              {/* <p>
-                <strong>People: </strong> 
-                 {orderDetail.no_of_people} 
-              </p> */}
-
-{orderDetail && orderDetail.no_of_people > 0 && (
             <p>
-              <strong>People: </strong> {orderDetail.no_of_people}
+              <strong>Time:</strong>
+              {orderDetail?.order_time}
             </p>
-          )}
-            
-              {orderDetail?.order_locality && (
+
+            {orderDetail?.order_locality && (
               <p>
                 <strong>Location:</strong> {orderDetail.order_locality}
               </p>
             )}
-            
           </div>
+
+          {/* <div style={styles.rightColumn}>
+            {orderDetail && orderDetail.no_of_people > 0 && (
+              <p>
+                <strong>People: </strong> {orderDetail.no_of_people}
+              </p>
+            )}
+
+           
+          </div> */}
         </div>
 
-        {/* Centered Address */}
-        {/* <div style={styles.centeredAddress}>
-          <p><strong>Address:</strong> {orderDetail.addressId?.address1}</p>
-        </div> */}
         {orderDetail.addressId?.address1 && (
           <div style={styles.centeredAddress}>
             <p>
               <strong>Address:</strong> {orderDetail.addressId.address1}
+            </p>
+            <p>
+              <strong>Google Map Location:</strong>{" "}
+              {orderDetail.addressId.address2}
             </p>
             {/* <button style={styles.directionsButton}>Get Directions</button> */}
           </div>

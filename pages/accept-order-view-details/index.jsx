@@ -27,6 +27,7 @@ const OrderDetail = () => {
   const [decorationItems, setDecorationItems] = useState([]);
   const [decorationComments, setDecorationComments] = useState("");
   const [decorationAddon, setDecorationAddon] = useState("");
+  const [balanceAmount, setBalanceAmount] = useState("");
 
   orderType = parseInt(orderType);
 
@@ -71,6 +72,7 @@ const OrderDetail = () => {
         BASE_URL + GET_BOOKING_ORDER_DETAILS + "/" + orderId
       );
       const responseData = await response.json();
+      console.log(responseData, "responsedata");
 
       setOrderDetail(responseData.data._doc);
       // setOrderDetail(responseData?.data?._doc);
@@ -78,6 +80,7 @@ const OrderDetail = () => {
       setDecorationItems(responseData.data.items[0].decoration);
       setDecorationComments(responseData?.data?._doc.decoration_comments);
       setDecorationAddon(responseData.data._doc.add_on);
+      setBalanceAmount(responseData.data._doc.balance_amount);
             setLoading(false);
     } catch (error) {
       console.log("fetchDecorationOrderDetails error", error);
@@ -133,6 +136,7 @@ const OrderDetail = () => {
             decorationItems={decorationItems}
             decorationComments={decorationComments}
             decorationAddon={decorationAddon}
+            balanceAmount={balanceAmount}
           />
         </div>
       </div>

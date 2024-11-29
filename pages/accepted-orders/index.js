@@ -155,16 +155,16 @@ const Orderlist = () => {
       const supplierIdMatches = order.toId == supplierID;
       const typeMatches = order.type.toString() === supplierJobType;
       const isBooked =
-        order.order_status === 1 ||
-        order.order_status === 2 ||
-        order.order_status === 3;
-      const dateMatches = order.order_date.split("T")[0] === date; 
+        order.order_status === 1;
+      const dateMatches = order.order_date.split("T")[0] === date;
+      const isStatus = order.status === 1;
       return (
         cityMatches &&
         typeMatches &&
         supplierIdMatches &&
         isBooked &&
-        dateMatches
+        dateMatches &&
+        isStatus
       );
     });
   };
@@ -242,7 +242,7 @@ const Orderlist = () => {
                             <div className="order-div">
                               <div className="order-id">
                                 <div style={{ color: "#9252AA" }}>
-                                  Order Id: {order.order_id}
+                                  Order Id: {getOrderId(order.order_id)}
                                 </div>
                                 <h6
                                   className="order-otp mt-2"
@@ -325,44 +325,17 @@ const Orderlist = () => {
                                   </div>
                                 )}
                                 <div>
-                                  {order.phone_no ? (
-                                    order.total_amount - order.advance_amount
-                                  ) : (
-                                    <strong
-                                      style={{
-                                        color: "#9252AA",
-                                        fontSize: "13px",
-                                      }}
-                                    >
-                                      Balance Amount
-                                      {order?.type === 2 ||
-                                      order?.type === 3 ||
-                                      order?.type === 4 ||
-                                      order?.type === 5 ? (
-                                        <p className="mb-0 price-para">
-                                          {"₹" +
-                                            Math.round(
-                                              (order?.payable_amount * 4) / 5
-                                            )}
-                                        </p>
-                                      ) : order?.type === 6 ||
-                                        order?.type === 7 ? (
-                                        <p className="mb-0 price-para">
-                                          {"₹" +
-                                            Math.round(
-                                              order?.payable_amount * 0.35
-                                            )}
-                                        </p>
-                                      ) : (
-                                        <p className="mb-0 price-para">
-                                          {"₹" +
-                                            Math.round(
-                                              order?.payable_amount * 0.65
-                                            )}
-                                        </p>
-                                      )}
-                                    </strong>
-                                  )}
+                                  <strong
+                                    style={{
+                                      color: "#9252AA",
+                                      fontSize: "15px",
+                                    }}
+                                  >
+                                    Balance Amount
+                                    <p className="mb-0 price-para">
+                                      {"₹" + order.balance_amount}
+                                    </p>
+                                  </strong>
                                 </div>
                               </div>
                             </div>
