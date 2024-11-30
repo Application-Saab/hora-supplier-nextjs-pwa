@@ -30,6 +30,8 @@ const Orderlist = () => {
     supplierCity = localStorage.getItem("supplierCity");
   }
 
+  console.log(supplierID, "supplierID");
+
   if (supplierCity === "Bengaluru") {
     supplierCity = "Bangalore"; // Adjusting for city name
   }
@@ -71,6 +73,7 @@ const Orderlist = () => {
 
     fetchOrderList();
   }, [supplierID]);
+  
 
   const getOrderStatus = (orderStatusValue) => {
     switch (orderStatusValue) {
