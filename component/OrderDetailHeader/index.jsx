@@ -105,7 +105,7 @@ const OrderDetailHeader = ({ orderDetail }) => {
             </p>
             <p>
               <strong>Google Map Location:</strong>{" "}
-              {orderDetail.addressId.address2}
+              <a href={orderDetail.addressId.address2} style={{ fontWeight: "bold" , cursor:"pointer" }}>{orderDetail.addressId.address2}</a>
             </p>
             {/* <button style={styles.directionsButton}>Get Directions</button> */}
           </div>
@@ -133,7 +133,7 @@ const styles = {
     marginBottom: "10px",
   },
   headerText: {
-    fontSize: "18px",
+    fontSize: "12px",
     fontWeight: "bold",
   },
   callButton: {
