@@ -315,12 +315,9 @@ const Orderlist = () => {
                                         fontSize: "13px",
                                       }}
                                     >
-                                      City
-                                      <p
-                                        style={{ textAlign: "end", margin: 0 }}
-                                      >
+                                    
                                         {order.addressId[0].city}
-                                      </p>
+
                                     </strong>
                                   </div>
                                 )}
@@ -328,7 +325,7 @@ const Orderlist = () => {
                                   <strong
                                     style={{
                                       color: "#9252AA",
-                                      fontSize: "15px",
+                                      fontSize: "14px",
                                     }}
                                   >
                                     Balance Amount

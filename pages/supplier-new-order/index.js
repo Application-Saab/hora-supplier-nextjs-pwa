@@ -262,18 +262,15 @@ const Orderlist = () => {
                         {order.addressId?.[0]?.city && (
                           <div>
                             <strong
-                              style={{ color: "#9252AA", fontSize: "13px" }}
+                              style={{ color: "#9252AA", fontSize: "15px" }}
                             >
-                              City
-                              <p style={{ textAlign: "end", margin: 0 }}>
-                                {order.addressId[0].city}
-                              </p>
+                           {order.addressId[0].city}  
                             </strong>
                           </div>
                         )}
                         <div>
                           <strong
-                            style={{ color: "#9252AA", fontSize: "15px" }}
+                            style={{ color: "#9252AA", fontSize: "14px" }}
                           >
                             Balance Amount
                             <p className="mb-0 price-para">

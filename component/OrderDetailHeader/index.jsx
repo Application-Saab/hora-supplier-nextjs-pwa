@@ -105,7 +105,7 @@ const OrderDetailHeader = ({ orderDetail }) => {
             </p>
             <p>
               <strong>Google Map Location:</strong>{" "}
-              <a href={orderDetail.addressId.address2} style={{ fontWeight: "bold" , cursor:"pointer" }}>{orderDetail.addressId.address2}</a>
+              <a href={orderDetail.addressId.address2} style={{ fontWeight: "bold" , cursor:"pointer" , wordWrap: "break-word" }} target="_blank">{orderDetail.addressId.address2}</a>
             </p>
             {/* <button style={styles.directionsButton}>Get Directions</button> */}
           </div>

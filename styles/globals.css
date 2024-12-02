@@ -859,6 +859,9 @@ main.shifted {
 .left-details div,
 .right-details div {
   margin-bottom: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .view-details {
@@ -3336,6 +3339,10 @@ main.order-list .order-container {
   flex-direction: column;
   align-items: flex-start;
 }
+.left-details span {
+  font-size: 12px;
+  margin-left: 2px;
+}
 
 .left-details div,
 .right-details div {
@@ -3826,9 +3833,10 @@ main.order-list .order-container {
 
 .product-name {
   font-size: 18px;
-  font-weight: bold;
-  margin-bottom: 5px;
-  text-align: start;
+  font-weight: 900;
+  text-align: left;
+  color: #222;
+  margin-top: 10px;
 }
 
 .product-price {
@@ -3844,19 +3852,55 @@ main.order-list .order-container {
   word-wrap: break-word;
   text-align: left; 
   margin: 0;
-  padding-left: 20px;
 }
 
 .product-inclusion ul {
-  list-style-type: disc; /* For bullet points */
-  margin: 0;
-  padding-left: 20px; /* Indents the bullet list */
+  padding: 10px 20px; /* Indents the bullet list */
 }
 
 .product-inclusion li {
-  margin-bottom: 5px; /* Space between bullet points */
+  margin-bottom: 5px;
   font-size: 14px;
+  font-weight: normal;
+  list-style: auto;
 }
+
+.product-page-heading {
+  font-size: 16px;
+    font-weight: 900;
+    text-align: left;
+    color: #97538c;
+}
+
+.prod_sec {
+  margin-top: 10px;
+}
+
+.prod_sec.balanc_amount {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 7px;
+}
+
+.product-add-ons ul {
+  display: flex;
+      list-style: auto;
+      padding: 3px 0 2px 17px;
+      flex-direction: column;
+      margin: 0;
+}
+
+.product-add-ons ul li {
+  color: black;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  text-align: left;
+  font-size: 13px;
+  margin-bottom: 6px;
+}
+
+
 
 .comment-container {
   display: flex;
@@ -3876,6 +3920,7 @@ main.order-list .order-container {
   font-size: 14px;
   color: #666;
   padding-bottom: 20px;
+  text-align: left;
 }
 
 
@@ -4052,7 +4097,7 @@ main.order-list .order-container {
   width: 90%;
   margin: 0;
   position: fixed;
-  bottom: 20px;
+  bottom: 10px;
   left: 0;
   right: 0;
   margin-left: 17px;

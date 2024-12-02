@@ -33,20 +33,27 @@ const OrderDetailTab = ({
   const [orderStatus, setOrderStatus] = useState(orderDetail?.order_status);
 
   const getItemInclusion = (inclusion) => {
-    if (!inclusion || !inclusion.length) return [];
+    if (!Array.isArray(inclusion) || inclusion.length === 0) {
+      return null;
+    }
+    const htmlString = inclusion[0];
+    const withoutTags = htmlString.replace(/<[^>]*>/g, ''); // Remove HTML tags
+    const withoutSpecialChars = withoutTags.replace(/&#[^;]*;/g, ' '); // Replace &# sequences with space
+    const statements = withoutSpecialChars.split('<div>');
+    const inclusionItems = statements.flatMap(statement => statement.split("-").filter(item => item.trim() !== ''));
+    const inclusionList = inclusionItems.map((item, index) => (
+      <li key={index} className="inclusionstyle">
+        {item.trim()}
+      </li>
+    ));
+    return (
+      <div>
+        <ul>
+          {inclusionList}
+        </ul>
+      </div>
 
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(inclusion[0], "text/html");
-    const items = doc.body.childNodes;
-
-    const result = [];
-    items.forEach((item) => {
-      if (item.nodeName === "DIV" || item.nodeName === "BR") {
-        result.push(item.textContent.trim());
-      }
-    });
-
-    return result;
+    );
   };
 
   const acceptOrder = async () => {
@@ -210,56 +217,42 @@ const OrderDetailTab = ({
                 <div className="product-info">
                   <p className="product-name">{product?.name}</p>
                   {/* <p className="product-price">₹{product?.price}</p> */}
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "8px",
-                      margin: "7px 0 15px",
-                    }}
-                  >
-                    <span
-                      style={{
-                        fontWeight: "bold",
-                        fontSize: "1rem",
-                        color: "#333",
-                      }}
-                    >
+                
+
+                  <div className="product-inclusion prod_sec">
+                  <div className="product-page-heading">Inclusion</div>
+                  <div>{getItemInclusion(product?.inclusion)}</div>
+                  </div>
+                 
+                <div className="product-add-ons prod_sec">
+                  <p className="product-page-heading">AddOns:</p>
+                  <ul>
+                  {
+                    decorationAddon.map((item, index) => (
+                      <li key={index}>
+                        <div>{item.name ? item.name : 'NA'}</div>
+                      </li>
+                          )
+                          )}
+                    </ul>
+                </div>
+
+
+                
+                  <div className="prod_sec balanc_amount">
+                    <div className="product-page-heading">
                       Balance Amount:
-                    </span>
-                    <p
-                      style={{
-                        fontSize: "1rem",
-                        color: "#555",
-                        margin: "0",
-                      }}
-                    >
+                    </div>
+                    <div>
                       ₹{balanceAmount}
-                    </p>
+                    </div>
                   </div>
 
-                  <h6 className="product-inclusion">
-                    <ul>
-                      {getItemInclusion(product?.inclusion).map(
-                        (item, index) => (
-                          <li key={index}>{item}</li>
-                        )
-                      )}
-                    </ul>
-                  </h6>
 
-                  <p className="product-inclusion">
-                    <p className="comments-header">AddOn:</p>
-                    {decorationAddon.map((item, index) => (
-                      <li key={index}>
-                        <strong>{item.name}</strong>
-                        {/* : ₹{item.price} */}
-                      </li>
-                    ))}
-                  </p>
+
                   {decorationComments && (
-            <div className="comment-container">
-              <p className="comments-header">Additional Comments:</p>
+            <div className="comment-container prod_sec">
+              <p className="product-page-heading">Additional Comments:</p>
               <p className="comments-text">{decorationComments}</p>
             </div>
           )}
