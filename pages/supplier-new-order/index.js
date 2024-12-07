@@ -165,9 +165,9 @@ const Orderlist = () => {
         <div className="order-container">
           {orders.filter((order) => {
             const cityMatches =
-              order.addressId[0]?.city.toLowerCase() ===
+              order.order_locality.toLowerCase() ===
                 supplierCity.toLowerCase() ||
-              (order.addressId[0]?.city.toLowerCase() === "bengaluru" &&
+              (order.order_locality.toLowerCase() === "bengaluru" &&
                 supplierCity.toLowerCase() === "bangalore");
             const typeMatches = order.type.toString() === supplierJobType;
             const isBooked = order.order_status === 0;
@@ -181,9 +181,9 @@ const Orderlist = () => {
             orders
               .filter((order) => {
                 const cityMatches =
-                  order.addressId[0]?.city.toLowerCase() ===
+                  order.order_locality.toLowerCase() ===
                     supplierCity.toLowerCase() ||
-                  (order.addressId[0]?.city.toLowerCase() === "bengaluru" &&
+                  (order.order_locality.toLowerCase() === "bengaluru" &&
                     supplierCity.toLowerCase() === "bangalore");
                 const typeMatches = order.type.toString() === supplierJobType;
                 const isBooked = order.order_status === 0;
@@ -259,12 +259,12 @@ const Orderlist = () => {
                       </div>
 
                       <div className="right-details">
-                        {order.addressId?.[0]?.city && (
+                        {order.order_locality && (
                           <div>
                             <strong
                               style={{ color: "#9252AA", fontSize: "15px" }}
                             >
-                           {order.addressId[0].city}  
+                           {order.order_locality}  
                             </strong>
                           </div>
                         )}

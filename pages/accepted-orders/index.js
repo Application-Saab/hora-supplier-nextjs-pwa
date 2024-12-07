@@ -149,8 +149,8 @@ const Orderlist = () => {
   const filteredOrdersByDate = (date) => {
     return orders.filter((order) => {
       const cityMatches =
-        order.addressId[0].city.toLowerCase() === supplierCity.toLowerCase() ||
-        (order.addressId[0].city.toLowerCase() === "bengaluru" &&
+      order.order_locality.toLowerCase() === supplierCity.toLowerCase() ||
+        (order.order_locality.toLowerCase() === "bengaluru" &&
           supplierCity.toLowerCase() === "bangalore");
       const supplierIdMatches = order.toId == supplierID;
       const typeMatches = order.type.toString() === supplierJobType;
@@ -307,7 +307,7 @@ const Orderlist = () => {
                                   )}
                               </div>
                               <div className="right-details">
-                                {order.addressId?.[0]?.city && (
+                                {order.order_locality && (
                                   <div>
                                     <strong
                                       style={{
@@ -316,7 +316,7 @@ const Orderlist = () => {
                                       }}
                                     >
                                     
-                                        {order.addressId[0].city}
+                                        {order.order_locality}
 
                                     </strong>
                                   </div>

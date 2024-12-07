@@ -116,8 +116,6 @@ const Login = () => {
   };
 
   useEffect(() => {
-    console.log("Popup message changed:", popupMessage);
-    console.log("Show popup state changed:", showPopup);
   }, [popupMessage, showPopup]);
 
   const handleOtpSuccess1 = () => {
