@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { Storage } from '@capacitor/storage';
 import {
   BASE_URL,
   OTP_GENERATE_END_POINT,
@@ -42,9 +43,37 @@ const Login = () => {
   const { time, isTimeUp, resetTimer } = useTimer(25);
   const [showPopup, setShowPopup] = useState(false);
   const [popupMessage, setPopupMessage] = useState({});
+
+  const loadAuthToken = async () => {
+    const { value: token } = await Storage.get({ key: 'authToken' });
+
+    if (token) {
+      console.log('Token found:', token);
+      // Optionally validate the token (e.g., with an API call)
+      setLoggedIn(true); // Restore the logged-in state
+        router.push("/Profile");
+      
+    } else {
+      console.log('No token found. User is logged out.');
+    }
+  };
+
+  useEffect(() => {
+    console.log("Hello")
+    loadAuthToken(); // Load the token on component mount
+  }, []);
+
+  // Save token
+  const saveAuthToken = async (token) => {
+    await Storage.set({
+      key: 'authToken',
+      value: token, // The token received from your backend
+    });
+  };
   const handleLogout = () => {
     localStorage.setItem("isLoggedIn", "false");
     localStorage.clear();
+    Storage.remove({ key: 'auth_token' });
     setPopupMessage({
       img: logoutImage,
       title: "Logout Successful",
@@ -130,6 +159,7 @@ const Login = () => {
 
   const validateOtp = async (enteredOtp) => {
     try {
+      console.log("OTP")
       if (enteredOtp === fetchedOtp.toString()) {
         const url = BASE_URL + OTP_VERIFY_ENDPOINT;
         const requestData = {
@@ -157,6 +187,7 @@ const Login = () => {
           localStorage.setItem("supplierJobProfile", response.data.data.job_profile);
           const supplierIsPersonalStatus =  localStorage.getItem("supplierIsPersonalStatus");
           const supplierJobProfile =  localStorage.getItem("supplierJobProfile");
+          await saveAuthToken(response.data.token);
           // if (supplierIsPersonalStatus == 1) {
           if(supplierJobProfile != ""){
             console.log("logged in false")

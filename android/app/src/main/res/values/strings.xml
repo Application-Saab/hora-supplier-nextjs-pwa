@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">Hora</string>
-    <string name="title_activity_main">Hora</string>
-    <string name="package_name">com.example.app</string>
-    <string name="custom_url_scheme">com.example.app</string>
+    <string name="app_name"> HORA</string>
+    <string name="title_activity_main"> HORA</string>
+    <string name="package_name">horaservices.com</string>
+    <string name="custom_url_scheme">horaservices.com</string>
 </resources>
