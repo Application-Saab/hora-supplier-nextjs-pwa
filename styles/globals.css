@@ -4113,3 +4113,119 @@ main.order-list .order-container {
   transform: translateY(-3px);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
+
+
+
+/* my-wallet css */
+.app {
+  width: 100%;
+  max-width: 359px;
+  background-color: #fff;
+  border-radius: 25px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 35px 20px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  margin-top: 50px;
+}
+
+.balance-section {
+  margin-bottom: 30px;
+}
+
+.current-balance-text {
+  font-size: 14px;
+  color: #aaa;
+  margin-bottom: 5px;
+}
+
+.balance {
+  font-size: 50px;
+  font-weight: 700;
+  color: #4CAF50;
+  letter-spacing: 1px;
+  margin-bottom: 5px;
+}
+
+.currency-name {
+  font-size: 16px;
+  color: #777;
+  margin-top: 5px;
+}
+
+.amount-button {
+  margin-top: 25px;
+  padding: 12px 25px;
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+  background-color: #3b82f6;
+  border: none;
+  border-radius: 30px;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+}
+
+.amount-button:hover {
+  background-color: #2563eb;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+}
+
+.amount-button:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+.app::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, #3b82f6, #4CAF50);
+  z-index: -1;
+  animation: backgroundAnimation 6s ease-in-out infinite;
+}
+
+@keyframes backgroundAnimation {
+  0% {
+    background: linear-gradient(45deg, #3b82f6, #4CAF50);
+  }
+  50% {
+    background: linear-gradient(45deg, #4CAF50, #3b82f6);
+  }
+  100% {
+    background: linear-gradient(45deg, #3b82f6, #4CAF50);
+  }
+}
+
+.custom-amount-input {
+  padding: 8px;
+  margin-bottom: 15px;
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.popup-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.popup-button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+}
+
+.popup-button:hover {
+  background-color: #0056b3;
+}

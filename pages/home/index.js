@@ -17,7 +17,7 @@ const Home = () => {
 
   const menuItems = [
     { id: 1, name: "New Orders", icon: bellLogo, path: "/supplier-new-order" },
-    { id: 2, name: "My Wallet", icon: walletLogo, path: "/home" },
+    { id: 2, name: "My Wallet", icon: walletLogo, path: "/my-wallet" },
     { id: 3, name: "My Account", icon: myAccountLogo, path: "/MyAcount" },
     {
       id: 4,
@@ -25,7 +25,7 @@ const Home = () => {
       icon: trackingLogo,
       path: "/accepted-orders",
     },
-    { id: 5, name: "My Ratings", icon: ratingLogo, path: "/home" },
+    { id: 5, name: "My Ratings", icon: ratingLogo, path: "/notification" },
   ];
   const [error, setError] = useState(null);
 
@@ -76,6 +76,7 @@ const Home = () => {
 
   return (
     <>
+
     <Layout showBackButton={false}>
       <div className="container">
         <div style={{ marginTop: "10px" }}>
@@ -97,6 +98,24 @@ const Home = () => {
             </div>
           </div>
         </div>
+        <div style={{
+      backgroundColor: 'white',
+      borderRadius: '10px',
+      padding: '15px', 
+      color: 'black',
+      fontFamily: 'Arial, sans-serif',
+      lineHeight: '1.5',
+      fontSize: '14px', 
+      boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)' 
+    }}>
+      <p>1. Please read the <b>inclusions and comments</b> very carefully.</p>
+      <p>2. Do not miss any material mentioned in inclusions and comments.</p>
+      <p>3. <b>Please be on time.</b> Customers don't like late arrivals 🥺</p>
+      <p>4. If you want to change anything from design please let us know in advance.</p>
+      <p>5. Always carry gluedots and avoid using tapes.</p>
+      <p>6. Please collect the payment before leaving the spot. In case of any payment-related issues, please reach out to us at the same time. <b>Do not leave the spot without taking payment from the spot</b></p>
+      <p><b>It's important day for customers, we need to make it perfect ☺</b></p>
+    </div>
       </div>
       </Layout>
     </>
