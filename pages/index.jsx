@@ -46,12 +46,19 @@ const Login = () => {
 
   const loadAuthToken = async () => {
     const { value: token } = await Storage.get({ key: 'authToken' });
+    const { value: supplierJobProfile } = await Storage.get({ key: 'supplierJobProfile' });
 
     if (token) {
       console.log('Token found:', token);
       // Optionally validate the token (e.g., with an API call)
       setLoggedIn(true); // Restore the logged-in state
-        router.push("/Profile");
+        if(supplierJobProfile != ""){
+            console.log("logged in false")
+           router.push("/home");
+          } else {
+            router.push("/Profile");
+           console.log("logged in true")
+          }
       
     } else {
       console.log('No token found. User is logged out.');
@@ -188,6 +195,10 @@ const Login = () => {
           const supplierIsPersonalStatus =  localStorage.getItem("supplierIsPersonalStatus");
           const supplierJobProfile =  localStorage.getItem("supplierJobProfile");
           await saveAuthToken(response.data.token);
+          await Storage.set({
+            key: 'supplierJobProfile',
+            value: response.data.data.job_profile, // The token received from your backend
+          });
           // if (supplierIsPersonalStatus == 1) {
           if(supplierJobProfile != ""){
             console.log("logged in false")
