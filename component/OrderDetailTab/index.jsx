@@ -230,7 +230,7 @@ const OrderDetailTab = ({
                   {
                     decorationAddon.map((item, index) => (
                       <li key={index}>
-                        <div>{item.name ? item.name : 'NA'}{item.title}</div>
+                        <div>{item.name}{item.title}</div>
                       </li>
                           )
                           )}
