@@ -207,12 +207,7 @@ const Orderlist = () => {
                         <div style={{ color: "#9252AA" }}>
                           Order Id: #{10800 + order.order_id}
                         </div>
-                        <h6
-                          className="order-otp mt-2"
-                          style={{ color: "#9252AA" }}
-                        >
-                          OTP: {order?.otp}
-                        </h6>
+                
                       </div>
                       <div className="order-status">
                         <span className={orderStatus.className}>

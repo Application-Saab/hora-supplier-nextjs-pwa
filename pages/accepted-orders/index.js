@@ -38,7 +38,7 @@ const Orderlist = () => {
 
   useEffect(() => {
     const today = new Date();
-    const dates = Array.from({ length: 7 }, (_, index) => {
+    const dates = Array.from({ length: 13 }, (_, index) => {
       const date = new Date();
       date.setDate(today.getDate() + index);
       return date.toISOString().split("T")[0];
@@ -244,12 +244,7 @@ const Orderlist = () => {
                                 <div style={{ color: "#9252AA" }}>
                                   Order Id: {getOrderId(order.order_id)}
                                 </div>
-                                <h6
-                                  className="order-otp mt-2"
-                                  style={{ color: "#9252AA" }}
-                                >
-                                  OTP: {order?.otp}
-                                </h6>
+              
                               </div>
 
                               {/* Order Status Section */}

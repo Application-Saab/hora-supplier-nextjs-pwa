@@ -97,6 +97,28 @@ const Home = () => {
             </div>
           </div>
         </div>
+        <div style={{
+      backgroundColor: 'white',
+      borderRadius: '10px',
+      padding: '15px', 
+      color: 'black',
+      fontFamily: 'Arial, sans-serif',
+      lineHeight: '1.5',
+      fontSize: '14px', 
+      boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+      border: '1px solid #97538c',
+       width: '94%',
+    margin: '10px auto 0',
+    }}>
+      <p><strong style={{fontSize:'18px'}}>Note:</strong></p>
+      <p>1. Please read the <b>inclusions and comments</b> very carefully.</p>
+      <p>2. Do not miss any material mentioned in inclusions and comments.</p>
+      <p>3. <b>Please be on time.</b> Customers don't like late arrivals 🥺</p>
+      <p>4. If you want to change anything from design please let us know in advance.</p>
+      <p>5. Always carry gluedots and avoid using tapes.</p>
+      <p>6. Please collect the payment before leaving the spot. In case of any payment-related issues, please reach out to us at the same time. <b>Do not leave the spot without taking payment from the spot</b></p>
+      <p><b>It's important day for customers, we need to make it perfect ☺</b></p>
+    </div>
       </div>
       </Layout>
     </>

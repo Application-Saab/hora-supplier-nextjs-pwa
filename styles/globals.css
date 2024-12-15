@@ -3236,7 +3236,7 @@ main.order-list .order-container {
 
 @media (max-width: 375px) {
   .order-id>div {
-    font-size: 14px;
+    font-size: 17px;
     margin-bottom: 1px;
     font-weight: 600;
   }
