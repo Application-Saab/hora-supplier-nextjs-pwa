@@ -384,6 +384,7 @@ select {
   margin-top: 5px;
   border-radius: 5px;
   border: 1px solid #ccc;
+  background-color:#fff;
 }
 
 .update-action-button {

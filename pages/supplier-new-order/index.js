@@ -45,8 +45,8 @@ const Orderlist = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            page: "1",
-            _id: supplierID,
+          page: 1,
+          per_page: 400,
           }),
         });
 
@@ -173,7 +173,6 @@ const Orderlist = () => {
             const isBooked = order.order_status === 0;
             const isStatus = order.status === 1;
 
-            console.log(cityMatches, typeMatches, isBooked, isStatus, "sohan");
             return cityMatches && typeMatches && isBooked && isStatus;
           }).length === 0 ? (
             <p className="no-orders-message">No orders available</p>
@@ -190,15 +189,10 @@ const Orderlist = () => {
                 const isStatus = order.status === 1;
                 return cityMatches && typeMatches && isBooked && isStatus;
               })
+              
               .map((order) => {
                 const orderStatus = getOrderStatus(order?.order_status);
-                // const balanceAmount = order.phone_no
-                //   ? order.total_amount - order.advance_amount
-                //   : order.type === 2 || order.type === 3 || order.type === 4 || order.type === 5
-                //   ? Math.round((order?.payable_amount * 4) / 5)
-                //   : order.type === 6 || order.type === 7
-                //   ? Math.round(order?.payable_amount * 0.35)
-                //   : Math.round(order?.payable_amount * 0.65);
+          
 
                 return (
                   <div key={order.order_id} className="order-card">
@@ -267,7 +261,8 @@ const Orderlist = () => {
                           <strong
                             style={{ color: "#9252AA", fontSize: "14px" }}
                           >
-                            Balance Amount
+                            {/* Balance Amount */}
+                            Amount
                             <p className="mb-0 price-para">
                               {"₹" + order.balance_amount}
                             </p>

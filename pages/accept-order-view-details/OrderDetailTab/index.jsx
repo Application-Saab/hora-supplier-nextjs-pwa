@@ -334,7 +334,8 @@ const OrderDetailTab = ({
 
 <div className="prod_sec balanc_amount">
                     <div className="product-page-heading">
-                      Balance Amount:
+                      {/* Balance Amount: */}
+                      Amount
                     </div>
                     <div>
                       ₹{balanceAmount}

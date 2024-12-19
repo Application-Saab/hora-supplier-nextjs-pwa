@@ -58,8 +58,8 @@ const Orderlist = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            page: "1",
-            _id: supplierID,
+            page: 1,
+            per_page: 400,
           }),
         });
 
@@ -154,9 +154,11 @@ const Orderlist = () => {
           supplierCity.toLowerCase() === "bangalore");
       const supplierIdMatches = order.toId == supplierID;
       const typeMatches = order.type.toString() === supplierJobType;
-      const isBooked =
-        order.order_status === 1;
-      const dateMatches = order.order_date.split("T")[0] === date;
+      const isBooked = order.order_status === 1;
+        let dateMatches = '';
+        if (order.order_date) {
+          dateMatches = order.order_date.split("T")[0] === date;
+        }
       const isStatus = order.status === 1;
       return (
         cityMatches &&
@@ -323,7 +325,8 @@ const Orderlist = () => {
                                       fontSize: "14px",
                                     }}
                                   >
-                                    Balance Amount
+                                    {/* Balance Amount */}
+                                    Amount:
                                     <p className="mb-0 price-para">
                                       {"₹" + order.balance_amount}
                                     </p>
