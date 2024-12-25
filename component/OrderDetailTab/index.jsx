@@ -18,6 +18,7 @@ const OrderDetailTab = ({
   decorationComments,
   decorationAddon,
   balanceAmount,
+  
 }) => {
   const router = useRouter();
   const { apiOrderId } = router.query;
@@ -31,7 +32,6 @@ const OrderDetailTab = ({
   }
   const [tab, setTab] = useState("Menu");
   const [orderStatus, setOrderStatus] = useState(orderDetail?.order_status);
-
   const getItemInclusion = (inclusion) => {
     if (!Array.isArray(inclusion) || inclusion.length === 0) {
       return null;
@@ -264,10 +264,12 @@ const OrderDetailTab = ({
           
         </div>
       ) : null}
-
-      <div onClick={acceptOrder}>
+      {/* by aarti================= */}
+{orderStatus === 3 ?  ''
+  :<div onClick={acceptOrder}>
         <button className="acceptOrder acceptbutton">Accept Order</button>
-      </div>
+      </div>}
+      
     </>
   );
 };
