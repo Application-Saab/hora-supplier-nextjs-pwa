@@ -33,8 +33,10 @@ const Orderlist = () => {
   if (supplierCity === "Bengaluru") {
     supplierCity = "Bangalore"; // Adjusting for city name
   }
+  console.log(supplierCity)
 
   useEffect(() => {
+
     const fetchOrderList = async () => {
       try {
         setLoading(true);
@@ -45,8 +47,13 @@ const Orderlist = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-          page: 1,
-          per_page: 400,
+            page: 1,
+            per_page: 400,
+            status: 1,
+            order_status: 0,
+            type: Number(supplierJobType),
+            order_locality: supplierCity.charAt(0).toUpperCase() + supplierCity.slice(1).toLowerCase(),
+
           }),
         });
 
@@ -158,130 +165,105 @@ const Orderlist = () => {
       </center>
     );
   }
+  const bookedOrders = orders.filter((order) => order.order_status === 0);
 
   return (
     <Layout>
       <main className="order-list">
         <div className="order-container">
-          {orders.filter((order) => {
-            const cityMatches =
-              order.order_locality.toLowerCase() ===
-                supplierCity.toLowerCase() ||
-              (order.order_locality.toLowerCase() === "bengaluru" &&
-                supplierCity.toLowerCase() === "bangalore");
-            const typeMatches = order.type.toString() === supplierJobType;
-            const isBooked = order.order_status === 0;
-            const isStatus = order.status === 1;
-
-            return cityMatches && typeMatches && isBooked && isStatus;
-          }).length === 0 ? (
+         {bookedOrders.length === 0 ? (
             <p className="no-orders-message">No orders available</p>
           ) : (
-            orders
-              .filter((order) => {
-                const cityMatches =
-                  order.order_locality.toLowerCase() ===
-                    supplierCity.toLowerCase() ||
-                  (order.order_locality.toLowerCase() === "bengaluru" &&
-                    supplierCity.toLowerCase() === "bangalore");
-                const typeMatches = order.type.toString() === supplierJobType;
-                const isBooked = order.order_status === 0;
-                const isStatus = order.status === 1;
-                return cityMatches && typeMatches && isBooked && isStatus;
-              })
-              
-              .map((order) => {
-                const orderStatus = getOrderStatus(order?.order_status);
-          
+            bookedOrders.map((order) => {
+              const orderStatus = getOrderStatus(order?.order_status);
+              return (
+                <div key={order.order_id} className="order-card">
+                  <div className="order-div">
+                    <div className="order-id">
+                      <div style={{ color: "#9252AA" }}>
+                        Order Id: #{10800 + order.order_id}
+                      </div>
 
-                return (
-                  <div key={order.order_id} className="order-card">
-                    <div className="order-div">
-                      <div className="order-id">
-                        <div style={{ color: "#9252AA" }}>
-                          Order Id: #{10800 + order.order_id}
-                        </div>
-                
-                      </div>
-                      <div className="order-status">
-                        <span className={orderStatus.className}>
-                          {orderStatus.status}
-                        </span>
-                        <h6 className="mt-2" style={{ color: "#9252AA" }}>
-                          {getOrderType(order?.type)}
-                        </h6>
-                      </div>
                     </div>
-                    <div className="order-details">
-                      <div className="left-details">
+                    <div className="order-status">
+                      <span className={orderStatus.className}>
+                        {orderStatus.status}
+                      </span>
+                      <h6 className="mt-2" style={{ color: "#9252AA" }}>
+                        {getOrderType(order?.type)}
+                      </h6>
+                    </div>
+                  </div>
+                  <div className="order-details">
+                    <div className="left-details">
+                      <div>
+                        <Image
+                          className="contact-us-img"
+                          src={date_time_icon}
+                          height={20}
+                          width={20}
+                        />{" "}
+                        <span>{formatDate(order.order_date)}</span>
+                      </div>
+                      {order.order_time && (
                         <div>
                           <Image
                             className="contact-us-img"
-                            src={date_time_icon}
+                            src={clock}
                             height={20}
                             width={20}
                           />{" "}
-                          <span>{formatDate(order.order_date)}</span>
+                          <span>{order.order_time}</span>
                         </div>
-                        {order.order_time && (
-                          <div>
-                            <Image
-                              className="contact-us-img"
-                              src={clock}
-                              height={20}
-                              width={20}
-                            />{" "}
-                            <span>{order.order_time}</span>
-                          </div>
-                        )}
-                        {order.no_of_people > 0 && (
-                          <div>
-                            <Image
-                              className="contact-us-img"
-                              src={peopleIcon}
-                              height={20}
-                              width={20}
-                            />{" "}
-                            <span>{order.no_of_people}</span>
-                          </div>
-                        )}
-                      </div>
+                      )}
+                      {order.no_of_people > 0 && (
+                        <div>
+                          <Image
+                            className="contact-us-img"
+                            src={peopleIcon}
+                            height={20}
+                            width={20}
+                          />{" "}
+                          <span>{order.no_of_people}</span>
+                        </div>
+                      )}
+                    </div>
 
-                      <div className="right-details">
-                        {order.order_locality && (
-                          <div>
-                            <strong
-                              style={{ color: "#9252AA", fontSize: "15px" }}
-                            >
-                           {order.order_locality}  
-                            </strong>
-                          </div>
-                        )}
+                    <div className="right-details">
+                      {order.order_locality && (
                         <div>
                           <strong
-                            style={{ color: "#9252AA", fontSize: "14px" }}
+                            style={{ color: "#9252AA", fontSize: "15px" }}
                           >
-                            {/* Balance Amount */}
-                            Amount
-                            <p className="mb-0 price-para">
-                              {"₹" + order.balance_amount}
-                            </p>
+                            {order.order_locality}
                           </strong>
                         </div>
+                      )}
+                      <div>
+                        <strong
+                          style={{ color: "#9252AA", fontSize: "14px" }}
+                        >
+                          {/* Balance Amount */}
+                          Amount
+                          <p className="mb-0 price-para">
+                            {"₹" + order.balance_amount}
+                          </p>
+                        </strong>
                       </div>
                     </div>
-                    <hr className="m-0" />
-                    <div className="d-flex button-div">
-                      <button
-                        className="view-details"
-                        onClick={() => handleViewDetail(order)}
-                      >
-                        View Details
-                      </button>
-                    </div>
                   </div>
-                );
-              })
+                  <hr className="m-0" />
+                  <div className="d-flex button-div">
+                    <button
+                      className="view-details"
+                      onClick={() => handleViewDetail(order)}
+                    >
+                      View Details
+                    </button>
+                  </div>
+                </div>
+              );
+            })
           )}
         </div>
       </main>

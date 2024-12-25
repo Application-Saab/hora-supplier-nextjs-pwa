@@ -57,9 +57,14 @@ const Orderlist = () => {
             Accept: "application/json",
             "Content-Type": "application/json",
           },
+          // by aarti-------------------------------------
           body: JSON.stringify({
             page: 1,
             per_page: 400,
+            status: 1,
+            order_status: 0,
+            type: Number(supplierJobType),
+            order_locality: supplierCity.charAt(0).toUpperCase() + supplierCity.slice(1).toLowerCase(),
           }),
         });
 
@@ -148,25 +153,15 @@ const Orderlist = () => {
 
   const filteredOrdersByDate = (date) => {
     return orders.filter((order) => {
-      const cityMatches =
-      order.order_locality.toLowerCase() === supplierCity.toLowerCase() ||
-        (order.order_locality.toLowerCase() === "bengaluru" &&
-          supplierCity.toLowerCase() === "bangalore");
-      const supplierIdMatches = order.toId == supplierID;
-      const typeMatches = order.type.toString() === supplierJobType;
+      // bu aarti===========================
       const isBooked = order.order_status === 1;
         let dateMatches = '';
         if (order.order_date) {
           dateMatches = order.order_date.split("T")[0] === date;
         }
-      const isStatus = order.status === 1;
-      return (
-        cityMatches &&
-        typeMatches &&
-        supplierIdMatches &&
+      return (   
         isBooked &&
-        dateMatches &&
-        isStatus
+        dateMatches  
       );
     });
   };
