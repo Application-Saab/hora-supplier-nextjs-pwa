@@ -11,7 +11,7 @@ import { useRouter } from "next/router";
 import Image from "next/image";
 import Layout from "../../component/Layout";
 
-const supplierRating = () => {
+const SupplierRating = () => {
   const router = useRouter();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -243,4 +243,4 @@ const supplierRating = () => {
   );
 };
 
-export default supplierRating;
+export default SupplierRating;
