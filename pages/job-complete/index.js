@@ -200,7 +200,7 @@ const PictureUpload = () => {
               flexDirection: "column",
               alignItems: "center",
               textAlign: "center",
-              marginLeft: "90px",
+             
             }}
           >
             <label style={styles.title}>{item.label}</label>
@@ -265,108 +265,6 @@ const PictureUpload = () => {
 };
 
 export default PictureUpload;
-
-
-
-
-// working second
-// import { useState } from "react";
-// import {BASE_URL, COMPLETE_ORDER} from '../../apiconstant/apiconstant';
-// import { useRouter } from "next/router";
- 
-// export default function UploadForm() {
-//   const [file, setFile] = useState(null);
-//   const [message, setMessage] = useState("");
-//   const router = useRouter();
-//   const { apiOrderId } = router.query;
-
-
-//   const supplierID = localStorage.getItem("supplierID");
-
-//   const handleFileChange = (event) => {
-//     setFile(event.target.files[0]);
-//   };
-
-//   const handleJobComplete = () => {
-//     const currDate = new Date().toLocaleDateString();
-//     const currTime = new Date().toLocaleTimeString();
-
-//     const currDateTime = currDate +"  " +currTime;
-// console.log(currDate,currTime, "currTimecurrDate");
-//     try {
-//       const token =  localStorage.getItem("token");
-
-//       const response =  fetch(BASE_URL + COMPLETE_ORDER, {
-//         method: "POST",
-//         headers: {
-//           Accept: "application/json, text/plain, /",
-//           "Content-Type": "application/json",
-//         },
-//         body: JSON.stringify({
-//           // Authorisation: token,
-//           _id: apiOrderId,
-//           userId: supplierID,
-//           job_end_time: currDateTime
-//         }),
-//       }); 
-
-//       console.log(response, "responsedata");
-//     //   router.push({
-//     //     pathname:`/job-complete`, 
-//     //   query: { apiOrderId },
-//     // });
-//     } catch (error) {
-//       console.log("acceptOrder error", error);
-//     }
-//   }
-
-//   const handleSubmit = async (event) => {
-//     event.preventDefault();
-
-//     if (!file) {
-//       setMessage("Please select a file to upload.");
-//       return;
-//     }
-
-//     // FormData to store file data
-//     const formData = new FormData();
-//     formData.append("file", file);
-
-//     try {
-//       // Make the POST request to the Express API
-//       const response = await fetch("https://horaservices.com:3000/api/image_upload", {
-//         method: "POST",
-//         body: formData,
-//       });
-
-//       // Parse the JSON response
-//       const result = await response.json();
-//       console.log(result, "resultjson");
-
-//       if (response.ok) {
-//         setMessage(result.message);
-//       } else {
-//         setMessage(result.message || "File upload failed.");
-//       }
-//     } catch (error) {
-//       setMessage("An error occurred while uploading the file.");
-//       console.error(error);
-//     }
-//   };
-
-//   return (
-//     <div>
-//       <form onSubmit={handleSubmit}>
-//         <input type="file" onChange={handleFileChange} />
-//         <button type="submit">Upload</button>
-//       </form>
-//       {message && <p>{message}</p>}
-    
-//       <button onClick={handleJobComplete} 
-//       className="startbutton">Job Completed</button>
-//     </div>
-//   );
-// }
 const styles = {
   title: {
         fontSize: '14px',

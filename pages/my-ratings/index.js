@@ -5,12 +5,13 @@ import { IoCalendarClear } from "react-icons/io5";
 import { FiClock } from "react-icons/fi";
 import clock from "../../assets/bell.png";
 import people from "../../assets/people.png";
+import star from '../../assets/ratingStar.jpg'
 import date_time_icon from "../../assets/date-time-icon.png";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import Layout from "../../component/Layout";
 
-const Orderlist = () => {
+const supplierRating = () => {
   const router = useRouter();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -34,7 +35,9 @@ const Orderlist = () => {
     supplierCity = "Bangalore"; // Adjusting for city name
   }
 
+
   useEffect(() => {
+
     const fetchOrderList = async () => {
       try {
         setLoading(true);
@@ -46,10 +49,12 @@ const Orderlist = () => {
           },
           body: JSON.stringify({
             page: 1,
-            per_page: 6000,
+            per_page: 4000,
             status: 1,
+            order_status: 3,
             type: Number(supplierJobType),
             order_locality: supplierCity.charAt(0).toUpperCase() + supplierCity.slice(1).toLowerCase(),
+            toId:supplierID,
           }),
         });
 
@@ -162,102 +167,72 @@ const Orderlist = () => {
     );
   }
 
-  const bookedOrders = orders.filter((order) => order.order_status === 0);
-
   return (
     <Layout>
       <main className="order-list">
         <div className="order-container">
-         {bookedOrders.length === 0 ? (
+          <h5>Cmpleted Orders with Customer Rating<span> <Image
+            src={star}
+            alt="Star"
+            height={20} // Adjust height to fit design
+            width={20}  // Adjust width to fit design
+            className="star-icon"
+          /></span></h5>
+          {orders.length === 0 ? (
             <p className="no-orders-message">No orders available</p>
           ) : (
-            bookedOrders.map((order) => {
+            orders.map((order) => {
               const orderStatus = getOrderStatus(order?.order_status);
               return (
-                <div key={order.order_id} className="order-card">
-                  <div className="order-div">
-                    <div className="order-id">
+                <div key={order.order_id} className="order-card1">
+                  <div className="order-div1">
+                    <div className="order-id1">
                       <div style={{ color: "#9252AA" }}>
                         Order Id: #{10800 + order.order_id}
                       </div>
 
                     </div>
-                    <div className="order-status">
-                      <span className={orderStatus.className}>
-                        {orderStatus.status}
-                      </span>
+                    <div className="order-status1">
+                      
                       <h6 className="mt-2" style={{ color: "#9252AA" }}>
                         {getOrderType(order?.type)}
                       </h6>
                     </div>
                   </div>
-                  <div className="order-details">
-                    <div className="left-details">
-                      <div>
-                        <Image
-                          className="contact-us-img"
-                          src={date_time_icon}
-                          height={20}
-                          width={20}
-                        />{" "}
-                        <span>{formatDate(order.order_date)}</span>
-                      </div>
-                      {order.order_time && (
-                        <div>
-                          <Image
-                            className="contact-us-img"
-                            src={clock}
-                            height={20}
-                            width={20}
-                          />{" "}
-                          <span>{order.order_time}</span>
-                        </div>
-                      )}
-                      {order.no_of_people > 0 && (
-                        <div>
-                          <Image
-                            className="contact-us-img"
-                            src={people}
-                            height={20}
-                            width={20}
-                          />{" "}
-                          <span>{order.no_of_people}</span>
-                        </div>
-                      )}
-                    </div>
 
-                    <div className="right-details">
-                      {order.order_locality && (
-                        <div>
-                          <strong
-                            style={{ color: "#9252AA", fontSize: "15px" }}
-                          >
-                            {order.order_locality}
-                          </strong>
-                        </div>
-                      )}
-                      <div>
-                        <strong
-                          style={{ color: "#9252AA", fontSize: "14px" }}
-                        >
-                          {/* Balance Amount */}
-                          Amount
-                          <p className="mb-0 price-para">
-                            {"₹" + order.balance_amount}
-                          </p>
-                        </strong>
-                      </div>
+                 
+                    <div className="user-review" style={{ textAlign: 'center' }}>
+                      <span style={{ fontSize: '13px', fontWeight: '500' }}>
+                        <b>Customer rating:</b></span>
+                      {/* <Image
+                        src={star}
+                        alt="Star"
+                        height={20} // Adjust height to fit design
+                        width={20}  // Adjust width to fit design
+                        className="star-icon"
+                      /> */}
+            {order.userReviewRatingArray.length > 0 ? (
+  <span style={{ fontSize: '13px', paddingLeft: '10px' }}>
+    <b>{order.userReviewRatingArray}</b>
+  </span>
+) : (
+  <span style={{ fontSize: '13px', fontWeight: '500' , paddingLeft:"10px" }}>
+    <b>No rated</b>
+  </span>
+)}
                     </div>
-                  </div>
-                  <hr className="m-0" />
-                  <div className="d-flex button-div">
+                 
+
+
+                  {/* <hr className="m-0" /> */}
+                  {/* <div className="d-flex button-div" style={{ textAlign: 'center' }}>
                     <button
                       className="view-details"
                       onClick={() => handleViewDetail(order)}
                     >
-                      View Details
+                      View Order Details
                     </button>
-                  </div>
+                  </div> */}
                 </div>
               );
             })
@@ -268,4 +243,4 @@ const Orderlist = () => {
   );
 };
 
-export default Orderlist;
+export default supplierRating;

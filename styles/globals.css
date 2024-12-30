@@ -4160,3 +4160,13 @@ main.order-list .order-container {
   transform: translateY(-3px);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
+/* rating page */
+.order-card1 {
+  width: 100%;
+  background-color: #fff;
+  justify-content: flex-start;
+  align-items: flex-start;
+  padding: 8px;
+  border: 1px solid #a9a5a5;
+  border-radius: 9px;
+}

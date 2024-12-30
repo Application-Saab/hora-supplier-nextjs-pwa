@@ -16,6 +16,6 @@ export const ACCEPT_ORDER = "/api/order/acceptOrder";
 
 export const START_ORDER = "/api/order/startOrder";
 
-export const IMAGE_UPLOAD = "/api/image_upload";
+export const IMAGE_UPLOAD = "/api/multiple_image_upload";
 
 export const COMPLETE_ORDER = "/api/order/completeOrder";

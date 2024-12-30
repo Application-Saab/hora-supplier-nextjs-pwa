@@ -25,7 +25,7 @@ const Home = () => {
       icon: trackingLogo,
       path: "/accepted-orders",
     },
-    { id: 5, name: "My Ratings", icon: ratingLogo, path: "/home" },
+    { id: 5, name: "My Ratings", icon: ratingLogo, path: "/my-ratings" },
   ];
   const [error, setError] = useState(null);
 
@@ -60,7 +60,7 @@ const Home = () => {
             localStorage.setItem("supplierJobProfile", response.data.data.job_profile);
             localStorage.setItem("supplierExperince", response.data.data.experience);
             localStorage.setItem("supplierName", response.data.data.name);
-            localStorage.setItem("supplierJobType", response.data.data.order_type);
+            localStorage.setItem("supplierJobType", response.data.data.job_type);
             localStorage.setItem("supplierAge", response.data.data.age);
           }	
 
