@@ -24,7 +24,8 @@ const Orderlist = () => {
   if (
     typeof window !== "undefined" &&
     typeof window.localStorage !== "undefined"
-  ) {
+  ) 
+  {
     supplierJobType = localStorage.getItem("supplierJobType");
     supplierID = localStorage.getItem("supplierID");
     supplierCity = localStorage.getItem("supplierCity");
@@ -33,6 +34,8 @@ const Orderlist = () => {
   if (supplierCity === "Bengaluru") {
     supplierCity = "Bangalore"; // Adjusting for city name
   }
+
+ 
 
   useEffect(() => {
     const fetchOrderList = async () => {
