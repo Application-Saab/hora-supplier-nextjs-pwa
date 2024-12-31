@@ -61,8 +61,10 @@ const Orderlist = () => {
             page: 1,
             per_page: 4000,
             status: 1,
+            order_status: 1,
             type: Number(supplierJobType),
             order_locality: supplierCity.charAt(0).toUpperCase() + supplierCity.slice(1).toLowerCase(),
+            toId:supplierID,
           }),
         });
 
@@ -191,18 +193,18 @@ const Orderlist = () => {
     );
   }
 
-  if (orders.length === 0) {
-    return (
-      <center>
-        <div className="no-orders">
-          <h4>No Orders. Please continue shopping with Hora.</h4>
-          <button className="button-style" onClick={openContinueShopping}>
-            Continue Shopping
-          </button>
-        </div>
-      </center>
-    );
-  }
+  // if (orders.length === 0) {
+  //   return (
+  //     <center>
+  //       <div className="no-orders">
+  //         <h4>No Orders. Please continue shopping with Hora.</h4>
+  //         <button className="button-style" onClick={openContinueShopping}>
+  //           Continue Shopping
+  //         </button>
+  //       </div>
+  //     </center>
+  //   );
+  // }
 
   return (
     <Layout>
