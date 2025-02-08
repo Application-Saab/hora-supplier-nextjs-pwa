@@ -253,11 +253,11 @@ const PictureUpload = () => {
       </button>
 
       <div>
-      {uploadSuccess && (
+      {/* {uploadSuccess && ( */}
         <button onClick={handleJobComplete} className="startbutton" style={{marginLeft: "40px"}}>
           Job Completed
                   </button>
-      )}
+      {/* )} */}
       </div>
     </div>
     </Layout>
