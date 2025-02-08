@@ -168,9 +168,9 @@ const Orderlist = () => {
         <div className="order-container">
           {orders.filter((order) => {
             const cityMatches =
-              order.addressId[0]?.city.toLowerCase() ===
+              order.order_locality.toLowerCase() ===
                 supplierCity.toLowerCase() ||
-              (order.addressId[0]?.city.toLowerCase() === "bengaluru" &&
+              (order.order_locality.toLowerCase() === "bengaluru" &&
                 supplierCity.toLowerCase() === "bangalore");
             const typeMatches = order.type.toString() === supplierJobType;
             const isBooked = order.order_status === 0;
@@ -184,9 +184,9 @@ const Orderlist = () => {
             orders
               .filter((order) => {
                 const cityMatches =
-                  order.addressId[0]?.city.toLowerCase() ===
+                  order.order_locality.toLowerCase() ===
                     supplierCity.toLowerCase() ||
-                  (order.addressId[0]?.city.toLowerCase() === "bengaluru" &&
+                  (order.order_locality.toLowerCase() === "bengaluru" &&
                     supplierCity.toLowerCase() === "bangalore");
                 const typeMatches = order.type.toString() === supplierJobType;
                 const isBooked = order.order_status === 0;
@@ -210,12 +210,7 @@ const Orderlist = () => {
                         <div style={{ color: "#9252AA" }}>
                           Order Id: #{10800 + order.order_id}
                         </div>
-                        <h6
-                          className="order-otp mt-2"
-                          style={{ color: "#9252AA" }}
-                        >
-                          OTP: {order?.otp}
-                        </h6>
+                
                       </div>
                       <div className="order-status">
                         <span className={orderStatus.className}>
@@ -262,21 +257,18 @@ const Orderlist = () => {
                       </div>
 
                       <div className="right-details">
-                        {order.addressId?.[0]?.city && (
+                        {order.order_locality && (
                           <div>
                             <strong
-                              style={{ color: "#9252AA", fontSize: "13px" }}
+                              style={{ color: "#9252AA", fontSize: "15px" }}
                             >
-                              City
-                              <p style={{ textAlign: "end", margin: 0 }}>
-                                {order.addressId[0].city}
-                              </p>
+                           {order.order_locality}  
                             </strong>
                           </div>
                         )}
                         <div>
                           <strong
-                            style={{ color: "#9252AA", fontSize: "15px" }}
+                            style={{ color: "#9252AA", fontSize: "14px" }}
                           >
                             Balance Amount
                             <p className="mb-0 price-para">

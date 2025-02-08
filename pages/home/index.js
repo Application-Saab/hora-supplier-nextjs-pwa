@@ -25,7 +25,7 @@ const Home = () => {
       icon: trackingLogo,
       path: "/accepted-orders",
     },
-    { id: 5, name: "My Ratings", icon: ratingLogo, path: "/notification" },
+    { id: 5, name: "My Ratings", icon: ratingLogo, path: "/home" },
   ];
   const [error, setError] = useState(null);
 
@@ -106,8 +106,12 @@ const Home = () => {
       fontFamily: 'Arial, sans-serif',
       lineHeight: '1.5',
       fontSize: '14px', 
-      boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)' 
+      boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+      border: '1px solid #97538c',
+       width: '94%',
+    margin: '10px auto 0',
     }}>
+      <p><strong style={{fontSize:'18px'}}>Note:</strong></p>
       <p>1. Please read the <b>inclusions and comments</b> very carefully.</p>
       <p>2. Do not miss any material mentioned in inclusions and comments.</p>
       <p>3. <b>Please be on time.</b> Customers don't like late arrivals 🥺</p>

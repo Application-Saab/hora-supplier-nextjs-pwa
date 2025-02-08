@@ -4,7 +4,7 @@
     "type": "APK",
     "kind": "Directory"
   },
-  "applicationId": "horaservices.com",
+  "applicationId": "com.example.app",
   "variantName": "release",
   "elements": [
     {
