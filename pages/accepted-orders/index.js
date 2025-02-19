@@ -69,6 +69,7 @@ const Orderlist = () => {
         });
 
         const responseData = await response.json();
+        console.log(responseData,"responsedataaccepts");
 
         if (responseData && responseData.data && responseData.data.order) {
           const sortedOrders = responseData.data.order.sort(
@@ -281,7 +282,7 @@ const Orderlist = () => {
                                       height={20}
                                       width={20}
                                     />{" "}
-                                    <span>{order.order_time}</span>
+                                    <span>{order.order_time.split(" - ")[0]}</span>
                                   </div>
                                 )}
                                 {supplierJobType !== "1" &&

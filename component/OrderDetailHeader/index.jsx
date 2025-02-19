@@ -76,8 +76,10 @@ const OrderDetailHeader = ({ orderDetail }) => {
             )}
 
             <p>
-              <strong>Time:</strong>
-              {orderDetail?.order_time}
+              <strong>
+                Arrival Time:
+              </strong>
+              {orderDetail?.order_time?.split(" - ")[0]}
             </p>
 
             {orderDetail?.order_locality && (

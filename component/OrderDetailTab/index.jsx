@@ -59,6 +59,7 @@ const OrderDetailTab = ({
   const acceptOrder = async () => {
     try {
       const token = await localStorage.getItem("token");
+      console.log(token,"accept token");
 
       const response = await fetch(BASE_URL + ACCEPT_ORDER, {
         method: "POST",
@@ -73,6 +74,8 @@ const OrderDetailTab = ({
           userId: supplierID,
         }),
       });
+      console.log(otp, 'otp', apiOrderId, "_id", supplierID,"userid");
+      console.log(response, "responseaccept");
 
       alert("Order accepted successfully");
       router.push("/accepted-orders");

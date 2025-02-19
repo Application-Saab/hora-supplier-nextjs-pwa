@@ -213,7 +213,9 @@ const Orderlist = () => {
                             height={20}
                             width={20}
                           />{" "}
-                          <span>{order.order_time}</span>
+
+                          <span>{order.order_time.split(" - ")[0]}</span>
+
                         </div>
                       )}
                       {order.no_of_people > 0 && (
