@@ -24,8 +24,7 @@ const Orderlist = () => {
   if (
     typeof window !== "undefined" &&
     typeof window.localStorage !== "undefined"
-  ) 
-  {
+  ) {
     supplierJobType = localStorage.getItem("supplierJobType");
     supplierID = localStorage.getItem("supplierID");
     supplierCity = localStorage.getItem("supplierCity");
@@ -35,10 +34,43 @@ const Orderlist = () => {
     supplierCity = "Bangalore"; // Adjusting for city name
   }
 
- 
+  const [userStatus, setUserStatus] = useState(null);
+  let phoneNumber = localStorage.getItem("mobileNumber");
+
+  useEffect(() => {
+    const fetchUserStatus = async () => {
+      try {
+        setLoading(true);
+
+        const response = await fetch(
+          "https://horaservices.com:3000/api/admin/admin_user_list",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ phone: phoneNumber }),
+          }
+        );
+
+        const result = await response.json();
+
+        // users array
+        const user = result?.data?.users?.[0];
+        const status = user?.status ?? null;
+        console.log(status, "stattata");
+        setUserStatus(status);
+      } catch (error) {
+        console.error("Error fetching user status:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserStatus();
+  }, []);
 
   useEffect(() => {
     const fetchOrderList = async () => {
+      if (userStatus !== 1) return;
       try {
         setLoading(true);
         const response = await fetch(BASE_URL + ORDERLIST_ENDPOINT, {
@@ -52,7 +84,9 @@ const Orderlist = () => {
             per_page: 6000,
             status: 1,
             type: Number(supplierJobType),
-            order_locality: supplierCity.charAt(0).toUpperCase() + supplierCity.slice(1).toLowerCase(),
+            order_locality:
+              supplierCity.charAt(0).toUpperCase() +
+              supplierCity.slice(1).toLowerCase(),
           }),
         });
 
@@ -76,7 +110,7 @@ const Orderlist = () => {
     };
 
     fetchOrderList();
-  }, [supplierID]);
+  }, [supplierID, userStatus]);
 
   const getOrderStatus = (orderStatusValue) => {
     switch (orderStatusValue) {
@@ -171,7 +205,7 @@ const Orderlist = () => {
     <Layout>
       <main className="order-list">
         <div className="order-container">
-         {bookedOrders.length === 0 ? (
+          {bookedOrders.length === 0 ? (
             <p className="no-orders-message">No orders available</p>
           ) : (
             bookedOrders.map((order) => {
@@ -183,7 +217,6 @@ const Orderlist = () => {
                       <div style={{ color: "#9252AA" }}>
                         Order Id: #{10800 + order.order_id}
                       </div>
-
                     </div>
                     <div className="order-status">
                       <span className={orderStatus.className}>
@@ -213,9 +246,7 @@ const Orderlist = () => {
                             height={20}
                             width={20}
                           />{" "}
-
                           <span>{order.order_time.split(" - ")[0]}</span>
-
                         </div>
                       )}
                       {order.no_of_people > 0 && (
@@ -242,9 +273,7 @@ const Orderlist = () => {
                         </div>
                       )}
                       <div>
-                        <strong
-                          style={{ color: "#9252AA", fontSize: "14px" }}
-                        >
+                        <strong style={{ color: "#9252AA", fontSize: "14px" }}>
                           {/* Balance Amount */}
                           Amount
                           <p className="mb-0 price-para">

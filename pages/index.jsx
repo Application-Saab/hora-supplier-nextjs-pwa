@@ -179,6 +179,8 @@ const Login = () => {
             "Content-Type": "application/json",
           },
         });
+
+        console.log(response, "response");
   
         if (response.data.error && response.data.message === "The number is used already for Customer login . Please use different number") {
           alert("This phone number is already used for customer login. Please use a different number.");
@@ -187,6 +189,8 @@ const Login = () => {
         } else if (response.data.status === API_SUCCESS_CODE) {
           // Proceed with successful OTP verification
           localStorage.setItem("isLoggedIn", "true");
+          localStorage.setItem("status", response.data.status);
+          console.log(response.data.data.status, "statuss");
           localStorage.setItem("mobileNumber", mobileNumber);
           localStorage.setItem("token", response.data.token);
           localStorage.setItem("supplierID", response.data.data._id);
