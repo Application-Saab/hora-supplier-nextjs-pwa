@@ -104,6 +104,22 @@ const OrderDetailTab = ({
     }
   };
 
+  
+  const getDecorationComments = (comments) => {
+    console.log(comments, "comments");
+    if (!comments) return "N/A";
+  
+    const commentList = Array.isArray(comments) ? comments : comments.split("\n");
+  
+    return (
+      <ul>
+        {commentList.map((comment, index) => (
+          <li key={index}>{comment}</li>
+        ))}
+      </ul>
+    );
+  };
+
   return (
     <>
       {parseInt(orderType) == 2 ? (
@@ -257,7 +273,7 @@ const OrderDetailTab = ({
                   {decorationComments && (
             <div className="comment-container prod_sec">
               <p className="product-page-heading">Additional Comments:</p>
-              <p className="comments-text">{decorationComments}</p>
+              <p className="comments-text"> {getDecorationComments(decorationComments)}</p>
             </div>
           )}
                 </div>
