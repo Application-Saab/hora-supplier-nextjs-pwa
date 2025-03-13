@@ -163,6 +163,7 @@ const ProfileUpdate = () => {
                 <option value="">Select Job Profile</option>
                 <option value="Chef" job_type="2">Chef</option>
                 <option value="Decorator" job_type="1">Decorator</option>
+                <option value="Photography" job_type="8">Photography</option>
               </select>
             </div>
             <button type="submit" className='button-primary'>Continue</button>

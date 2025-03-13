@@ -19,3 +19,4 @@ export const START_ORDER = "/api/order/startOrder";
 export const IMAGE_UPLOAD = "/api/multiple_image_upload";
 
 export const COMPLETE_ORDER = "/api/order/completeOrder";
+export const GET_PHOTOGRAPHY_BY_NAME = "/api/photography/searchByTag/66c96b4e22ed47b72117e09a";

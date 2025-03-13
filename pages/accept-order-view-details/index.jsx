@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,useRef } from "react";
+import { Form } from "react-bootstrap";
 import OrderDetailHeader from "./OrderDetailHeader/index";
 import OrderDetailTab from "./OrderDetailTab/index";
 import {
   BASE_URL,
   GET_DECORATION_DETAILS,
   ORDER_DETAILS_ENDPOINT,
-  GET_BOOKING_ORDER_DETAILS
+  GET_BOOKING_ORDER_DETAILS,
+  START_ORDER
 } from "../../apiconstant/apiconstant";
 import { useRouter } from "next/router";
 import Layout from "../../component/Layout";
@@ -30,6 +32,33 @@ const OrderDetail = () => {
   const [balanceAmount, setBalanceAmount] = useState("");
 
   orderType = parseInt(orderType);
+const [otp, setOtp] = useState(null);
+
+  const [supplierID, setSupplierID] = useState(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      console.log(localStorage.getItem("otp"),"faltu");
+      setSupplierID(localStorage.getItem("supplierID"));
+      setOtp(localStorage.getItem("otp"));
+    }
+  }, []);
+
+  const [otp1, setOtp1] = useState(["", "", "", ""]);
+    const [isOtpMatched, setIsOtpMatched] = useState(false);
+    
+      const [errorMessage, setErrorMessage] = useState("");
+      const inputRefs = useRef([]);
+      
+      
+  let orderOtp;
+
+  if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
+    
+  orderOtp = localStorage.getItem("orderOtp");
+  }	
+
+  
 
   useEffect(() => {
     if (
@@ -123,6 +152,67 @@ const OrderDetail = () => {
     );
   }
 
+  
+    
+  const handleChange = (value, index) => {
+    const newOtp = [...otp1];
+    newOtp[index] = value;
+    console.log(newOtp, "newot");
+    setOtp1(newOtp);
+
+    if (value && index < otp1.length - 1) {
+      inputRefs.current[index + 1].focus();
+    }
+
+    if (newOtp.join("") === orderOtp) {
+      setIsOtpMatched(true);
+      setErrorMessage("");
+    } else {
+      setIsOtpMatched(false);
+      if (newOtp.join("").length === otp1.length) {
+        setErrorMessage("Wrong OTP, please try again.");
+      } else {
+        setErrorMessage("");
+      }
+    }
+  };
+
+  
+    const handleSubmit = () => {
+      console.log("clicked");
+      const currDate = new Date().toLocaleDateString();
+      const currTime = new Date().toLocaleTimeString();
+  
+      const currDateTime = currDate + currTime;
+      try {
+        const token =  localStorage.getItem("token");
+        console.log(otp, "otp");
+  
+        const response =  fetch(BASE_URL + START_ORDER, {
+          method: "POST",
+          headers: {
+            Accept: "application/json, text/plain, /",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            // Authorisation: token,
+            otp: otp,
+            _id: apiOrderId,
+            userId: supplierID,
+            job_start_time: currDateTime
+          }),
+        }); 
+  
+        router.push({
+          pathname:`/job-complete`, 
+        query: { apiOrderId },
+      });
+      } catch (error) {
+        console.log("acceptOrder error", error);
+      }
+    };
+  
+
 
   return (
     <>
@@ -139,6 +229,33 @@ const OrderDetail = () => {
             balanceAmount={balanceAmount}
           />
         </div>
+        <div>
+            <div className="otp-container">
+              <h2 className="otp-title">Enter OTP</h2>
+              <p className="otp-instructions">
+                Please enter the OTP sent to your number
+              </p>
+              <div className="otp-inputs">
+                {otp1.map((_, index) => (
+                  <Form.Control
+                    key={index}
+                    type="text"
+                    maxLength="1"
+                    value={otp1[index]}
+                    onChange={(e) => handleChange(e.target.value, index)}
+                    className="otp-input"
+                    ref={(el) => (inputRefs.current[index] = el)}
+                  />
+                ))}
+              </div>
+              {errorMessage && <p className="error-message">{errorMessage}</p>}
+              {isOtpMatched && (
+                <button onClick={handleSubmit} className="startbutton">
+                  Start Order
+                </button>
+              )}
+            </div>
+          </div>
       </div>
       </Layout>
     </>

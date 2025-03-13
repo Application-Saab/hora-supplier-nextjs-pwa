@@ -149,6 +149,8 @@ const Orderlist = () => {
         return "Food Delivery";
       case 7:
         return "Live Catering";
+      case 8:
+        return "Photography";
       default:
         return "Unknown Type";
     }
@@ -200,6 +202,7 @@ const Orderlist = () => {
   }
 
   const bookedOrders = orders.filter((order) => order.order_status === 0);
+  console.log(bookedOrders, "bookedorders");
 
   return (
     <Layout>

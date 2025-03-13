@@ -127,6 +127,8 @@ const Orderlist = () => {
         return "Food Delivery";
       case 7:
         return "Live Catering";
+      case 8:
+        return "Photography";
       default:
         return "Unknown Type";
     }

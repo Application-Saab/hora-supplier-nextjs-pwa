@@ -29,6 +29,12 @@ const OrderDetail = () => {
   const [decorationAddon, setDecorationAddon] = useState("");
   const [balanceAmount, setBalanceAmount] = useState("");
 
+  
+  console.log(orderType,"ordertype");
+  orderType = parseInt(orderType);
+  console.log(orderType,"ordertypes");
+
+
  // alert("New Order detils");
   useEffect(() => {
     // alert(orderType);
@@ -58,6 +64,7 @@ const OrderDetail = () => {
         BASE_URL + ORDER_DETAILS_ENDPOINT + "/v1/" + apiOrderId
       );
       const responseData = await response.json();
+      console.log(responseData,"responsedata1");
       setOrderDetail(responseData.data);
       setLoading(false);
     } catch (error) {
@@ -72,7 +79,7 @@ const OrderDetail = () => {
         BASE_URL + GET_BOOKING_ORDER_DETAILS + "/" + orderId
       );
       const responseData = await response.json();
-
+      console.log(responseData,"pata2");
       setOrderDetail(responseData.data._doc);
       setDecorationItems(responseData.data.items[0].decoration);
       setDecorationComments(responseData?.data?._doc.decoration_comments);
@@ -92,7 +99,7 @@ const OrderDetail = () => {
         BASE_URL + ORDER_DETAILS_ENDPOINT + "/v1/" + apiOrderId
       );
       const responseData = await response.json();
-
+      console.log(responseData,"pata");
       setOrderDetail(responseData.data);
       setHospitalityServiceCount(responseData.data.no_of_people);
       setHospitalityServiceTotalAmount(responseData.data.total_amount);
