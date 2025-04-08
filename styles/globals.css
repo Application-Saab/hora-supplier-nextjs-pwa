@@ -453,9 +453,9 @@ select {
     padding: 0.5rem;
   }
 
-  .navbar {
-    padding: 0.5rem;
-  }
+  nav.navbar {
+    padding: 6px 16px !important;
+}
 }
 
 .sidebar {

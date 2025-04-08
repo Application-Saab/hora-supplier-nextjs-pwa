@@ -4,10 +4,14 @@
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background-color: #f4f4f4;
+    /* background-color: #f4f4f4; */
+  }
+
+  .login-header h2 {
+    color: #9d4a93;
   }
   
-  .login-background {
+  .login-content {
     width: 100%;
     max-width: 400px;
     padding: 20px;
@@ -58,7 +62,7 @@
   }
   
   .reload-icon {
-    background: url('reload-icon-url') no-repeat center;
+    /* background: url('reload-icon-url') no-repeat center; */
     width: 20px;
     height: 20px;
     display: inline-block;
@@ -97,7 +101,7 @@
   /* Desktop Styles */
   @media (min-width: 769px) {
     .login-container {
-      background-image: url('./horasupplierimage.jpg');
+      /* background-image: url('./horasupplierimage.jpg'); */
       background-size: cover;
       background-position: center;
       justify-content: center;
@@ -109,3 +113,153 @@
     }
   }
   
+/* login css */
+.login-content{
+  width: 90%;
+    padding: 30px 8px;
+    text-align: center;
+}
+.otp-login {
+  padding: 27px;
+  margin: 3% auto 0;
+  width: 100%;   
+}
+.otp-login  label {
+  color: rgb(33, 37, 41);
+  display: flex;
+  justify-content: flex-start;
+  width: 100%;
+  font-size: 14px;
+  margin-bottom: 7px;
+}
+.otp-error {
+  font-size: 18px;
+  font-weight: 600;
+}
+.popup-content h2 {
+  font-size: 16px;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 18px;
+}
+.enterotp-input {
+  width: 100% !important;
+}
+.error-message {
+  color: red;
+  font-size: 12px;
+  padding: 3px 0 6px;
+  text-align: center;
+}
+.resend-timer{
+  color: rgb(138, 138, 138);
+  font-weight: 300;
+  font-size: 15px;
+}
+.resend-otp {
+  color: #9252AA;
+  display: flex;
+  justify-content: flex-end;
+  margin: 26px 0 0;
+  font-size: 15px;
+}
+button.loginbtn:disabled {
+  background-color: #ddd;
+  color: #9d4a93;
+  cursor: not-allowed;
+  border: none;
+}
+.input-group input{
+  background-color: #d7d5d5a8;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.5;
+  border: rgb(222, 226, 230);
+  padding: 9px 9px;
+  width: 91%;
+}
+.country-code {
+  background-color: #d7d5d5a8;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.5;
+  border: rgb(222, 226, 230);
+  padding: 9px 16px 9px 12px;
+  margin-right: 10px;
+  width: auto;
+}
+.loginbtn {
+  border: 1px solid #9d4a93;
+  background-color: #9d4a93;
+  color: #fff;
+  font-size: 14px;
+  padding: 7px 0;
+  border-radius: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin: 11px 0;
+}
+.input-group.login {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+.success-message p {
+  color: #707070;
+  text-align: center;
+  font-family: Roboto;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  padding: 0 22px;
+}
+.success-message h1 {
+  margin-bottom: 10px;
+  color: #000;
+  text-align: center;
+  font-size: 17px;
+  font-style: normal;
+  font-weight: 500;
+  padding: 18px 51px 0px;
+  line-height: 26px;
+}
+@media (max-width: 800px) {
+  .popup-content {
+      max-width: 90%;
+      padding: 19px 11px !important;
+  }
+  .otp-login {
+      margin: 5% auto;
+  }
+  .otp-error {
+      font-size: 16px;
+      }
+}
+
+
+@media (max-width: 481px) {
+.otp-error {
+font-size: 14px;
+} 
+.d-flex.justify-content-center.mt-4.resend-timer {
+  margin-top: 10px !important;
+}
+.input-group input {
+  font-size: 11px;
+}
+.country-code {
+  font-size: 10px;
+}
+.otp-login {
+  margin: 0% auto;
+  padding: 18px 13px;
+}
+}
+@media (max-width: 375px) {
+.otp-error {
+      font-size: 11px;
+  }
+}

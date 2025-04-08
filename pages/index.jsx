@@ -1,431 +1,239 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Storage } from '@capacitor/storage';
+import React, { useState, useEffect } from "react";
+import { Storage } from "@capacitor/storage";
+import axios from "axios";
+import { useTimer } from "../apiconstant/useTimer";
+// import login from "../apiconstant/login";
 import {
   BASE_URL,
   OTP_GENERATE_END_POINT,
   API_SUCCESS_CODE,
   OTP_VERIFY_ENDPOINT,
 } from "../apiconstant/apiconstant";
-import axios from "axios";
-import { Col, Form, Row } from "react-bootstrap";
-import { useTimer } from "../apiconstant/useTimer";
-import Popup from "../apiconstant/popup";
-import loginImage from "../assets/login.png";
-import orderWarning from "../assets/OrderWarning.png";
 import { useRouter } from "next/router";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "../styles/Home.module.css";
-
-import logo from "../assets/new_logo_light.png.png";
 import Image from "next/image";
+import "bootstrap/dist/css/bootstrap.min.css";
+import logo from '../assets/new_logo_light.png.png';
+// import "../styles/login.css"; // Ensure it's not a CSS module if using classNames directly
 
 const Login = () => {
-  const [isWarningVisibleForTotalAmount, setWarningVisibleForTotalAmount] =
-    useState(false);
   const [mobileNumber, setMobileNumber] = useState("");
-  const [loggedIn, setLoggedIn] = useState(false);
-  const [otp, setOtp] = useState(["", "", "", ""]);
-  const [validOtp, setValidOtp] = useState(undefined);
-  const [fetchedOtp, setFetchedOtp] = useState(null);
-  const [phoneNumberError, setPhoneNumberError] = useState("");
-  const [otpSent, setOtpSent] = useState(false);
+  const [otp, setOtp] = useState("");
+  const [isOtpSent, setIsOtpSent] = useState(false);
+  const [error, setError] = useState("");
   const [otpError, setOtpError] = useState("");
-  const [loginError, setLoginError] = useState(false);
-  const [loginMsg, setLoginMsg] = useState("");
+  const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { time, isTimeUp, resetTimer } = useTimer(30);
   const router = useRouter();
-  const [validMobileNumber, setValidMobileNumber] = useState(false);
-  const otpRefs = useRef([
-    React.createRef(),
-    React.createRef(),
-    React.createRef(),
-    React.createRef(),
-  ]);
-  const { time, isTimeUp, resetTimer } = useTimer(25);
-  const [showPopup, setShowPopup] = useState(false);
-  const [popupMessage, setPopupMessage] = useState({});
 
-  const loadAuthToken = async () => {
-    const { value: token } = await Storage.get({ key: 'authToken' });
-    const { value: supplierJobProfile } = await Storage.get({ key: 'supplierJobProfile' });
+
+  const loadAuthToken = () => {
+    const token = localStorage.getItem("token");
+    const supplierJobProfile = localStorage.getItem("supplierJobProfile");
 
     if (token) {
-      console.log('Token found:', token);
-      // Optionally validate the token (e.g., with an API call)
-      setLoggedIn(true); // Restore the logged-in state
-        if(supplierJobProfile != ""){
-            console.log("logged in false")
-           router.push("/home");
-          } else {
-            router.push("/Profile");
-           console.log("logged in true")
-          }
-      
+      console.log("Token found:", supplierJobProfile);
+      setIsUserLoggedIn(true);
+
+      if (supplierJobProfile && supplierJobProfile !== null ) {
+        router.push("/home");
+      } else {
+        router.push("/Profile");
+      }
     } else {
-      console.log('No token found. User is logged out.');
+      console.log("No token found. User is logged out.");
     }
   };
 
   useEffect(() => {
-    console.log("Hello")
-    loadAuthToken(); // Load the token on component mount
+
+
+    loadAuthToken();
   }, []);
 
-  // Save token
+
+
   const saveAuthToken = async (token) => {
     await Storage.set({
-      key: 'authToken',
-      value: token, // The token received from your backend
+      key: "authToken",
+      value: token,
     });
-  };
-  const handleLogout = () => {
-    localStorage.setItem("isLoggedIn", "false");
-    localStorage.clear();
-    Storage.remove({ key: 'auth_token' });
-    setPopupMessage({
-      img: logoutImage,
-      title: "Logout Successful",
-      body: "You have been logged out successfully.",
-      button: "OK",
-    });
-    setShowPopup(true);
-    router.push("/");
-  };
-
-  const handleWarningClose = () => {
-    setWarningVisibleForTotalAmount(false);
-  };
-
-  const handlePopupClose = () => {
-    setShowPopup(false);
-  };
-
-  const handleOtpSuccess = () => {
-    setPopupMessage({
-      img: logoutImage,
-      title: "Logout Successful",
-      body: "You have been logged out successfully.",
-      button: "OK",
-    });
-    setShowPopup(true);
-  };
-
-  const handleOrderWarning = () => {
-    setPopupMessage({
-      img: orderWarning,
-      title: "Total Order Amount is less than ₹700",
-      body: "Total Order amount can not be less than ₹700, Add more to continue",
-      button: "Add More",
-    });
-    setWarningVisibleForTotalAmount(true);
   };
 
   const handleMobileNumberChange = (e) => {
-    const value = e.target.value.trim();
-    setMobileNumber(value);
-
-    const isValidPhoneNumber = /^\d{10}$/.test(value);
-    if (!isValidPhoneNumber) {
-      setPhoneNumberError("Please enter a valid 10-digit phone number.");
-      setValidMobileNumber(false);
-      setLoginError(true);
-    } else {
-      setPhoneNumberError("");
-      setLoginError(false);
-      setValidMobileNumber(true);
+    const value = e.target.value;
+    if (/^\d{0,10}$/.test(value)) {
+      setMobileNumber(value);
+      setError(value.length === 10 ? "" : "Please enter a valid mobile number");
     }
   };
 
-  useEffect(() => {
-    if (isTimeUp && otpSent) {
-      setOtpError(true);
-    }
-  }, [isTimeUp, otpSent]);
-
-  useEffect(() => {
-    if (otpSent) {
-      otpRefs.current[0]?.current?.focus();
-    }
-  }, [otpSent]);
-
-  const handleSendOtp = () => {
-    fetchOtp();
+  const handleOtpChange = (e) => {
+    setOtp(e.target.value);
   };
 
-  useEffect(() => {
-  }, [popupMessage, showPopup]);
+  const sendOtp = async () => {
+    if (!mobileNumber) {
+      setError("Mobile number is required.");
+      return;
+    }
 
-  const handleOtpSuccess1 = () => {
-    setPopupMessage({
-      img: loginImage,
-      title: "Login Successful",
-      body: "You have been logged IN successfully.",
-      button: "OK",
-    });
-    setShowPopup(true);
-  };
-
-  const validateOtp = async (enteredOtp) => {
     try {
-      console.log("OTP")
-      if (enteredOtp === fetchedOtp.toString()) {
-        const url = BASE_URL + OTP_VERIFY_ENDPOINT;
-        const requestData = {
-          phone: mobileNumber,
-          role: "supplier",
-          otp: enteredOtp,
-        };
-        const response = await axios.post(url, requestData, {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-  
-        if (response.data.error && response.data.message === "The number is used already for Customer login . Please use different number") {
-          alert("This phone number is already used for customer login. Please use a different number.");
-          setOtpError("Phone number already in use. Please use a different number.");
-          setLoginError(true);
-        } else if (response.data.status === API_SUCCESS_CODE) {
-          // Proceed with successful OTP verification
-          localStorage.setItem("isLoggedIn", "true");
-          localStorage.setItem("mobileNumber", mobileNumber);
-          localStorage.setItem("token", response.data.token);
-          localStorage.setItem("supplierID", response.data.data._id);
-          localStorage.setItem("supplierIsPersonalStatus", response.data.data.isPersonalStatus);
-          localStorage.setItem("supplierJobProfile", response.data.data.job_profile);
-          const supplierIsPersonalStatus =  localStorage.getItem("supplierIsPersonalStatus");
-          const supplierJobProfile =  localStorage.getItem("supplierJobProfile");
-          await saveAuthToken(response.data.token);
-          await Storage.set({
-            key: 'supplierJobProfile',
-            value: response.data.data.job_profile, // The token received from your backend
-          });
-          // if (supplierIsPersonalStatus == 1) {
-          if(supplierJobProfile != ""){
-            console.log("logged in false")
-           router.push("/home");
-          } else {
-            router.push("/Profile");
-           console.log("logged in true")
-          }
-          handleOtpSuccess1();
-        } else {
-          router.push("/home");
-        }
-      } else {
-        setLoginMsg("");
-        setValidOtp(false);
-        setOtpError("Invalid OTP. Please try again.");
-      }
-    } catch (error) {
-      setLoginMsg(" ");
-      setLoginError(true);
-      console.log("Error verifying OTP:", error.message);
-      setOtpError("Failed to verify OTP. Please try again.");
-    }
-  };
-  
+      const response = await axios.post(
+        `${BASE_URL}${OTP_GENERATE_END_POINT}`,
+        { phone: mobileNumber, role: "customer" },
+        { headers: { "Content-Type": "application/json" } }
+      );
 
-  const handleOtpChange = (e, index) => {
-    const { value } = e.target;
-    const updatedOtp = [...otp];
-    updatedOtp[index] = value;
-    setOtp(updatedOtp);
-
-    if (value && index < otpRefs.current.length - 1) {
-      otpRefs.current[index + 1].current.focus();
-    }
-
-    if (!value && index > 0) {
-      otpRefs.current[index - 1].current.focus();
-    }
-
-    if (index === 3) {
-      const enteredOtp = updatedOtp.join("");
-      if (enteredOtp.length === 4) {
-        validateOtp(enteredOtp);
-      }
-    }
-
-    if (otpError) {
-      setOtpError("");
-    }
-  };
-
-  const handleKeyDown = (e, index) => {
-    if (e.key === "Backspace" && !otp[index] && index > 0) {
-      otpRefs.current[index - 1].current.focus();
-    }
-  };
-
-  const fetchOtp = async () => {
-    try {
-      const url = BASE_URL + OTP_GENERATE_END_POINT;
-      const requestData = {
-        phone: mobileNumber,
-        role: "supplier",
-      };
-      const response = await axios.post(url, requestData, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
       if (response.data.status === API_SUCCESS_CODE) {
-        setFetchedOtp(response.data.otp);
-        setOtpSent(true);
+        setIsOtpSent(true);
+        setError("");
         resetTimer();
-        setOtp(["", "", "", ""]);
-        setOtpError("");
       } else {
-        console.log("OTP sending failed");
+        setError("Failed to send OTP. Please try again.");
       }
-    } catch (error) {
-      console.log("Error sending OTP:", error.message);
+    } catch {
+      setError("Error sending OTP. Please try again.");
     }
   };
+
+  const verifyOtp = async () => {
+    if (!otp) {
+      setError("Please enter the OTP");
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        `${BASE_URL}${OTP_VERIFY_ENDPOINT}`,
+        { phone: mobileNumber, role: "customer", otp },
+        { headers: { "Content-Type": "application/json" } }
+      );
+
+      if (response.data.status === API_SUCCESS_CODE) {
+        localStorage.setItem("isLoggedIn", "true");
+        localStorage.setItem("mobileNumber", mobileNumber);
+        localStorage.setItem("token", response.data.token);
+        localStorage.setItem("supplierID", response.data.data._id);
+        const supplierIsPersonalStatus = localStorage.getItem("supplierIsPersonalStatus");
+        const supplierJobProfile = localStorage.getItem("supplierJobProfile");
+        await saveAuthToken(response.data.token);
+        await Storage.set({
+          key: 'supplierJobProfile',
+          value: response.data.data.job_profile, // The token received from your backend
+        });
+     
+        // if (supplierIsPersonalStatus == 1) {
+        if (supplierJobProfile != null) {
+          console.log("logged in false")
+          router.push("/home");
+        } else {
+          router.push("/Profile");
+          console.log("logged in true")
+        }
+        setError("");
+        setOtpError("");
+        setIsOtpSent(false);
+        setIsUserLoggedIn(true);
+        setIsModalOpen(true);
+        setOtp("");
+        setMobileNumber("");
+
+      } else {
+        setOtpError("Invalid OTP. Please try again.");
+        setOtp("");
+      }
+
+    } catch {
+      setOtpError("Error verifying OTP. Please try again.");
+    }
+  };
+
+  const resendOtp = async () => {
+    setOtp("");
+    setIsOtpSent(true);
+    setOtpError("");
+    await sendOtp();
+  };
+
+
 
   return (
-    <div
-      className="login-page"
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        flexDirection: "column",
-        textAlign: "center",
-        margin: "50px 0 0",
-        marginTop: "200px",
-      }}
-    >
-      <Image
-        src={logo}
-        alt="Icon"
-        style={{
-          width: "100px",
-          height: "100px",
-          alignSelf: "center",
-          marginBottom: "30px",
-        }}
-      />
-      {!loggedIn ? (
-        <form
-          className="loginform"
-          style={!otpSent ? { maxWidth: "36rem" } : { maxWidth: "30rem" }}
-        >
-          {!otpSent ? (
-            <>
-              <div
-                className="form-group"
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  flexDirection: "column",
-                  textAlign: "center",
-                }}
-              >
-                <p
-                  className="font-16px"
-                  style={{ color: "#9252AA", fontWeight: 600 }}
-                >
-                  Login with your mobile number{" "}
-                </p>
-                <div className="row gap-1 justify-content-center">
-                  <div className="col-2 p-0 text-center phone-code-wrapper">
-                    <p className="form-control rounded-2 phone-code m-0 py-3">
-                      +91
-                    </p>
-                  </div>
-                  <div className="col-8 p-0">
-                    <Form.Control
-                      className={`rounded-2 font-20px px-4 py-3 mb-4 ${
-                        loginError ? "otp-failed" : "input-field"
-                      }`}
-                      type="tel"
-                      name="mobileNumber"
-                      onChange={handleMobileNumberChange}
-                      value={mobileNumber}
-                      placeholder="Enter your 10 digit mobile number"
-                      isInvalid={loginError}
-                    />
-                  </div>
-                </div>
-                {phoneNumberError && (
-                  <span className="error">{phoneNumberError}</span>
-                )}
+    <div className="login-container">
+      <div className="login-content">
+        <div className="login-header">
+        <Image
+                  src={logo}
+                  alt="logo"
+                  width={60}
+                  height={60}
+                
+              />
+          <h2>Login to Hora!</h2>
+        </div>
+        <div className="otp-login">
+          {!isOtpSent ? (
+            <div className="input-group login">
+              <div style={{ width: "100%", display: "flex" }}>
+                <div className="country-code">+91</div>
+                <input
+                  type="text"
+                  value={mobileNumber}
+                  onChange={handleMobileNumberChange}
+                  placeholder="Login 10 digit Mobile Number"
+                />
               </div>
-              <button
-                type="button"
-                onClick={handleSendOtp}
-                disabled={!validMobileNumber}
-                className="blue-btn loginbtn"
-              >
+            </div>
+          ) : (
+            <div className="input-group">
+              <input
+                type="text"
+                value={otp}
+                onChange={handleOtpChange}
+                placeholder="Enter OTP"
+                className="enterotp-input"
+              />
+            </div>
+          )}
+
+          <div className="buttons">
+            {!isOtpSent ? (
+              <button onClick={sendOtp} className="loginbtn">
                 GET OTP
               </button>
-            </>
-          ) : (
-            <>
-              <p className="font-14px text-center">
-                Check your phone we have sent you an OTP to{" "}
-                <span className="font-14px phone-number-span">
-                  (+91) {mobileNumber}
-                </span>{" "}
-              </p>
-              <Row className="justify-content-center">
-                {otp.map((digit, index) => (
-                  <Col key={index} xs={3} style={{ maxWidth: "7rem" }}>
-                    <Form.Control
-                      type="text"
-                      className={`rounded-3 input-field font-20px py-3 text-center ${
-                        otpError ? "otp-failed" : ""
-                      }`}
-                      name={`otp[${index}]`}
-                      maxLength={1}
-                      inputMode="numeric"
-                      value={digit}
-                      onChange={(e) => handleOtpChange(e, index)}
-                      onKeyDown={(e) => handleKeyDown(e, index)}
-                      ref={otpRefs.current[index]}
-                    />
-                  </Col>
-                ))}
-              </Row>
-            </>
-          )}
-          {loginMsg && <span className="successmsg">{loginMsg} </span>}
-          {otpError && <span className="error">{otpError}</span>}
+            ) : (
+              <button
+                onClick={verifyOtp}
+                className="loginbtn"
+                disabled={otp.length !== 4}
+              >
+                Verify OTP
+              </button>
+            )}
+          </div>
+
           {otpError ? (
-            <div className="d-flex justify-content-between mt-4">
-              <p className="m-0 p-0 text-danger font-13px">*Wrong OTP</p>
+            <div className="d-flex justify-content-between mt-2 otp-error">
+              <p className="m-0 p-0 text-danger">* {otpError}</p>
               <p
-                className="m-0 p-0 font-13px"
+                className="m-0 p-0"
                 style={{ color: "#9252AA", cursor: "pointer" }}
-                onClick={fetchOtp}
+                onClick={resendOtp}
               >
                 Resend Code
               </p>
             </div>
-          ) : (
-            otpSent && (
-              <div className="d-flex justify-content-center mt-4">
-                <p
-                  className="m-0 p-0 font-13px text-center"
-                  style={{ color: "#8A8A8A" }}
-                >
-                  Resend Code in {time} sec
-                </p>
-              </div>
-            )
-          )}
-        </form>
-      ) : (
-        <div>
-          <p>Welcome! You have successfully logged in.</p>
+          ) : isOtpSent ? (
+            <div className="d-flex justify-content-center mt-4 resend-timer">
+              <p className="m-0 p-0 text-center" style={{ color: "#8A8A8A" }}>
+                Resend Code in {time} sec
+              </p>
+            </div>
+          ) : null}
+
+          {error && <p className="error-message">{error}</p>}
         </div>
-      )}
-      {showPopup && (
-        <Popup
-          onClose={() => setShowPopup(false)}
-          popupMessage={popupMessage}
-        />
-      )}
+      </div>
     </div>
   );
 };

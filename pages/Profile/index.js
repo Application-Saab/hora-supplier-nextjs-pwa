@@ -132,7 +132,7 @@ const ProfileUpdate = () => {
 
   return (
     <Layout>
-      <div className="profile-container" style={{ backgroundColor:"rgba(237, 237, 237, 0.79)" , minHeight:"100vh"}}>
+      <div className="profile-container">
         <div className="profile-form">
         {!showAdditionalFields && (
           <div style={{ width:"100%" , marginBottom:20 , backgroundColor:"rgb(255, 255, 255)" , boxShadow:"rgba(0, 0, 0, 0.18) 0px 1px 8px" , padding:"20px" , borderRadius:"20px"}}>
@@ -163,6 +163,7 @@ const ProfileUpdate = () => {
                 <option value="">Select Job Profile</option>
                 <option value="Chef" job_type="2">Chef</option>
                 <option value="Decorator" job_type="1">Decorator</option>
+                {/* <option value="Photographer" job_type="8">Photographer</option> */}
               </select>
             </div>
             <button type="submit" className='button-primary'>Continue</button>
