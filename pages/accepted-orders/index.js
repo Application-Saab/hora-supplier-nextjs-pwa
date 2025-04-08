@@ -59,7 +59,7 @@ const Orderlist = () => {
           },
           body: JSON.stringify({
             page: 1,
-            per_page: 4000,
+            per_page: 6000,
             status: 1,
             order_status: 1,
             type: Number(supplierJobType),
@@ -281,7 +281,9 @@ const Orderlist = () => {
                                       height={20}
                                       width={20}
                                     />{" "}
-                                    <span>{order.order_time}</span>
+
+                                                                <span>{order.order_time.split(" - ")[0].split(" ")[0]} {order.order_time.split(" - ")[0].split(" ")[1]}</span>
+
                                   </div>
                                 )}
                                 {supplierJobType !== "1" &&

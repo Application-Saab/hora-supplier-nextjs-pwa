@@ -65,23 +65,29 @@ const OrderDetailHeader = ({ orderDetail }) => {
         <div style={styles.detailsRow}>
           <div style={styles.leftColumn}>
             {orderDetail?.order_id && (
-              <p>
+              <p style={{ marginBottom: "2px"}}>
                 <strong>Id:</strong> {getOrderId(orderDetail.order_id)}
               </p>
             )}
             {orderDetail?.order_date && (
-              <p>
+              <p style={{ marginBottom: "2px"}}>
                 <strong>Date:</strong> {formatDate(orderDetail.order_date)}
               </p>
             )}
 
-            <p>
+            <p style={{ marginBottom: "2px"}}>
               <strong>Time:</strong>
-              {orderDetail?.order_time}
+            
+  {orderDetail?.order_time && (() => {
+    const firstTime = orderDetail.order_time.split(" - ")[0];
+    const [hour, period] = firstTime.split(" ");
+    return `${hour} ${period}`;
+  })()}
+
             </p>
 
             {orderDetail?.order_locality && (
-              <p>
+              <p style={{ marginBottom: "2px"}}>
                 <strong>Location:</strong> {orderDetail.order_locality}
               </p>
             )}
@@ -100,10 +106,10 @@ const OrderDetailHeader = ({ orderDetail }) => {
 
         {orderDetail.addressId?.address1 && (
           <div style={styles.centeredAddress}>
-            <p>
+            <p style={{ marginBottom: "2px"}}>
               <strong>Address:</strong> {orderDetail.addressId.address1}
             </p>
-            <p>
+            <p style={{ marginBottom: "2px"}}>
               <strong>Google Map Location:</strong>{" "}
               <a href={orderDetail.addressId.address2} style={{ fontWeight: "bold" , cursor:"pointer" , wordWrap: "break-word" , color: 'blue' , borderBottom: '1px solid blue' }} target="_blank" rel="noopener">{orderDetail.addressId.address2}</a>
             </p>
@@ -120,7 +126,7 @@ const styles = {
   bookingContainer: {
     backgroundColor: "#9252aa", // Blue color
     color: "white",
-    padding: "20px",
+    padding: "7px 20px 4px",
     borderRadius: "15px",
     width: "100%",
     marginBottom: "12px",
@@ -130,7 +136,7 @@ const styles = {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: "10px",
+    marginBottom: "2px",
   },
   headerText: {
     fontSize: "12px",
@@ -149,7 +155,7 @@ const styles = {
   detailsRow: {
     display: "flex",
     justifyContent: "space-between",
-    marginBottom: "10px",
+    marginBottom: "2px",
   },
   leftColumn: {
     textAlign: "left",
@@ -161,7 +167,7 @@ const styles = {
   },
   centeredAddress: {
     textAlign: "left",
-    marginTop: "10px",
+    marginTop: "2px",
     fontSize: "14px",
   },
   directionsButton: {

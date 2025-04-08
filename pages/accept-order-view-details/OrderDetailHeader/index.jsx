@@ -93,23 +93,29 @@ const OrderDetailHeader = ({ orderDetail }) => {
         <div style={styles.detailsRow}>
           <div style={styles.leftColumn}>
             {orderDetail?.order_id && (
-              <p>
+              <p style={{ marginBottom: "2px"}}>
                 <strong>Id:</strong> {getOrderId(orderDetail.order_id)}
               </p>
             )}
             {orderDetail?.order_date && (
-              <p>
+              <p style={{ marginBottom: "2px"}}>
                 <strong>Date:</strong> {formatDate(orderDetail.order_date)}
               </p>
             )}
 
-<p>
-  <strong>Time:
-  </strong>{orderDetail?.order_time}
+<p style={{ marginBottom: "2px"}}>
+  <strong style={{ marginRight: "3px"}}>Time:</strong>
+     
+  {orderDetail?.order_time && (() => {
+    const firstTime = orderDetail.order_time.split(" - ")[0];
+    const [hour, period] = firstTime.split(" ");
+    return `${hour} ${period}`;
+  })()}
+
   </p>
 
   {orderDetail?.order_locality && (
-              <p>
+             <p style={{ marginBottom: "2px"}}>
                 <strong>Location:</strong> {orderDetail.order_locality}
               </p>
             )}
@@ -118,7 +124,7 @@ const OrderDetailHeader = ({ orderDetail }) => {
 
         {orderDetail?.addressId?.address1 && (
   <div style={styles.centeredAddress}>
-    <p>
+    <p style={{ marginBottom: "2px"}}>
       <strong>Address:</strong> {orderDetail.addressId.address1}
     </p>
     <p>
@@ -138,7 +144,7 @@ const styles = {
   bookingContainer: {
     backgroundColor: "#9252aa", // Blue color
     color: "white",
-    padding: "20px",
+    padding: "10px 20px 5px",
     borderRadius: "15px",
     width: "100%",
     marginBottom: "12px",
@@ -153,6 +159,7 @@ const styles = {
   headerText: {
     fontSize: "18px",
     fontWeight: "bold",
+    marginBottom:"2px",
   },
   callButton: {
     backgroundColor: "#ff726f", // Red color for call button
@@ -167,7 +174,7 @@ const styles = {
   detailsRow: {
     display: "flex",
     justifyContent: "space-between",
-    marginBottom: "10px",
+    marginBottom: "2px",
   },
   leftColumn: {
     textAlign: "left",
@@ -179,7 +186,7 @@ const styles = {
   },
   centeredAddress: {
     textAlign: "left",
-    marginTop: "10px",
+    marginTop: "2px",
     fontSize: "14px",
   },
   directionsButton: {
