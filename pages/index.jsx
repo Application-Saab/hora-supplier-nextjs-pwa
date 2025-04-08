@@ -81,7 +81,7 @@ const Login = () => {
     try {
       const response = await axios.post(
         `${BASE_URL}${OTP_GENERATE_END_POINT}`,
-        { phone: mobileNumber, role: "customer" },
+        { phone: mobileNumber, role: "supplier" },
         { headers: { "Content-Type": "application/json" } }
       );
 
@@ -106,7 +106,7 @@ const Login = () => {
     try {
       const response = await axios.post(
         `${BASE_URL}${OTP_VERIFY_ENDPOINT}`,
-        { phone: mobileNumber, role: "customer", otp },
+        { phone: mobileNumber, role: "supplier", otp },
         { headers: { "Content-Type": "application/json" } }
       );
 
