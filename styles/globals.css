@@ -888,6 +888,14 @@ main.shifted {
   margin-top: 5px;
 }
 
+.button-div.accept-order {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+button.add-more-button.call-customer {
+  margin: 16px 0 0;
+}
 .status.cancelled {
   color: red;
 }

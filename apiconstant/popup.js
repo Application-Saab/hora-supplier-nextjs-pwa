@@ -26,6 +26,13 @@ const Popup = ({ onClose, popupMessage }) => {
     onClose();
   };
 
+  const handleCallExecutor = () => {
+    if (popupMessage?.onButtonClick && popupMessage.executorPhone) {
+      popupMessage.onButtonClick(popupMessage.executorPhone); 
+    }
+    onClose();
+  };
+
 
   return (
     <div className="popup-overlay">
@@ -46,13 +53,8 @@ const Popup = ({ onClose, popupMessage }) => {
                   alt="Popup"
                   className="popup-image"
               />
-          ) : (
-              <Image
-                  src= {imageivew}
-                  alt="Default"
-                  className="popup-image"
-              />
-          )}
+          ) : 'Loading Please wait...'
+          }
 
           <h1>{popupMessage?.title}</h1>
           <p>{popupMessage?.body}</p>
@@ -71,11 +73,18 @@ const Popup = ({ onClose, popupMessage }) => {
             <button className="add-more-button" onClick={handleAddMore}>
               + {popupMessage?.button}
             </button>
-          )}{popupMessage?.button === "OK" && (
+          )}
+          {popupMessage?.button === "OK" && (
             <button className="add-more-button" onClick={handleOk}>
               {popupMessage?.button}
             </button>
         )}
+
+{popupMessage?.button === "Call Customer" && (
+          <button className="add-more-button call-customer" onClick={handleCallExecutor}>
+            {popupMessage?.button}
+          </button>
+      )}
         </div>
       </div>
     </div>

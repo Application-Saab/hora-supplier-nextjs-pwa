@@ -9,6 +9,9 @@ import date_time_icon from "../../assets/date-time-icon.png";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import Layout from "../../component/Layout";
+import Popup from "../../apiconstant/popup";
+import informationImage from "../../assets/information.webp";
+import dangerImage from "../../assets/danger.webp";
 
 const Orderlist = () => {
   const router = useRouter();
@@ -17,6 +20,11 @@ const Orderlist = () => {
   const [selectedDate, setSelectedDate] = useState("");
   const [availableDates, setAvailableDates] = useState([]);
   const [expandedDate, setExpandedDate] = useState(null);
+  const [showPopup, setShowPopup] = useState(false);
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [executor, setExecutor] = useState("");
+  const [isPopupVisible, setIsPopupVisible] = useState(false);
+  const [popupMessage, setPopupMessage] = useState(null);
 
   let supplierJobType;
   let supplierID;
@@ -176,6 +184,104 @@ const Orderlist = () => {
     });
   };
 
+  const parseTime = (timeString, date) => {
+    const [time, modifier] = timeString.split(" ");
+    let [hours, minutes] = time.split(":");
+
+    if (modifier === "PM" && hours !== "12") {
+      hours = parseInt(hours, 10) + 12;
+    }
+    if (modifier === "AM" && hours === "12") {
+      hours = "0";
+    }
+
+    const parsedDate = date ? new Date(date) : new Date();
+    const year = parsedDate.getFullYear();
+    const month = parsedDate.getMonth();
+    const day = parsedDate.getDate();
+
+    return new Date(
+      year,
+      month,
+      day,
+      parseInt(hours, 10),
+      parseInt(minutes, 10),
+      0
+    );
+  };
+
+
+  const isWithinFourHourWindow = (orderTimeRange, orderDate) => {
+    const [startTimeString] = orderTimeRange.split(" - ");
+    const startTime = parseTime(startTimeString, orderDate);
+    const twoHoursBeforeStartTime = startTime.getTime() - 5 * 60 * 60 * 1000;
+    const twoHoursAfterStartTime = startTime.getTime() + 5 * 60 * 60 * 1000;
+
+    const currentTime = new Date();
+    return (
+      currentTime.getTime() >= twoHoursBeforeStartTime &&
+      currentTime.getTime() < twoHoursAfterStartTime
+    );
+  };
+
+  
+  const openSupplierPopup = async (order) => {
+    console.log(order, "order111");
+    const { _id, order_id, type, fromId    } = order;
+
+   
+      const apiOrderId = _id;
+      const orderType = type;
+      const orderId = fromId ;
+  
+      try {
+        
+        // Fetch executor details from the API
+        const response = await fetch(
+          `https://horaservices.com:3000/api/admin/getUserDetails/${orderId}`
+        );
+  
+        console.log(response, "response");
+  
+        if (!response.ok) {
+          throw new Error("Failed to fetch user details");
+        }
+  
+        const data = await response.json();
+
+  
+        const executorName = data.data.name;
+        const executorPhone = data.data.phone;
+  
+        setPopupMessage({
+          img: informationImage,
+          title: `Customer Name: ${executorName}`,
+          body: `Customer Phone: ${executorPhone}`,
+          button: "Call Customer",
+          executorPhone: executorPhone,
+          onButtonClick: (phone) => {
+            console.log(phone, "phone");
+            if (phone) {
+              window.location.href = `tel:${phone}`;
+            } else {
+              alert("Phone number not available.");
+            }
+          },
+        });
+  
+        setIsPopupVisible(true);
+      } catch (error) {
+        console.error(error.message);
+        setIsPopupVisible(true);
+      }
+   
+  };
+
+  const closePopup = () => {
+    setIsPopupOpen(false);
+    setIsPopupVisible(false);
+  };
+
   if (loading) {
     return (
       <center>
@@ -193,19 +299,7 @@ const Orderlist = () => {
     );
   }
 
-  // if (orders.length === 0) {
-  //   return (
-  //     <center>
-  //       <div className="no-orders">
-  //         <h4>No Orders. Please continue shopping with Hora.</h4>
-  //         <button className="button-style" onClick={openContinueShopping}>
-  //           Continue Shopping
-  //         </button>
-  //       </div>
-  //     </center>
-  //   );
-  // }
-
+ 
   return (
     <Layout>
       <main className="order-list">
@@ -331,13 +425,49 @@ const Orderlist = () => {
                               </div>
                             </div>
                             <hr className="m-0" />
-                            <div className="d-flex button-div">
+                            <div className="button-div accept-order">
                               <button
                                 className="view-details"
                                 onClick={() => handleViewDetail(order)}
                               >
                                 View Details
                               </button>
+             
+                        <>
+                          <button
+                            className="view-details"
+                            onClick={() => {
+                              if (isWithinFourHourWindow('4:00 PM - 7:00 PM', '2025-04-14')) {
+                                openSupplierPopup(order);
+                                setIsPopupVisible(true);
+                              } 
+                              else {
+                                setPopupMessage({
+                                  img: dangerImage,
+                                  title:
+                                    "Customer details will be shown 5 hours before your scheduled time to avoid distractions. 🙂",
+                                  body: "",
+                                  button: "OK",
+                                });
+                                console.log(order, "order");
+                                setIsPopupVisible(true);
+                              }
+                            }}
+                            style={{ marginLeft: "10px" }}
+                          >
+                            Customer Details
+                          </button>
+                          {isPopupVisible && (
+                            <Popup
+                              style={{ backgroundColor: "rgba(0, 0, 0, 0.1)" }}
+                              onClose={closePopup}
+                              popupMessage={popupMessage}
+                            />
+                          )}
+                        </>
+                   
+                  
+
                             </div>
                           </div>
                         );
