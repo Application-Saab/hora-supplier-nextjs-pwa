@@ -177,6 +177,7 @@ button.loginbtn:disabled {
   border: rgb(222, 226, 230);
   padding: 9px 9px;
   width: 91%;
+  color: #000;
 }
 .country-code {
   background-color: #d7d5d5a8;
