@@ -104,7 +104,7 @@ const OrderDetailHeader = ({ orderDetail }) => {
             )}
 
 <p style={{ marginBottom: "2px"}}>
-  <strong style={{ marginRight: "3px"}}>Time:</strong>
+  <strong style={{ marginRight: "3px"}}>Arrival Time:</strong>
      
   {orderDetail?.order_time && (() => {
     const firstTime = orderDetail.order_time.split(" - ")[0];

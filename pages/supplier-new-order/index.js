@@ -49,7 +49,7 @@ const Orderlist = () => {
           },
           body: JSON.stringify({
             page: 1,
-            per_page: 6000,
+            per_page: 1000,
             status: 1,
             type: Number(supplierJobType),
             order_locality: supplierCity.charAt(0).toUpperCase() + supplierCity.slice(1).toLowerCase(),

@@ -67,7 +67,7 @@ const Orderlist = () => {
           },
           body: JSON.stringify({
             page: 1,
-            per_page: 6000,
+            per_page: 1000,
             status: 1,
             order_status: 1,
             type: Number(supplierJobType),
@@ -437,7 +437,7 @@ const Orderlist = () => {
                           <button
                             className="view-details"
                             onClick={() => {
-                              if (isWithinFourHourWindow('4:00 PM - 7:00 PM', '2025-04-14')) {
+                              if (isWithinFourHourWindow(order.order_time, order.order_date)) {
                                 openSupplierPopup(order);
                                 setIsPopupVisible(true);
                               } 
