@@ -256,7 +256,7 @@ const OrderDetailTab = ({
               <p className="product-page-heading">Additional Comments:</p>
                       <ul className="comments-text aarti">
                       <ul className="comments-text aarti">
-                      {decorationComments.split(/[,\n;\-]+/).map((comment, index) => (
+                      {decorationComments.split('-').map((comment, index) => (
                       <li key={index}>{comment.trim()}</li>
                         ))}
                       </ul>

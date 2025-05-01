@@ -90,10 +90,10 @@ const OrderDetailHeader = ({ orderDetail }) => {
         </div>
 
         {/* Left and Right Column for Details */}
-        <div style={styles.detailsRow}>
+        <div style={styles.detailsRow} className="order-details-header">
           <div style={styles.leftColumn}>
             {orderDetail?.order_id && (
-              <p style={{ marginBottom: "2px"}}>
+              <p style={{ marginBottom: "2px" }}>
                 <strong>Id:</strong> {getOrderId(orderDetail.order_id)}
               </p>
             )}
