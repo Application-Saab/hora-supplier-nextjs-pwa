@@ -58,6 +58,10 @@ const OrderDetail = () => {
         BASE_URL + ORDER_DETAILS_ENDPOINT + "/v1/" + apiOrderId
       );
       const responseData = await response.json();
+      console.log(responseData, "responseDatamenu");
+      
+      setDecorationComments(responseData?.data?.decoration_comments);
+      setBalanceAmount(responseData.data.balance_amount);
       setOrderDetail(responseData.data);
       setLoading(false);
     } catch (error) {
@@ -72,6 +76,7 @@ const OrderDetail = () => {
         BASE_URL + GET_BOOKING_ORDER_DETAILS + "/" + orderId
       );
       const responseData = await response.json();
+      console.log(responseData, "responseDataDecorationOrderDetails");
 
       setOrderDetail(responseData.data._doc);
       setDecorationItems(responseData.data.items[0].decoration);
@@ -92,6 +97,7 @@ const OrderDetail = () => {
         BASE_URL + ORDER_DETAILS_ENDPOINT + "/v1/" + apiOrderId
       );
       const responseData = await response.json();
+      console.log(responseData, "responseDataorderdetails");
 
       setOrderDetail(responseData.data);
       setHospitalityServiceCount(responseData.data.no_of_people);

@@ -1,5 +1,6 @@
+"use client";
 import Image from "next/image";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Layout from "../../component/Layout";
 import CameraFrame from "../../assets/camera_frame.png";
 import {BASE_URL, COMPLETE_ORDER} from '../../apiconstant/apiconstant';
@@ -29,43 +30,6 @@ const PictureUpload = () => {
       setImages(prev => ({ ...prev, [type]: files[0] })); 
     }
   };
-
-  // const uploadAllImages = async () => {
-  //   const allImagesUploaded = Object.keys(images).every(type => images[type] !== null);
-
-  //   if (!allImagesUploaded) {
-  //     alert("Please upload all images before submitting."); 
-  //     return; 
-  //   }
-
-  //   const formData = new FormData();
-  //   Object.keys(images).forEach(type => {
-  //     if (images[type]) {
-  //       formData.append(type, images[type]);
-  //     }
-  //   });
-
-  //   try {
-  //     const response = await fetch("https://horaservices.com:3000/api/image_upload", {
-  //       method: "POST",
-  //       file: formData,
-  //     });
-
-  //     if (!response.ok) {
-  //       throw new Error("Failed to upload images");
-  //     }
-
-  //     const data = await response.json();
-  //     console.log("Successfully uploaded all pictures", data);
-  //     alert("Successfully uploaded all images!");
-  //     setUploadSuccess(true); 
-  //   } catch (error) {
-  //     console.error("Error uploading images:", error);
-  //     alert("Error uploading images: " + error.message);
-  //     setUploadSuccess(false); 
-  //   }
-  // };
-
 
   const uploadAllImages = async () => {
     const firstImageType = Object.keys(images).find(type => images[type] !== null);
@@ -102,58 +66,13 @@ const PictureUpload = () => {
     }
   };
 
+  const [supplierJobType, setSupplierJobType] = useState(null);
 
-  // const uploadAllImages = async () => {
-  //   const allImagesUploaded = Object.keys(images).every(type => images[type] !== null);
-  
-  //   if (!allImagesUploaded) {
-  //     alert("Please upload all images before submitting."); 
-  //     return; 
-  //   }
-  
-  //   const imageNamesArray = [];
-  
-  //   Object.keys(images).forEach(type => {
-  //     const imageToUpload = images[type];
-  //     if (imageToUpload) {
-  //       imageNamesArray.push(imageToUpload.name); 
-  //       console.log(`Preparing to upload ${type}:`, imageToUpload.name);
-  //     } else {
-  //       console.log(`No image uploaded for ${type}`);
-  //     }
-  //   });
-  
-  //   console.log("Image names array to be uploaded:", imageNamesArray);
-  
-  //   const dataToSend = {
-  //     file: imageNamesArray, 
-  //   };
-  
-  //   try {
-  //     const response = await fetch("https://horaservices.com:3000/api/image_upload", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify(dataToSend), 
-  //     });
-  
-  //     if (!response.ok) {
-  //       throw new Error("Failed to upload images");
-  //     }
-  
-  //     const data = await response.json();
-  //     console.log("Successfully uploaded all image names:", data);
-  //     alert("Successfully uploaded all image names!");
-  //     setUploadSuccess(true); 
-  //   } catch (error) {
-  //     console.error("Error uploading image names:", error);
-  //     alert("Error uploading image names: " + error.message);
-  //     setUploadSuccess(false); 
-  //   }
-  // };
-    
-  
+  useEffect(() => {
+    const jobType = localStorage.getItem("supplierJobType");
+    setSupplierJobType(Number(jobType)); // Convert to number for comparison
+  }, []);
+
   
 
   const handleJobComplete = () => {
@@ -187,78 +106,83 @@ const PictureUpload = () => {
 
   return (
     <Layout>
-    <div style={{ padding: "20px" }}>
-    <h2 style={styles.title}>Take & Upload Pictures</h2>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
-        {[
-          { label: "Picture", type: "slab" },
-        ].map((item) => (
-          <div
-            key={item.type}
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              textAlign: "center",
-             
-            }}
-          >
-            <label style={styles.title}>{item.label}</label>
-            <div style={{
-              border: "1px dashed gray",
-              width: "150px",
-              height: "150px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              position: "relative",
-              cursor: "pointer",
-            }}>
-              <input
-                type="file"
-                id={item.type}
-                accept="image/*"
-                onChange={(event) => handleImageChange(event, item.type)}
-                style={{
-                  position: "absolute",
-                  width: "100%",
-                  height: "100%",
-                  opacity: 0,
-                  cursor: "pointer"
-                }}
-              />
-              {images[item.type] ? (
-                <Image
-                  src={URL.createObjectURL(images[item.type])}
-                  alt={`${item.label}`}
-                  style={{ maxWidth: "100%", maxHeight: "100%" }}
-                  width={100}
-                  height={100}
-                />
-              ) : (
-                // <span style={{ color: "gray" }}>📷</span>
-                <Image
-                  src={CameraFrame}
-                  style={{ maxWidth: "30%", maxHeight: "30%" }}
-                  width={100}
-                  height={100}
-                />
-              )}
-            </div>
-          </div>
-        ))}
-      </div>
-      <button onClick={uploadAllImages} className="startbutton" style={{marginLeft: "40px", marginTop: "20px"}}>
-        Upload All Images
-      </button>
-
-      <div>
-      {uploadSuccess && (
-        <button onClick={handleJobComplete} className="startbutton" style={{marginLeft: "40px"}}>
+     <div style={{ padding: "20px" }}>
+      {supplierJobType === 8 ? (
+        <button onClick={handleJobComplete} className="startbutton" style={{ marginLeft: "40px" }}>
           Job Completed
-                  </button>
+        </button>
+      ) : (
+        <>
+          <h2 style={{ fontWeight: "bold" }}>Take & Upload Pictures</h2>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
+            {[
+              { label: "Picture", type: "slab" },
+            ].map((item) => (
+              <div
+                key={item.type}
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  textAlign: "center",
+                }}
+              >
+                <label style={{ fontWeight: "bold" }}>{item.label}</label>
+                <div style={{
+                  border: "1px dashed gray",
+                  width: "150px",
+                  height: "150px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  position: "relative",
+                  cursor: "pointer",
+                }}>
+                  <input
+                    type="file"
+                    id={item.type}
+                    accept="image/*"
+                    onChange={(event) => handleImageChange(event, item.type)}
+                    style={{
+                      position: "absolute",
+                      width: "100%",
+                      height: "100%",
+                      opacity: 0,
+                      cursor: "pointer"
+                    }}
+                  />
+                  {images[item.type] ? (
+                    <Image
+                      src={URL.createObjectURL(images[item.type])}
+                      alt={`${item.label}`}
+                      style={{ maxWidth: "100%", maxHeight: "100%" }}
+                      width={100}
+                  height={100}
+                    />
+                  ) : (
+                    <Image
+                      src={CameraFrame}
+                      alt="Camera Frame"
+                      style={{ maxWidth: "30%", maxHeight: "30%" }}
+                      width={100}
+                  height={100}
+                    />
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+          <button onClick={uploadAllImages} className="startbutton" style={{ marginLeft: "40px", marginTop: "20px" }}>
+            Upload All Images
+          </button>
+
+          {uploadSuccess && (
+            <button onClick={handleJobComplete} className="startbutton" style={{ marginLeft: "40px" }}>
+              Job Completed
+            </button>
+          )}
+        </>
       )}
-      </div>
     </div>
     </Layout>
   );

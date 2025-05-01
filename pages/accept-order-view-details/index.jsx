@@ -58,6 +58,9 @@ const OrderDetail = () => {
         BASE_URL + ORDER_DETAILS_ENDPOINT + "/v1/" + apiOrderId
       );
       const responseData = await response.json();
+      
+      setDecorationComments(responseData?.data?.decoration_comments);
+      setBalanceAmount(responseData.data.balance_amount);
       setOrderDetail(responseData.data);
       setLoading(false);
     } catch (error) {

@@ -161,8 +161,9 @@ const ProfileUpdate = () => {
                 required
               >
                 <option value="">Select Job Profile</option>
-                <option value="Chef" job_type="2">Chef</option>
+                <option value="" job_type="2">Chef</option>
                 <option value="Decorator" job_type="1">Decorator</option>
+                <option value="Photography" job_type="8">Photography</option>
                 {/* <option value="Photographer" job_type="8">Photographer</option> */}
               </select>
             </div>
