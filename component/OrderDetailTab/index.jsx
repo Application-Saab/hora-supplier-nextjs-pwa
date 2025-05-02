@@ -9,7 +9,10 @@ import OrderDetailsAppliances from "../OrderDetailsAppliances";
 import Image from "next/image";
 
 import { useRouter } from "next/router";
-import { BASE_URL, ACCEPT_ORDER } from "../../apiconstant/apiconstant";
+import { BASE_URL, ACCEPT_ORDER, GET_PHOTOGRAPHY_BY_NAME } from "../../apiconstant/apiconstant";
+import checkImage from "../../assets/tick.jpeg";
+import axios from 'axios';
+
 
 const OrderDetailTab = ({
   orderDetail,
@@ -32,15 +35,58 @@ const OrderDetailTab = ({
   const [tab, setTab] = useState("Menu");
   const [orderStatus, setOrderStatus] = useState(orderDetail?.order_status);
 
+  console.log(orderDetail, "orderDetailsss");
+  
+  // const [name, setname] = useState();
+  const [name, setName] = useState();
+
+  const fetchAndMatchItems = async (orderDetail) => {
+    try {
+      const { items } = orderDetail;
+      if (!items || items.length === 0) return;
+  
+      for (const itemId of items) {
+        const url = `${BASE_URL}${GET_PHOTOGRAPHY_BY_NAME}`;
+        try {
+          const response = await axios.get(url);
+          const apiData = response.data;
+  
+          if (apiData?.data?.length > 0) {
+            // 🔍 Find the matching item in the entire response array
+            const matchedItem = apiData.data.find(item => item._id === itemId);
+  
+            if (matchedItem) {
+              console.log(`✅ Match found for ID ${itemId}:`, matchedItem.name);
+              setName(matchedItem.name); // overwrites previous; store in array if needed
+            } else {
+              console.log(`❌ No match for ID ${itemId}`);
+            }
+          }
+        } catch (axiosError) {
+          console.error(`Error fetching data for ID ${itemId}:`, axiosError.message);
+        }
+      }
+    } catch (error) {
+      console.error("Error in fetchAndMatchItems:", error);
+    }
+  };
+  
+
+  fetchAndMatchItems(orderDetail);
+
+
+
   const getItemInclusion = (inclusion) => {
     if (!Array.isArray(inclusion) || inclusion.length === 0) {
       return null;
     }
     const htmlString = inclusion[0];
-    const withoutTags = htmlString.replace(/<[^>]*>/g, ''); // Remove HTML tags
-    const withoutSpecialChars = withoutTags.replace(/&#[^;]*;/g, ' '); // Replace &# sequences with space
-    const statements = withoutSpecialChars.split('<div>');
-    const inclusionItems = statements.flatMap(statement => statement.split("-").filter(item => item.trim() !== ''));
+    const withoutTags = htmlString.replace(/<[^>]*>/g, ""); // Remove HTML tags
+    const withoutSpecialChars = withoutTags.replace(/&#[^;]*;/g, " "); // Replace &# sequences with space
+    const statements = withoutSpecialChars.split("<div>");
+    const inclusionItems = statements.flatMap((statement) =>
+      statement.split("-").filter((item) => item.trim() !== "")
+    );
     const inclusionList = inclusionItems.map((item, index) => (
       <li key={index} className="inclusionstyle">
         {item.trim()}
@@ -48,11 +94,8 @@ const OrderDetailTab = ({
     ));
     return (
       <div>
-        <ul>
-          {inclusionList}
-        </ul>
+        <ul>{inclusionList}</ul>
       </div>
-
     );
   };
 
@@ -217,58 +260,174 @@ const OrderDetailTab = ({
                 <div className="product-info">
                   <p className="product-name">{product?.name}</p>
                   {/* <p className="product-price">₹{product?.price}</p> */}
-                
 
                   <div className="product-inclusion prod_sec">
-                  <div className="product-page-heading">Inclusion</div>
-                  <div>{getItemInclusion(product?.inclusion)}</div>
+                    <div className="product-page-heading">Inclusion</div>
+                    <div>{getItemInclusion(product?.inclusion)}</div>
                   </div>
-                 
-                <div className="product-add-ons prod_sec">
-                  <p className="product-page-heading">AddOns:</p>
-                  <ul>
-                  {
-                    decorationAddon.map((item, index) => (
-                      <li key={index}>
-                        <div>{item.name}{item.title}</div>
-                      </li>
-                          )
-                          )}
+
+                  <div className="product-add-ons prod_sec">
+                    <p className="product-page-heading">AddOns:</p>
+                    <ul>
+                      {decorationAddon.map((item, index) => (
+                        <li key={index}>
+                          <div>
+                            {item.name}
+                            {item.title}
+                          </div>
+                        </li>
+                      ))}
                     </ul>
-                </div>
+                  </div>
 
-
-                
                   <div className="prod_sec balanc_amount">
                     <div className="product-page-heading">
                       {/* Balance Amount: */}
                       Amount:
                     </div>
-                    <div>
-                      ₹{balanceAmount}
-                    </div>
+                    <div>₹{balanceAmount}</div>
                   </div>
 
-
-
                   {decorationComments && (
-            <div className="comment-container prod_sec">
-              <p className="product-page-heading">Additional Comments:</p>
-                      <ul className="comments-text aarti">
-                      <ul className="comments-text aarti">
-                      {decorationComments.split('-').map((comment, index) => (
-                      <li key={index}>{comment.trim()}</li>
-                        ))}
-                      </ul>
-                      </ul>
-            </div>
-          )}
+                    <div className="comment-container prod_sec">
+                      <p className="product-page-heading">
+                        Additional Comments:
+                      </p>
+                        <ul className="comments-text aarti">
+                          {decorationComments
+                            .split(/[,\n;\-]+/)
+                            .map((comment, index) => (
+                              <li key={index}>{comment.trim()}</li>
+                            ))}
+                        </ul>
+                    
+                    </div>
+                  )}
                 </div>
               </div>
             );
           })}
-          
         </div>
+         ) : orderType == 8 ? (
+          <div className="decoration-container">
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "flex-start",
+                paddingTop: "10px",
+                position: "relative",
+              }}
+              className="decDetails"
+            >
+              <div
+                style={{ width: "50%", textAlign: "center" }}
+                className="decDetailsLeft"
+              ></div>
+              <div
+                style={{
+                  width: "50%",
+                  paddingLeft: "20px",
+                  paddingRight: "50px",
+                }}
+                className="decDetailsRight"
+              >
+                <div
+                  style={{
+                    boxShadow: "0 1px 8px rgba(0,0,0,.18)",
+                    padding: "10px",
+                    marginBottom: "12px",
+                    backgroundColor: "#fff",
+                  }}
+                >
+                  <h1
+                    style={{
+                      fontSize: "16px",
+                      color: "#222",
+                      fontSize: "21px",
+                      fontWeight: "#222",
+                    }}
+                  >
+                    {name}
+                  </h1>
+                </div>
+  
+                <div
+                  style={{
+                    boxShadow: "0 1px 8px rgba(0,0,0,.18)",
+                    padding: "10px",
+                    marginBottom: "12px",
+                    backgroundColor: "#fff",
+                  }}
+                >
+                  {orderDetail?.add_on?.length > 0 && (
+                    <>
+                      <div
+                        style={{
+                          fontSize: "21px",
+                          borderBottom: "1px solid #e7eff9",
+                          marginBottom: "10px",
+                        }}
+                      >
+                        Inclusions
+                      </div>
+                      {/* <div className="product-add-ons"> */}
+                      <ul>
+                        {orderDetail.add_on.map((item, index) => (
+                          <li key={index} className="inclusionstyle">
+                            <Image
+                              src={checkImage}
+                              alt="Info"
+                              style={{ height: 13, width: 13, marginRight: 10 }}
+                            />
+                            <span>{item || "NA"}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </>
+                  )}
+                </div>
+                <div className="prod_sec balanc_amount"
+                 style={{
+                  boxShadow: "0 1px 8px rgba(0,0,0,.18)",
+                  padding: "10px",
+                  marginBottom: "12px",
+                  backgroundColor: "#fff",
+                }}>
+                    <div className="product-page-heading"
+                    >
+                      {/* Balance Amount: */}
+                      Amount:
+                    </div>
+                    <div>₹{balanceAmount}</div>
+                  </div>
+
+                  {decorationComments && (
+                    <div className="comment-container prod_sec"
+                    style={{
+                      boxShadow: "0 1px 8px rgba(0,0,0,.18)",
+                      padding: "10px",
+                      marginBottom: "12px",
+                      backgroundColor: "#fff",
+                    }}>
+                      <p className="product-page-heading">
+                        Additional Comments:
+                      </p>
+                      <ul className="comments-text aarti">
+                        <ul className="comments-text aarti">
+                          {decorationComments
+                            .split(/[,\n;\-]+/)
+                            .map((comment, index) => (
+                              <li key={index}>{comment.trim()}</li>
+                            ))}
+                        </ul>
+                      </ul>
+                    </div>
+                  )}
+              </div>
+            </div>
+          </div>
+        
       ) : null}
 
       <div onClick={acceptOrder}>
