@@ -71,8 +71,10 @@ const Orderlist = () => {
             status: 1,
             order_status: 1,
             type: Number(supplierJobType),
-            order_locality: supplierCity.charAt(0).toUpperCase() + supplierCity.slice(1).toLowerCase(),
-            toId:supplierID,
+            order_locality:
+              supplierCity.charAt(0).toUpperCase() +
+              supplierCity.slice(1).toLowerCase(),
+            toId: supplierID,
           }),
         });
 
@@ -134,8 +136,8 @@ const Orderlist = () => {
         return "Food Delivery";
       case 7:
         return "Live Catering";
-        case 8:
-          return "Photography";
+      case 8:
+        return "Photography";
       default:
         return "Unknown Type";
     }
@@ -164,14 +166,11 @@ const Orderlist = () => {
   const filteredOrdersByDate = (date) => {
     return orders.filter((order) => {
       const isAcccepted = order.order_status === 1;
-      let dateMatches = '';
+      let dateMatches = "";
       if (order.order_date) {
         dateMatches = order.order_date.split("T")[0] === date;
       }
-      return (
-        isAcccepted &&
-        dateMatches  
-      );
+      return isAcccepted && dateMatches;
     });
   };
 
@@ -212,7 +211,6 @@ const Orderlist = () => {
     );
   };
 
-
   const isWithinFourHourWindow = (orderTimeRange, orderDate) => {
     const [startTimeString] = orderTimeRange.split(" - ");
     const startTime = parseTime(startTimeString, orderDate);
@@ -226,57 +224,52 @@ const Orderlist = () => {
     );
   };
 
-  
   const openSupplierPopup = async (order) => {
     console.log(order, "order111");
-    const { _id, order_id, type, fromId    } = order;
+    const { _id, order_id, type, fromId } = order;
 
-   
-      const apiOrderId = _id;
-      const orderType = type;
-      const orderId = fromId ;
-  
-      try {
-        
-        // Fetch executor details from the API
-        const response = await fetch(
-          `https://horaservices.com:3000/api/admin/getUserDetails/${orderId}`
-        );
-  
-        console.log(response, "response");
-  
-        if (!response.ok) {
-          throw new Error("Failed to fetch user details");
-        }
-  
-        const data = await response.json();
+    const apiOrderId = _id;
+    const orderType = type;
+    const orderId = fromId;
 
-  
-        const executorName = data.data.name;
-        const executorPhone = data.data.phone;
-  
-        setPopupMessage({
-          img: informationImage,
-          title: `Customer Name: ${executorName}`,
-          body: `Customer Phone: ${executorPhone}`,
-          button: "Call Customer",
-          executorPhone: executorPhone,
-          onButtonClick: (phone) => {
-            console.log(phone, "phone");
-            if (phone) {
-              window.location.href = `tel:${phone}`;
-            } else {
-              alert("Phone number not available.");
-            }
-          },
-        });
-  
-        setIsPopupVisible(true);
-      } catch (error) {
-        console.error(error.message);
-        setIsPopupVisible(true);
+    try {
+      // Fetch executor details from the API
+      const response = await fetch(
+        `https://horaservices.com:3000/api/admin/getUserDetails/${orderId}`
+      );
+
+      console.log(response, "response");
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch user details");
       }
-   
+
+      const data = await response.json();
+
+      const executorName = data.data.name;
+      const executorPhone = data.data.phone;
+
+      setPopupMessage({
+        img: informationImage,
+        title: `Customer Name: ${executorName}`,
+        body: `Customer Phone: ${executorPhone}`,
+        button: "Call Customer",
+        executorPhone: executorPhone,
+        onButtonClick: (phone) => {
+          console.log(phone, "phone");
+          if (phone) {
+            window.location.href = `tel:${phone}`;
+          } else {
+            alert("Phone number not available.");
+          }
+        },
+      });
+
+      setIsPopupVisible(true);
+    } catch (error) {
+      console.error(error.message);
+      setIsPopupVisible(true);
+    }
   };
 
   const closePopup = () => {
@@ -301,7 +294,6 @@ const Orderlist = () => {
     );
   }
 
- 
   return (
     <Layout>
       <main className="order-list">
@@ -336,7 +328,6 @@ const Orderlist = () => {
                                 <div style={{ color: "#9252AA" }}>
                                   Order Id: {getOrderId(order.order_id)}
                                 </div>
-              
                               </div>
 
                               {/* Order Status Section */}
@@ -377,9 +368,18 @@ const Orderlist = () => {
                                       height={20}
                                       width={20}
                                     />{" "}
-
-                                                                <span>{order.order_time.split(" - ")[0].split(" ")[0]} {order.order_time.split(" - ")[0].split(" ")[1]}</span>
-
+                                    <span>
+                                      {
+                                        order.order_time
+                                          .split(" - ")[0]
+                                          .split(" ")[0]
+                                      }{" "}
+                                      {
+                                        order.order_time
+                                          .split(" - ")[0]
+                                          .split(" ")[1]
+                                      }
+                                    </span>
                                   </div>
                                 )}
                                 {supplierJobType !== "1" &&
@@ -404,9 +404,7 @@ const Orderlist = () => {
                                         fontSize: "13px",
                                       }}
                                     >
-                                    
-                                        {order.order_locality}
-
+                                      {order.order_locality}
                                     </strong>
                                   </div>
                                 )}
@@ -434,42 +432,45 @@ const Orderlist = () => {
                               >
                                 View Details
                               </button>
-             
-                        <>
-                          <button
-                            className="view-details"
-                            onClick={() => {
-                              if (isWithinFourHourWindow(order.order_time, order.order_date)) {
-                                openSupplierPopup(order);
-                                setIsPopupVisible(true);
-                              } 
-                              else {
-                                setPopupMessage({
-                                  img: dangerImage,
-                                  title:
-                                    "Customer details will be shown 5 hours before your scheduled time to avoid distractions. 🙂",
-                                  body: "",
-                                  button: "OK",
-                                });
-                                console.log(order, "order");
-                                setIsPopupVisible(true);
-                              }
-                            }}
-                            style={{ marginLeft: "10px" }}
-                          >
-                            Customer Details
-                          </button>
-                          {isPopupVisible && (
-                            <Popup
-                              style={{ backgroundColor: "rgba(0, 0, 0, 0.1)" }}
-                              onClose={closePopup}
-                              popupMessage={popupMessage}
-                            />
-                          )}
-                        </>
-                   
-                  
 
+                              <>
+                                <button
+                                  className="view-details"
+                                  onClick={() => {
+                                    if (
+                                      isWithinFourHourWindow(
+                                        order.order_time,
+                                        order.order_date
+                                      )
+                                    ) {
+                                      openSupplierPopup(order);
+                                      setIsPopupVisible(true);
+                                    } else {
+                                      setPopupMessage({
+                                        img: dangerImage,
+                                        title:
+                                          "Customer details will be shown 5 hours before your scheduled time to avoid distractions. 🙂",
+                                        body: "",
+                                        button: "OK",
+                                      });
+                                      console.log(order, "order");
+                                      setIsPopupVisible(true);
+                                    }
+                                  }}
+                                  style={{ marginLeft: "10px" }}
+                                >
+                                  Customer Details
+                                </button>
+                                {isPopupVisible && (
+                                  <Popup
+                                    style={{
+                                      backgroundColor: "rgba(0, 0, 0, 0.1)",
+                                    }}
+                                    onClose={closePopup}
+                                    popupMessage={popupMessage}
+                                  />
+                                )}
+                              </>
                             </div>
                           </div>
                         );
