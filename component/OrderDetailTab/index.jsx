@@ -35,7 +35,7 @@ const OrderDetailTab = ({
   const [tab, setTab] = useState("Menu");
   const [orderStatus, setOrderStatus] = useState(orderDetail?.order_status);
 
-  console.log(orderDetail, "orderDetailsss");
+  // console.log(orderDetail, "orderDetailsss");
   
   // const [name, setname] = useState();
   const [name, setName] = useState();

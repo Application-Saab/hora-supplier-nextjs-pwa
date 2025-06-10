@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { CiCalendar } from "react-icons/ci";
 import { GoClock } from "react-icons/go";
@@ -6,15 +5,16 @@ import { MdPeopleAlt } from "react-icons/md";
 import Layout from "../../../component/Layout";
 
 const OrderDetailHeader = ({ orderDetail }) => {
-
-
   const getOrderId = (e) => {
     const orderId1 = 10800 + e;
     const updateOrderId = "#" + orderId1;
 
-    if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
+    if (
+      typeof window !== "undefined" &&
+      typeof window.localStorage !== "undefined"
+    ) {
       localStorage.setItem("orderId", updateOrderId);
-    }	
+    }
     return updateOrderId;
   };
   const getOrderStatus = (orderStatusValue) => {
@@ -48,14 +48,13 @@ const OrderDetailHeader = ({ orderDetail }) => {
     return new Date(dateString).toLocaleDateString("en-GB", options);
   };
 
-  let otp; 
-  
+  let otp;
+
   useEffect(() => {
     otp = orderDetail.otp;
     // Save OTP to localStorage
     localStorage.setItem("otp", otp);
   }, [otp]);
-
 
   return (
     // <Layout navTitle="Order Details">
@@ -98,24 +97,24 @@ const OrderDetailHeader = ({ orderDetail }) => {
               </p>
             )}
             {orderDetail?.order_date && (
-              <p style={{ marginBottom: "2px"}}>
+              <p style={{ marginBottom: "2px" }}>
                 <strong>Date:</strong> {formatDate(orderDetail.order_date)}
               </p>
             )}
 
-<p style={{ marginBottom: "2px"}}>
-  <strong style={{ marginRight: "3px"}}>Arrival Time:</strong>
-     
-  {orderDetail?.order_time && (() => {
-    const firstTime = orderDetail.order_time.split(" - ")[0];
-    const [hour, period] = firstTime.split(" ");
-    return `${hour} ${period}`;
-  })()}
+            <p style={{ marginBottom: "2px" }}>
+              <strong style={{ marginRight: "3px" }}>Arrival Time:</strong>
 
-  </p>
+              {orderDetail?.order_time &&
+                (() => {
+                  const firstTime = orderDetail.order_time.split(" - ")[0];
+                  const [hour, period] = firstTime.split(" ");
+                  return `${hour} ${period}`;
+                })()}
+            </p>
 
-  {orderDetail?.order_locality && (
-             <p style={{ marginBottom: "2px"}}>
+            {orderDetail?.order_locality && (
+              <p style={{ marginBottom: "2px" }}>
                 <strong>Location:</strong> {orderDetail.order_locality}
               </p>
             )}
@@ -123,17 +122,29 @@ const OrderDetailHeader = ({ orderDetail }) => {
         </div>
 
         {orderDetail?.addressId?.address1 && (
-  <div style={styles.centeredAddress}>
-    <p style={{ marginBottom: "2px"}}>
-      <strong>Address:</strong> {orderDetail.addressId.address1}
-    </p>
-    <p>
-              <strong>Google Map Location:</strong>{" "}
-              <a href={orderDetail.addressId.address2} style={{ fontWeight: "bold" , cursor:"pointer" , wordWrap: "break-word" , color: 'blue' , borderBottom: '1px solid blue' }} target="_blank"  rel="noopener noreferrer">{orderDetail.addressId.address2}</a>
+          <div style={styles.centeredAddress}>
+            <p style={{ marginBottom: "2px" }}>
+              <strong>Address:</strong> {orderDetail.addressId.address1}
             </p>
-  </div>
-)}
-
+            <p>
+              <strong>Google Map Location:</strong>{" "}
+              <a
+                href={orderDetail.addressId.address2}
+                style={{
+                  fontWeight: "bold",
+                  cursor: "pointer",
+                  wordWrap: "break-word",
+                  color: "blue",
+                  borderBottom: "1px solid blue",
+                }}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {orderDetail.addressId.address2}
+              </a>
+            </p>
+          </div>
+        )}
       </div>
     </div>
     // </Layout>
@@ -159,7 +170,7 @@ const styles = {
   headerText: {
     fontSize: "18px",
     fontWeight: "bold",
-    marginBottom:"2px",
+    marginBottom: "2px",
   },
   callButton: {
     backgroundColor: "#ff726f", // Red color for call button

@@ -34,9 +34,13 @@ const Orderlist = () => {
     supplierCity = "Bangalore"; // Adjusting for city name
   }
 
-  // checking the status of the vendor sohan verma 06/06/2025 
+  // checking the status of the vendor sohan verma 06/06/2025
   const [userStatus, setUserStatus] = useState(null);
-  let phoneNumber = localStorage.getItem("mobileNumber");
+  // let phoneNumber = localStorage.getItem("mobileNumber");
+  let phoneNumber = null;
+  if (typeof window !== "undefined") {
+    phoneNumber = localStorage.getItem("mobileNumber");
+  }
 
   useEffect(() => {
     const fetchUserStatus = async () => {
@@ -71,8 +75,7 @@ const Orderlist = () => {
 
   useEffect(() => {
     const fetchOrderList = async () => {
-      
-      if (userStatus !== 1) return;   // sohan verma 06/06/2025
+      if (userStatus !== 1) return; // sohan verma 06/06/2025
       try {
         setLoading(true);
         const response = await fetch(BASE_URL + ORDERLIST_ENDPOINT, {
@@ -112,7 +115,7 @@ const Orderlist = () => {
     };
 
     fetchOrderList();
-  }, [supplierID,userStatus]);
+  }, [supplierID, userStatus]);
 
   const getOrderStatus = (orderStatusValue) => {
     switch (orderStatusValue) {
