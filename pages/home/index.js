@@ -27,7 +27,7 @@ const Home = () => {
       path: "/accepted-orders",
     },
     { id: 5, name: "My Ratings", icon: ratingLogo, path: "/my-ratings" },
-    { id: 6, name: "Order Reports", icon: reportLogo, path: "/orders-details" },
+    // { id: 6, name: "Order Reports", icon: reportLogo, path: "/orders-details" },
   ];
   const [error, setError] = useState(null);
 
