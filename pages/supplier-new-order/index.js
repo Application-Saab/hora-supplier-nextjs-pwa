@@ -117,6 +117,8 @@ const Orderlist = () => {
     fetchOrderList();
   }, [supplierID, userStatus]);
 
+  
+
   const getOrderStatus = (orderStatusValue) => {
     switch (orderStatusValue) {
       case 0:

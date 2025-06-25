@@ -12,6 +12,7 @@ import axios from 'axios';
 import Navbar from "../../component/Navbar";
 import Link from "next/link";
 import Layout from "../../component/Layout";
+import reportLogo from "../../assets/report.png";
 
 const Home = () => {
 
@@ -26,6 +27,7 @@ const Home = () => {
       path: "/accepted-orders",
     },
     { id: 5, name: "My Ratings", icon: ratingLogo, path: "/my-ratings" },
+    { id: 6, name: "Order Reports", icon: reportLogo, path: "/orders-details" },
   ];
   const [error, setError] = useState(null);
 
