@@ -349,7 +349,10 @@ const OrderDetailTab = ({
               <div key={product?.id} className="product-container">
                 <div className="product-image-container">
                   <Image
-                    src={`https://horaservices.com/api/uploads/${product?.featured_image}`}
+                    // src={`https://horaservices.com/api/uploads/${product?.featured_image}`}
+                    src={`https://horaservices.com/api/uploads/compressed_webp/${
+                    product.featured_image.split(".")[0]
+                  }.webp`}
                     alt={product?.name}
                     className="product-image"
                     height={300}
