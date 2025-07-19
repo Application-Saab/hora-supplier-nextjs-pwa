@@ -79,9 +79,16 @@ const Login = () => {
     }
 
     try {
+      const body = {
+        phone: mobileNumber, role: "supplier"
+      }
+      const device_token = localStorage.getItem("fmcToken");
+      if(device_token){
+        body.device_token = device_token;
+      }
       const response = await axios.post(
         `${BASE_URL}${OTP_GENERATE_END_POINT}`,
-        { phone: mobileNumber, role: "supplier" },
+         body,
         { headers: { "Content-Type": "application/json" } }
       );
 

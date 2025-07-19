@@ -16,8 +16,20 @@ android {
             ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+
+signingConfigs {
+    release {
+        storeFile file("./hora.jks")
+        storePassword "horaservices"
+        keyAlias "hora-alias"
+        keyPassword "horaservices"
+    }
+}
+
     buildTypes {
         release {
+            signingConfig signingConfigs.debug
+
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }

@@ -1,0 +1,67 @@
+{
+  "project_info": {
+    "project_number": "545787711672",
+    "project_id": "hora-379ab",
+    "storage_bucket": "hora-379ab.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:545787711672:android:26fe76d7ea8e00ea33a44d",
+        "android_client_info": {
+          "package_name": "com.hora"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDvF1k-E-8db8Cq_znERGrSOKc9OTp27Z8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:545787711672:android:f8009a1c7dca2f7e33a44d",
+        "android_client_info": {
+          "package_name": "com.horasupplier"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDvF1k-E-8db8Cq_znERGrSOKc9OTp27Z8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:545787711672:android:cc50f13f79ae9dcb33a44d",
+        "android_client_info": {
+          "package_name": "horaservices.com"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDvF1k-E-8db8Cq_znERGrSOKc9OTp27Z8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
