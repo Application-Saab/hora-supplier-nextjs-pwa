@@ -451,41 +451,66 @@ const OrderDetailTab = ({
                 </h1>
               </div>
 
-              <div
-                style={{
-                  boxShadow: "0 1px 8px rgba(0,0,0,.18)",
-                  padding: "10px",
-                  marginBottom: "12px",
-                  backgroundColor: "#fff",
-                }}
-              >
-                {orderDetail?.add_on?.length > 0 && (
-                  <>
-                    <div
-                      style={{
-                        fontSize: "21px",
-                        borderBottom: "1px solid #e7eff9",
-                        marginBottom: "10px",
-                      }}
-                    >
-                      Inclusions
-                    </div>
-                    {/* <div className="product-add-ons"> */}
-                    <ul>
-                      {orderDetail.add_on.map((item, index) => (
-                        <li key={index} className="inclusionstyle">
-                          <Image
-                            src={checkImage}
-                            alt="Info"
-                            style={{ height: 13, width: 13, marginRight: 10 }}
-                          />
-                          <span>{item || "NA"}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </>
-                )}
+             <div
+  style={{
+    boxShadow: "0 1px 8px rgba(0,0,0,.18)",
+    padding: "10px",
+    marginBottom: "12px",
+    backgroundColor: "#fff",
+  }}
+>
+  {orderDetail?.add_on?.length > 0 && (
+    <>
+      <div
+        style={{
+          fontSize: "21px",
+          borderBottom: "1px solid #e7eff9",
+          marginBottom: "10px",
+        }}
+      >
+        Inclusions
+      </div>
+      <ul style={{ paddingLeft: 0, listStyle: "none" }}>
+        {orderDetail.add_on.map((item, index) => (
+          <li
+            key={index}
+            style={{
+              display: "flex",
+              alignItems: "flex-start",
+              marginBottom: "15px",
+            }}
+            className="inclusionstyle"
+          >
+            <img
+              src={item.image}
+              alt={item.title}
+              style={{
+                height: 40,
+                width: 40,
+                marginRight: 10,
+                objectFit: "cover",
+                borderRadius: 4,
+              }}
+            />
+            <div>
+              <div style={{ fontWeight: "bold", fontSize: "16px" }}>
+                {item.title || "NA"}
               </div>
+              <div style={{ fontSize: "14px", color: "#555", marginTop: "2px" }}>
+                {item.description || "No description"}
+              </div>
+              <div style={{ fontSize: "13px", color: "#888", marginTop: "2px" }}>
+                ₹{item.price ?? 0}
+              </div>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </>
+  )}
+</div>
+
+
               <div
                 className="prod_sec balanc_amount"
                 style={{
