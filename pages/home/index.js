@@ -28,6 +28,9 @@ const Home = () => {
     },
     { id: 5, name: "My Ratings", icon: ratingLogo, path: "/my-ratings" },
     // { id: 6, name: "Order Reports", icon: reportLogo, path: "/orders-details" },
+    // { id: 6, name: "Decoration Image Upload", icon: reportLogo, path: "decoration-image-upload" },  
+    { id: 6, name: "Photography Order Drive Link", icon: reportLogo, path: "/photography-order-drive-link" },
+    
   ];
   const [error, setError] = useState(null);
 

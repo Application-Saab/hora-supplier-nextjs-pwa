@@ -50,6 +50,69 @@ const OrderDetailTab = ({
   const inputRefs = useRef([]);
   const [errorMessage, setErrorMessage] = useState("");
 
+  console.log(decorationItems, "decorationItemsd2");
+  console.log(orderDetail, "orderdetails");
+
+  const formatOrderMessage = (orderDetail, decorationItems) => {
+  const orderId = orderDetail?.order_id || "";
+  const orderDate = orderDetail?.order_date
+    ? new Date(orderDetail.order_date).toLocaleDateString()
+    : "";
+  const orderTime = orderDetail?.order_time || "";
+  const city = orderDetail?.addressId?.city || "";
+  const address1 = orderDetail?.addressId?.address1 || "";
+  const address2 = orderDetail?.addressId?.address2 || "";
+  const locality = orderDetail?.order_locality || "";
+  const pincode = orderDetail?.order_pincode || "";
+  const totalAmount = orderDetail?.total_amount || "";
+
+  // Decoration items with inclusions
+  const decorations = decorationItems?.length
+    ? decorationItems.map((item, i) => {
+        const inclusions = item.inclusion?.length
+          ? item.inclusion
+              .map(inc =>
+                inc
+                  .replace(/<div>/g, "• ")
+                  .replace(/<\/div>/g, "\n")
+                  .trim()
+              )
+              .join("")
+          : "No inclusions";
+
+        return `${i + 1}. ${item.name}\n${inclusions}`;
+      }).join("\n\n")
+    : "No decoration items";
+
+  return `
+📝 *Order Details*
+------------------------
+Order Id: ${orderId}
+Order Date: ${orderDate}
+City: ${city}
+Time: ${orderTime}
+Address1: ${address1}
+Address2: ${address2}
+Locality: ${locality}
+Pincode: ${pincode}
+Total Amount: ₹${totalAmount}
+
+🎉 *Decoration Items*
+------------------------
+${decorations}
+  `.trim();
+};
+
+
+const sendToWhatsApp = (orderDetail, decorationItems) => {
+  const phoneNumber = "919340785987"; // Change to your target number
+
+  const message = encodeURIComponent(formatOrderMessage(orderDetail, decorationItems));
+  const whatsappURL = `https://wa.me/${phoneNumber}?text=${message}`;
+  window.open(whatsappURL, "_blank");
+};
+
+
   let orderOtp;
 
   if (
@@ -403,6 +466,25 @@ const OrderDetailTab = ({
                     </div>
                   )}
                 </div>
+             
+<button
+  style={{
+    backgroundColor: "#25D366", // WhatsApp green
+    color: "white",
+    padding: "10px 18px",
+    border: "none",
+    borderRadius: "8px",
+    fontSize: "16px",
+    fontWeight: "600",
+    cursor: "pointer",
+    display: "inline-block",
+  }}
+  onClick={() => sendToWhatsApp(orderDetail, decorationItems)}
+>
+  Send to WhatsApp
+</button>
+
+
               </div>
             );
           })}

@@ -5,7 +5,7 @@ import { IoCalendarClear } from "react-icons/io5";
 import { FiClock } from "react-icons/fi";
 import clock from "../../assets/bell.png";
 import people from "../../assets/people.png";
-import star from '../../assets/ratingStar.jpg'
+import star from "../../assets/ratingStar.jpg";
 import date_time_icon from "../../assets/date-time-icon.png";
 import { useRouter } from "next/router";
 import Image from "next/image";
@@ -32,12 +32,10 @@ const SupplierRating = () => {
   }
 
   if (supplierCity === "Bengaluru") {
-    supplierCity = "Bangalore"; // Adjusting for city name
+    supplierCity = "Bangalore"; 
   }
 
-
   useEffect(() => {
-
     const fetchOrderList = async () => {
       try {
         setLoading(true);
@@ -53,8 +51,10 @@ const SupplierRating = () => {
             status: 1,
             order_status: 3,
             type: Number(supplierJobType),
-            order_locality: supplierCity.charAt(0).toUpperCase() + supplierCity.slice(1).toLowerCase(),
-            toId:supplierID,
+            order_locality:
+              supplierCity.charAt(0).toUpperCase() +
+              supplierCity.slice(1).toLowerCase(),
+            toId: supplierID,
           }),
         });
 
@@ -171,13 +171,19 @@ const SupplierRating = () => {
     <Layout>
       <main className="order-list">
         <div className="order-container">
-          <h5>Cmpleted Orders with Customer Rating<span> <Image
-            src={star}
-            alt="Star"
-            height={20} // Adjust height to fit design
-            width={20}  // Adjust width to fit design
-            className="star-icon"
-          /></span></h5>
+          <h5>
+            Cmpleted Orders with Customer Rating
+            <span>
+              {" "}
+              <Image
+                src={star}
+                alt="Star"
+                height={20} // Adjust height to fit design
+                width={20} // Adjust width to fit design
+                className="star-icon"
+              />
+            </span>
+          </h5>
           {orders.length === 0 ? (
             <p className="no-orders-message">No orders available</p>
           ) : (
@@ -190,39 +196,41 @@ const SupplierRating = () => {
                       <div style={{ color: "#9252AA" }}>
                         Order Id: #{10800 + order.order_id}
                       </div>
-
                     </div>
                     <div className="order-status1">
-                      
                       <h6 className="mt-2" style={{ color: "#9252AA" }}>
                         {getOrderType(order?.type)}
                       </h6>
                     </div>
                   </div>
 
-                 
-                    <div className="user-review" style={{ textAlign: 'center' }}>
-                      <span style={{ fontSize: '13px', fontWeight: '500' }}>
-                        <b>Customer rating:</b></span>
-                      {/* <Image
+                  <div className="user-review" style={{ textAlign: "center" }}>
+                    <span style={{ fontSize: "13px", fontWeight: "500" }}>
+                      <b>Customer rating:</b>
+                    </span>
+                    {/* <Image
                         src={star}
                         alt="Star"
                         height={20} // Adjust height to fit design
                         width={20}  // Adjust width to fit design
                         className="star-icon"
                       /> */}
-            {order.userReviewRatingArray.length > 0 ? (
-  <span style={{ fontSize: '13px', paddingLeft: '10px' }}>
-    <b>{order.userReviewRatingArray}</b>
-  </span>
-) : (
-  <span style={{ fontSize: '13px', fontWeight: '500' , paddingLeft:"10px" }}>
-    <b>No rated</b>
-  </span>
-)}
-                    </div>
-                 
-
+                    {order.userReviewRatingArray.length > 0 ? (
+                      <span style={{ fontSize: "13px", paddingLeft: "10px" }}>
+                        <b>{order.userReviewRatingArray}</b>
+                      </span>
+                    ) : (
+                      <span
+                        style={{
+                          fontSize: "13px",
+                          fontWeight: "500",
+                          paddingLeft: "10px",
+                        }}
+                      >
+                        <b>No rated</b>
+                      </span>
+                    )}
+                  </div>
 
                   {/* <hr className="m-0" /> */}
                   {/* <div className="d-flex button-div" style={{ textAlign: 'center' }}>
