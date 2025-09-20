@@ -16,6 +16,12 @@ import reportLogo from "../../assets/report.png";
 
 const Home = () => {
 
+  let supplierJobType;
+
+  if (typeof window !== "undefined") {
+   supplierJobType = localStorage.getItem("supplierJobType");
+}
+
   const menuItems = [
     { id: 1, name: "New Orders", icon: bellLogo, path: "/supplier-new-order" },
     { id: 2, name: "My Wallet", icon: walletLogo, path: "/home" },
@@ -26,10 +32,10 @@ const Home = () => {
       icon: trackingLogo,
       path: "/accepted-orders",
     },
-    { id: 5, name: "My Ratings", icon: ratingLogo, path: "/my-ratings" },
+    // { id: 5, name: "My Ratings", icon: ratingLogo, path: "/my-ratings" },
     // { id: 6, name: "Order Reports", icon: reportLogo, path: "/orders-details" },
     // { id: 6, name: "Decoration Image Upload", icon: reportLogo, path: "decoration-image-upload" },  
-    { id: 6, name: "Photography Order Drive Link", icon: reportLogo, path: "/photography-order-drive-link" },
+    { id: 6, name: "Past Order", icon: reportLogo, path: "/past-order" },
     
   ];
   const [error, setError] = useState(null);
@@ -79,6 +85,8 @@ const Home = () => {
     fetchData();
   }, []); 
 
+
+
   return (
     <>
     <Layout showBackButton={false}>
@@ -102,19 +110,55 @@ const Home = () => {
             </div>
           </div>
         </div>
-        <div style={{
-      backgroundColor: 'white',
-      borderRadius: '10px',
-      padding: '15px', 
-      color: 'black',
-      fontFamily: 'Arial, sans-serif',
-      lineHeight: '1.5',
-      fontSize: '14px', 
-      boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-      border: '1px solid #97538c',
-       width: '94%',
-    margin: '10px auto 0',
-    }}>
+
+
+         <>
+    {supplierJobType === "8" ? (
+      <div style={{
+        backgroundColor: 'white',
+        borderRadius: '10px',
+        padding: '15px',
+        color: 'black',
+        fontFamily: 'Arial, sans-serif',
+        lineHeight: '1.5',
+        fontSize: '14px',
+        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+        border: '1px solid #97538c',
+        width: '94%',
+        margin: '10px auto 0',
+      }}>
+        
+      <p><strong style={{fontSize:'18px'}}>Note:</strong></p>
+      <p>1. Please read the <b>inclusions and comments</b> very carefully.</p>
+<p>2. <b>Please be on time.</b> Customers don&#39;t like late arrivals 🥺</p>
+<p>3. Must carry a camera and flashlight (DSLRs and mirrorless cameras like Canon 80D, Sony A7M3, Canon R6).</p>
+<p>4. <b>Delivery timeline:</b></p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;- <b>Color corrected drive link</b> within <b>15 hrs</b></p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;- <b>Edited photos</b> in <b>24 hrs</b></p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;- <b>Edited video</b> in <b>3 days</b></p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;- <b>Album delivery</b> in <b>6 days</b></p>
+<p>5. Only you must attend the shoot – no replacements allowed.</p>
+<p>6. Don't eat or drink in the customer party (This may impact your next orders).</p>
+<p>7. Always wear professional dress.</p>
+<p>8. You should not use phone and take calls during the event.</p>
+<p>9. Photographers have to bring a 10-feet extension wire (Only for umbrella light orders).</p>
+ <p><b>It&apos;s an important day for customers, we need to make it perfect ☺</b></p>
+
+      </div>
+    ) : (
+     <div  style={{
+        backgroundColor: 'white',
+        borderRadius: '10px',
+        padding: '15px',
+        color: 'black',
+        fontFamily: 'Arial, sans-serif',
+        lineHeight: '1.5',
+        fontSize: '14px',
+        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+        border: '1px solid #97538c',
+        width: '94%',
+        margin: '10px auto 0',
+      }}>
       <p><strong style={{fontSize:'18px'}}>Note:</strong></p>
       <p>1. Please read the <b>inclusions and comments</b> very carefully.</p>
       <p>2. Do not miss any material mentioned in inclusions and comments.</p>
@@ -123,7 +167,11 @@ const Home = () => {
       <p>5. Always carry gluedots and avoid using tapes.</p>
       <p>6. Please collect the payment before leaving the spot. In case of any payment-related issues, please reach out to us at the same time. <b>Do not leave the spot without taking payment from the spot</b></p>
       <p><b>It&apos;s an important day for customers, we need to make it perfect ☺</b></p>
-    </div>
+      </div>
+    )}
+  </>
+        
+      
       </div>
       </Layout>
     </>

@@ -26,6 +26,7 @@ const OrderDetailTab = ({
   balanceAmount,
 }) => {
   const router = useRouter();
+  console.log(orderDetail,"orderdtails");
   const { apiOrderId } = router.query;
   if (
     typeof window !== "undefined" &&
@@ -42,6 +43,8 @@ const OrderDetailTab = ({
 
   // const [name, setname] = useState();
   const [name, setName] = useState();
+  
+    const [inclusion, setInclusion] = useState();
 
   const fetchAndMatchItems = async (orderDetail) => {
     try {
@@ -63,6 +66,7 @@ const OrderDetailTab = ({
             if (matchedItem) {
               console.log(`✅ Match found for ID ${itemId}:`, matchedItem.name);
               setName(matchedItem.name); // overwrites previous; store in array if needed
+               setInclusion(matchedItem.inclusion[0]);
             } else {
               console.log(`❌ No match for ID ${itemId}`);
             }
@@ -80,6 +84,21 @@ const OrderDetailTab = ({
   };
 
   fetchAndMatchItems(orderDetail);
+
+  function parseInclusionToBullets(inclusionString) {
+  if (!inclusionString) return [];
+
+  // Split by </div> and filter out empty strings
+  return inclusionString
+    .split('</div>')
+    .map(str => str.replace(/<div[^>]*>/g, '').trim()) // Remove opening <div> tags
+    .filter(str => str.length > 0) // Remove empty items
+    .map(str => str.replace(/^-\s*/, '')); // Optional: remove leading dash if present
+}
+
+// In your component
+const bulletItems = parseInclusionToBullets(inclusion); 
+
 
   const getItemInclusion = (inclusion) => {
     if (!Array.isArray(inclusion) || inclusion.length === 0) {
@@ -359,6 +378,31 @@ const OrderDetailTab = ({
                 </h1>
               </div>
 
+
+              <div
+  style={{
+    boxShadow: "0 1px 8px rgba(0,0,0,.18)",
+    padding: "10px",
+    marginBottom: "12px",
+    backgroundColor: "#fff",
+  }}
+>
+  <label style={{ display: "block", marginBottom: "8px", fontWeight: "bold" }}>
+    Inclusion:
+  </label>
+  <ul
+    style={{
+      listStyleType: "disc",      // Show dot bullets
+      paddingLeft: "20px",        // Indent to show bullets
+      margin: 0
+    }}
+  >
+    {bulletItems.map((item, index) => (
+      <li key={index}>{item}</li>
+    ))}
+  </ul>
+</div>
+
               <div
                 style={{
                   boxShadow: "0 1px 8px rgba(0,0,0,.18)",
@@ -376,7 +420,8 @@ const OrderDetailTab = ({
                         marginBottom: "10px",
                       }}
                     >
-                      Add On:
+  <label style={{ display: "block", marginBottom: "8px", fontWeight: "bold" }}>                      Add-On
+</label>
                     </div>
 
                     <div

@@ -34,6 +34,9 @@ const cleanHTML = (htmlString) => {
   return htmlString.replace(/<\/?div>/g, '').trim();
 };
 
+
+const SUBMIT_LINK_ENDPOINT = "/api/photo/drive/add-order-drive-link";
+
 const OrderDetailTab = ({
   orderDetail,
   orderType,
@@ -56,6 +59,8 @@ const OrderDetailTab = ({
   const [errorMessage, setErrorMessage] = useState("");
 
   console.log(decorationItems, "decorationItemsd2");
+  
+   const [driveLink, setDriveLink] = useState("");
   console.log(orderDetail, "orderdetails");
 
   const formatOrderMessage = (orderDetail, decorationItems) => {
@@ -327,6 +332,45 @@ const bulletItems = parseInclusionToBullets(inclusion);
       console.log("acceptOrder error", error);
     }
   };
+
+
+    const handleSubmitDriveLink = async () => {
+      if (!driveLink.startsWith("https://drive.google.com/")) {
+        alert("Invalid Google Drive link");
+        return;
+      }
+      try {
+        await axios.post(BASE_URL + SUBMIT_LINK_ENDPOINT, {
+          order_id: orderDetail.order_id,
+          folderUrl: driveLink,
+        });
+  
+        await fetch(`${BASE_URL}/api/photo/drive/update-google-sheet`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            orderIdDb: orderDetail.order_id,
+            orderIdCustomer: orderDetail.order_id + 10800,
+            phone: orderDetail.phone_no,
+            fulfillmentDate: orderDetail.order_date
+              ? new Date(orderDetail.order_date).toLocaleDateString("en-GB")
+              : "N/A",
+            services: "Photography",
+            driveLink: driveLink,
+            horaWebLink: "N/A",
+          }),
+        });
+  
+        alert("Drive link submitted!");
+        // setPopupOpen(false);
+        setDriveLink("");
+        window.location.href = "/past-order";
+      } catch (err) {
+        console.error(err.response?.data?.error, "testing");
+        alert(err.response?.data?.error);
+      }
+    };
+
 
   return (
     <>
@@ -697,12 +741,51 @@ const bulletItems = parseInclusionToBullets(inclusion);
                   </ul>
                 </div>
               )}
+
+
+                    {orderDetail.orderDriveLink && (
+                <div  style={{
+                    boxShadow: "0 1px 8px rgba(0,0,0,.18)",
+                    padding: "10px",
+                    marginBottom: "12px",
+                    backgroundColor: "#fff",
+                  }}>
+                  <span style={{ color: "#28a745", fontWeight: "500", fontSize: "14px" }}>
+                    ✓ Drive link already submitted
+                  </span>
+                </div>
+              )}
+              
+              <textarea
+                value={driveLink}
+                style={styles.inputText}
+                onChange={(e) => setDriveLink(e.target.value)}
+                placeholder={orderDetail.orderDriveLink 
+                  ? "Paste new Google Drive folder link to resubmit..." 
+                  : "Paste Google Drive folder link here..."}
+              />
+
+              <button
+                style={styles.submitBtn}
+                onClick={handleSubmitDriveLink}
+                onMouseEnter={(e) => {
+                  e.target.style.background = "#8a3f85";
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.background = "#9c4d97";
+                }}
+              >
+                {orderDetail.orderDriveLink ? "Re-Submit Link" : "Submit Link"}
+              </button>
             </div>
           </div>
         </div>
       ) : null}
       <div>
-        <div className="otp-container">
+        {/* <h1>sohan</h1>
+        <h2>{orderDetail.orderDriveLink}</h2> */}
+       
+        {/* <div className="otp-container">
           <h2 className="otp-title">Enter OTP</h2>
           <p className="otp-instructions">
             Please enter the OTP sent to your number
@@ -726,7 +809,7 @@ const bulletItems = parseInclusionToBullets(inclusion);
               Start Order
             </button>
           )}
-        </div>
+        </div> */}
       </div>
 
       {/* <div className="rate-us-footer">
@@ -741,3 +824,181 @@ const bulletItems = parseInclusionToBullets(inclusion);
 };
 
 export default OrderDetailTab;
+
+
+  const styles = {
+    container: {
+      maxWidth: "600px",
+      margin: "2px auto",
+      padding: "20px",
+      background: "#f8f9fa",
+      minHeight: "100vh",
+    },
+    heading: {
+      marginBottom: "20px",
+      textAlign: "center",
+      fontSize: "24px",
+      fontWeight: "600",
+      color: "#97538C",
+      fontWeight: "bold",
+    },
+    orderItem: {
+      padding: "15px",
+      marginBottom: "12px",
+      borderRadius: "8px",
+      border: "1px solid #e0e0e0",
+      background: "#fff",
+      boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
+    },
+    topRow: {
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginBottom: "8px",
+    },
+    orderIdText: { 
+      fontSize: "16px", 
+      fontWeight: "500", 
+      color: "#333",
+      fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+    },
+    reviewText: { 
+      fontSize: "13px", 
+      color: "#666",
+      fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+    },
+    button: {
+      padding: "6px 14px",
+      border: "1px solid",
+      borderRadius: "4px",
+      fontSize: "13px",
+      fontWeight: "500",
+      cursor: "pointer",
+      fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+      transition: "all 0.2s ease",
+    },
+    viewDetailsBtn: { 
+      background: "#fff", 
+      color: "#9c4d97",
+      borderColor: "#9c4d97",
+    },
+    uploadDriveBtn: { 
+      background: "#9c4d97", 
+      color: "#fff",
+      border: "none",
+    },
+    submittedBtn: { 
+      background: "#fff", 
+      color: "#666",
+      borderColor: "#d0d0d0",
+      cursor: "default",
+    },
+    statusText: {
+      fontSize: "13px",
+      color: "#28a745",
+      fontWeight: "500",
+      fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+    },
+    bottomRow: {
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+    },
+    overlay: {
+      position: "fixed",
+      top: 0,
+      left: 0,
+      width: "100vw",
+      height: "100vh",
+      background: "rgba(0,0,0,0.5)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      zIndex: 1000,
+    },
+    modal: {
+      background: "#fff",
+      borderRadius: "12px",
+      padding: "0",
+      width: "500px",
+      maxWidth: "90%",
+      maxHeight: "85vh",
+      overflow: "hidden",
+      boxShadow: "0 10px 40px rgba(0,0,0,0.2)",
+    },
+    modalHeader: {
+      padding: "20px 24px",
+      borderBottom: "1px solid #e0e0e0",
+      background: "#9c4d97",
+      color: "#fff",
+    },
+    modalTitle: { 
+      fontSize: "18px", 
+      fontWeight: "600", 
+      margin: 0,
+      fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+    },
+    modalBody: {
+      padding: "24px",
+      maxHeight: "calc(85vh - 200px)",
+      overflowY: "auto",
+    },
+    detailRow: {
+      display: "flex",
+      marginBottom: "16px",
+      fontSize: "14px",
+      fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+    },
+    detailLabel: {
+      fontWeight: "600",
+      color: "#555",
+      minWidth: "140px",
+      marginRight: "12px",
+    },
+    detailValue: {
+      color: "#333",
+      flex: 1,
+    },
+    inputText: {
+      width: "100%",
+      padding: "10px 12px",
+      border: "1px solid #d0d0d0",
+      borderRadius: "6px",
+      marginTop: "16px",
+      fontSize: "14px",
+      fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+      resize: "vertical",
+      minHeight: "80px",
+    },
+    modalFooter: {
+      padding: "16px 24px",
+      borderTop: "1px solid #e0e0e0",
+      display: "flex",
+      justifyContent: "flex-end",
+      gap: "12px",
+      background: "#f8f9fa",
+    },
+    cancelBtn: {
+      padding: "8px 20px",
+      background: "#fff",
+      color: "#666",
+      border: "1px solid #d0d0d0",
+      borderRadius: "6px",
+      cursor: "pointer",
+      fontSize: "14px",
+      fontWeight: "500",
+      fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+    },
+    submitBtn: {
+      padding: "8px 20px",
+      background: "#9c4d97",
+      color: "#fff",
+      border: "none",
+      borderRadius: "6px",
+      cursor: "pointer",
+      fontSize: "14px",
+      fontWeight: "500",
+      fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+      marginLeft: "83px",
+    },
+  };

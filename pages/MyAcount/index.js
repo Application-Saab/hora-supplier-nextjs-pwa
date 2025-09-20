@@ -1,9 +1,19 @@
 import React from "react";
 import Layout from "../../component/Layout";
 import { useRouter } from "next/router";
-import { FaUser, FaBriefcase, FaCity, FaCalendarAlt, FaPen } from "react-icons/fa";
-import bell from '../../assets/userprofile2.jpg';
+import {
+  FaUser,
+  FaBriefcase,
+  FaCity,
+  FaCalendarAlt,
+  FaPen,
+} from "react-icons/fa";
+import bell from "../../assets/userprofile2.jpg";
 
+import IconButton from '@mui/material/IconButton';
+import LogoutIcon from '@mui/icons-material/Logout';
+// import logo from '../assets/hora-logo-light.png';
+// import backArr from '../assets/back_arrow1.png';
 import Image from "next/image";
 
 const PersonalDetails = () => {
@@ -15,17 +25,26 @@ const PersonalDetails = () => {
   let supplierExperince;
   let supplierJobProfile;
 
-  if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
+  if (
+    typeof window !== "undefined" &&
+    typeof window.localStorage !== "undefined"
+  ) {
     supplierName = localStorage.getItem("supplierName");
     supplierAge = localStorage.getItem("supplierAge");
     supplierCity = localStorage.getItem("supplierCity");
     supplierExperince = localStorage.getItem("supplierExperince");
     supplierJobProfile = localStorage.getItem("supplierJobProfile");
-  }	
+  }
 
   const UpdateDetailFunction = () => {
-    router.push('./Profile');
-  }
+    router.push("./Profile");
+  };
+
+
+    const handleLogout = () => {
+      localStorage.removeItem("token");
+      router.push("/");
+    };
 
   return (
     <Layout navTitle="Personal Details">
@@ -58,29 +77,59 @@ const PersonalDetails = () => {
 
         {/* Details section */}
         <div style={{ textAlign: "left" }}>
-          <DetailItem icon={<FaBriefcase />} label="Job Experience" value={supplierExperince} />
-          <DetailItem icon={<FaPen />} label="Job Profile" value={supplierJobProfile} />
+          <DetailItem
+            icon={<FaBriefcase />}
+            label="Job Experience"
+            value={supplierExperince}
+          />
+          <DetailItem
+            icon={<FaPen />}
+            label="Job Profile"
+            value={supplierJobProfile}
+          />
           <DetailItem icon={<FaUser />} label="Name" value={supplierName} />
-          <DetailItem icon={<FaCalendarAlt />} label="Age" value={supplierAge} />
+          <DetailItem
+            icon={<FaCalendarAlt />}
+            label="Age"
+            value={supplierAge}
+          />
           <DetailItem icon={<FaCity />} label="City" value={supplierCity} />
         </div>
 
-        {/* Update Details Button */}
-        <button
-          onClick={UpdateDetailFunction}
-          style={{
-            marginTop: "20px",
-            padding: "10px 20px",
-            backgroundColor: "#FF5722",
-            color: "white",
-            border: "none",
-            borderRadius: "5px",
-            cursor: "pointer",
-            fontWeight: "bold",
-          }}
-        >
-          Edit Details
-        </button>
+       <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+  {/* Update Details Button */}
+  <button
+    onClick={UpdateDetailFunction}
+    style={{
+      padding: "10px 20px",
+      backgroundColor: "#FF5722",
+      color: "white",
+      border: "none",
+      borderRadius: "5px",
+      cursor: "pointer",
+      fontWeight: "bold",
+    }}
+  >
+    Edit Details
+  </button>
+
+  {/* Right Side: Logout Icon */}
+  <button
+    style={{
+      padding: "10px 20px",
+      backgroundColor: "#FF5722",
+      color: "white",
+      border: "none",
+      borderRadius: "5px",
+      cursor: "pointer",
+      fontWeight: "bold",
+    }}
+    onClick={handleLogout}
+  >
+    Logout
+  </button>
+</div>
+
       </div>
     </Layout>
   );
@@ -99,10 +148,16 @@ const DetailItem = ({ icon, label, value }) => (
       border: "1px solid #ccc",
     }}
   >
-    <div style={{ fontSize: "20px", color: "#FF5722", marginRight: "10px" }}>{icon}</div>
+    <div style={{ fontSize: "20px", color: "#FF5722", marginRight: "10px" }}>
+      {icon}
+    </div>
     <div>
-      <label style={{ fontWeight: "bold", color: "#333", fontSize: "14px" }}>{label}</label>
-      <p style={{ margin: "5px 0", fontSize: "16px", color: "#555" }}>{value || "N/A"}</p>
+      <label style={{ fontWeight: "bold", color: "#333", fontSize: "14px" }}>
+        {label}
+      </label>
+      <p style={{ margin: "5px 0", fontSize: "16px", color: "#555" }}>
+        {value || "N/A"}
+      </p>
     </div>
   </div>
 );
@@ -110,9 +165,10 @@ const DetailItem = ({ icon, label, value }) => (
 export default PersonalDetails;
 const styles = {
   title: {
-        fontSize: '14px',
-        fontWeight: 'bold',
-        marginBottom: '10px',
-        color: '#333',
-        alignSelf: 'flex-start',
-      }};
+    fontSize: "14px",
+    fontWeight: "bold",
+    marginBottom: "10px",
+    color: "#333",
+    alignSelf: "flex-start",
+  },
+};

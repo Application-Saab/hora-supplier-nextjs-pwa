@@ -11,6 +11,7 @@ import backArr from '../assets/back_arrow1.png';
 const Navbar = ({ backLink = "/home", navTitle, showBackButton = true }) => {
   const router = useRouter();
 
+  
   const handleLogout = () => {
     localStorage.removeItem("token");
     router.push("/");
@@ -42,10 +43,7 @@ const Navbar = ({ backLink = "/home", navTitle, showBackButton = true }) => {
         style={{ margin: "0 auto" }}
       />
 
-      {/* Right Side: Logout Icon */}
-      <IconButton onClick={handleLogout} color="inherit">
-        <LogoutIcon />
-      </IconButton>
+     
     </nav>
   );
 };

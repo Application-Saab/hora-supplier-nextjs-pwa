@@ -185,6 +185,7 @@ const Orderlist = () => {
     const apiOrderId = _id;
     const orderType = type;
     const orderId = order_id;
+  
     router.push({
       pathname: `/new-order-details`,
       query: { apiOrderId, orderType, orderId },

@@ -124,7 +124,7 @@ const OrderDetailHeader = ({ orderDetail }) => {
 
 const styles = {
   bookingContainer: {
-    backgroundColor: "#9252aa", // Blue color
+    // backgroundColor: "#9252aa", // Blue color
     color: "white",
     padding: "7px 20px 4px",
     borderRadius: "15px",
