@@ -31,7 +31,7 @@ import axios from "axios";
 
 const cleanHTML = (htmlString) => {
   // Remove all <div> and </div> tags, keep inner content
-  return htmlString.replace(/<\/?div>/g, '').trim();
+  return htmlString.replace(/<\/?div>/g, "").trim();
 };
 
 const OrderDetailTab = ({
@@ -108,6 +108,91 @@ Total Amount: ₹${totalAmount}
 ------------------------
 ${decorations}
   `.trim();
+  };
+
+  const getOrderId = (e) => {
+    const orderId1 = 10800 + e;
+    const updateOrderId = "#" + orderId1;
+    return updateOrderId;
+  };
+
+  const getCleanInclusionText = (inclusionArray) => {
+    if (!inclusionArray || inclusionArray.length === 0)
+      return "No inclusion details available";
+
+    return inclusionArray
+      .join("")
+      .replace(/<\/?(div|span)>/g, "")
+      .replace(/&#10;/g, "\n")
+      .replace(/\s*-\s*/g, "\n- ")
+      .trim();
+  };
+
+  const sendOrderDetailsToWhatsAppDoc = (orderDetail, decorationItems) => {
+    console.log(decorationItems, "decorationitems");
+    console.log(JSON.stringify(orderDetail.items), "bro");
+
+    // Extract order details
+    const orderId = getOrderId(orderDetail.order_id) || "N/A";
+    const orderDate =
+      new Date(orderDetail.order_date).toLocaleDateString() || "N/A";
+    // const orderType = getOrderType(orderDetails._doc.type) || "N/A";
+    const address = orderDetail.addressId?.address1 || "N/A";
+    const googleMapLocation = orderDetail.addressId?.address2 || "N/A";
+    const orderTime = orderDetail.order_time || "N/A";
+    const decorationComments = orderDetail.decoration_comments || "N/A";
+    const addOnItems = orderDetail.add_on || [];
+
+    // Create a Google Maps link
+    const googleMapUrl = `https://www.google.com/maps/search/?q=${encodeURIComponent(
+      googleMapLocation
+    )}`;
+
+    // Calculate balance amount
+    let balanceAmount = 0;
+    if (orderDetail.phone_no) {
+      balanceAmount = orderDetail.total_amount - orderDetail.advance_amount;
+    } else {
+      if ([2, 3, 4, 5].includes(orderDetail?.type)) {
+        balanceAmount = Math.round((orderDetail?.payable_amount * 4) / 5);
+      } else if ([6, 7].includes(orderDetail?.type)) {
+        balanceAmount = Math.round(orderDetail?.payable_amount * 0.35);
+      } else {
+        balanceAmount = Math.round(orderDetail?.payable_amount * 0.65);
+      }
+    }
+
+    // Construct the message
+    let message = `Order Details:\n\nOrder ID: ${orderId}\nOrder Date: ${orderDate}\nAddress: ${address}\nGoogleMapLocation: ${googleMapUrl}\nArrival Time: ${orderTime}\n\n*Amount: ₹${balanceAmount}*\n\n*Comments*:\n ${decorationComments}\n`;
+
+    // Add Add-On Items
+    message += `\n*Add-On Items:*\n`;
+
+    if (addOnItems && addOnItems.length > 0) {
+      addOnItems.forEach((item, index) => {
+        const itemLabel = [item.name, item.title].filter(Boolean).join(" ");
+        message += `\n${index + 1}. ${itemLabel}: ₹${item.price}`;
+      });
+    } else {
+      message += ` None`;
+    }
+
+    // Add Decoration Items
+    decorationItems.forEach((item) => {
+      message += `\n\n*Product Name:* ${item.name}`;
+      message += `\n*Image URL:* https://horaservices.com/api/uploads/${item.featured_image}`;
+
+      const inclusionText = getCleanInclusionText(item.inclusion); // Your formatting function
+      message += `\n*Inclusion:* \n${inclusionText}`;
+    });
+
+    // Encode message for URL
+    const encodedMessage = encodeURIComponent(message);
+
+    const whatsappLink = `https://wa.me/?text=${encodedMessage}`;
+
+    // Open the link in a new tab or window (this will open WhatsApp)
+    window.open(whatsappLink, "_blank");
   };
 
   const sendToWhatsApp = (orderDetail, decorationItems) => {
@@ -208,7 +293,7 @@ ${decorations}
       </div>
     );
   };
-  
+
   // console.log(getItemInclusion(inclusion),"fdsfsdfds");
 
   const cancelOrder = async () => {
@@ -283,18 +368,18 @@ ${decorations}
   };
 
   function parseInclusionToBullets(inclusionString) {
-  if (!inclusionString) return [];
+    if (!inclusionString) return [];
 
-  // Split by </div> and filter out empty strings
-  return inclusionString
-    .split('</div>')
-    .map(str => str.replace(/<div[^>]*>/g, '').trim()) // Remove opening <div> tags
-    .filter(str => str.length > 0) // Remove empty items
-    .map(str => str.replace(/^-\s*/, '')); // Optional: remove leading dash if present
-}
+    // Split by </div> and filter out empty strings
+    return inclusionString
+      .split("</div>")
+      .map((str) => str.replace(/<div[^>]*>/g, "").trim()) // Remove opening <div> tags
+      .filter((str) => str.length > 0) // Remove empty items
+      .map((str) => str.replace(/^-\s*/, "")); // Optional: remove leading dash if present
+  }
 
-// In your component
-const bulletItems = parseInclusionToBullets(inclusion); 
+  // In your component
+  const bulletItems = parseInclusionToBullets(inclusion);
 
   const handleSubmit = () => {
     const currDate = new Date().toLocaleDateString();
@@ -509,7 +594,9 @@ const bulletItems = parseInclusionToBullets(inclusion);
                     cursor: "pointer",
                     display: "inline-block",
                   }}
-                  onClick={() => sendToWhatsApp(orderDetail, decorationItems)}
+                  onClick={() =>
+                    sendOrderDetailsToWhatsAppDoc(orderDetail, decorationItems)
+                  }
                 >
                   Send to WhatsApp
                 </button>
@@ -561,30 +648,35 @@ const bulletItems = parseInclusionToBullets(inclusion);
                 </h1>
               </div>
 
-             <div
-  style={{
-    boxShadow: "0 1px 8px rgba(0,0,0,.18)",
-    padding: "10px",
-    marginBottom: "12px",
-    backgroundColor: "#fff",
-  }}
->
-  <label style={{ display: "block", marginBottom: "8px", fontWeight: "bold" }}>
-    Inclusion:
-  </label>
-  <ul
-    style={{
-      listStyleType: "disc",      // Show dot bullets
-      paddingLeft: "20px",        // Indent to show bullets
-      margin: 0
-    }}
-  >
-    {bulletItems.map((item, index) => (
-      <li key={index}>{item}</li>
-    ))}
-  </ul>
-</div>
-
+              <div
+                style={{
+                  boxShadow: "0 1px 8px rgba(0,0,0,.18)",
+                  padding: "10px",
+                  marginBottom: "12px",
+                  backgroundColor: "#fff",
+                }}
+              >
+                <label
+                  style={{
+                    display: "block",
+                    marginBottom: "8px",
+                    fontWeight: "bold",
+                  }}
+                >
+                  Inclusion:
+                </label>
+                <ul
+                  style={{
+                    listStyleType: "disc", // Show dot bullets
+                    paddingLeft: "20px", // Indent to show bullets
+                    margin: 0,
+                  }}
+                >
+                  {bulletItems.map((item, index) => (
+                    <li key={index}>{item}</li>
+                  ))}
+                </ul>
+              </div>
 
               <div
                 style={{
@@ -603,8 +695,17 @@ const bulletItems = parseInclusionToBullets(inclusion);
                         marginBottom: "10px",
                       }}
                     >
- <label style={{ display: "block", marginBottom: "8px", fontWeight: "bold" }}>                      Add-On
-</label>                    </div>
+                      <label
+                        style={{
+                          display: "block",
+                          marginBottom: "8px",
+                          fontWeight: "bold",
+                        }}
+                      >
+                        {" "}
+                        Add-On
+                      </label>{" "}
+                    </div>
                     <ul style={{ paddingLeft: 0, listStyle: "none" }}>
                       {orderDetail.add_on.map((item, index) => (
                         <li

@@ -31,9 +31,8 @@ import axios from "axios";
 
 const cleanHTML = (htmlString) => {
   // Remove all <div> and </div> tags, keep inner content
-  return htmlString.replace(/<\/?div>/g, '').trim();
+  return htmlString.replace(/<\/?div>/g, "").trim();
 };
-
 
 const SUBMIT_LINK_ENDPOINT = "/api/photo/drive/add-order-drive-link";
 
@@ -59,8 +58,8 @@ const OrderDetailTab = ({
   const [errorMessage, setErrorMessage] = useState("");
 
   console.log(decorationItems, "decorationItemsd2");
-  
-   const [driveLink, setDriveLink] = useState("");
+
+  const [driveLink, setDriveLink] = useState("");
   console.log(orderDetail, "orderdetails");
 
   const formatOrderMessage = (orderDetail, decorationItems) => {
@@ -113,16 +112,6 @@ Total Amount: ₹${totalAmount}
 ------------------------
 ${decorations}
   `.trim();
-  };
-
-  const sendToWhatsApp = (orderDetail, decorationItems) => {
-    const phoneNumber = "919340785987"; // Change to your target number
-
-    const message = encodeURIComponent(
-      formatOrderMessage(orderDetail, decorationItems)
-    );
-    const whatsappURL = `https://wa.me/${phoneNumber}?text=${message}`;
-    window.open(whatsappURL, "_blank");
   };
 
   let orderOtp;
@@ -213,7 +202,7 @@ ${decorations}
       </div>
     );
   };
-  
+
   // console.log(getItemInclusion(inclusion),"fdsfsdfds");
 
   const cancelOrder = async () => {
@@ -288,18 +277,18 @@ ${decorations}
   };
 
   function parseInclusionToBullets(inclusionString) {
-  if (!inclusionString) return [];
+    if (!inclusionString) return [];
 
-  // Split by </div> and filter out empty strings
-  return inclusionString
-    .split('</div>')
-    .map(str => str.replace(/<div[^>]*>/g, '').trim()) // Remove opening <div> tags
-    .filter(str => str.length > 0) // Remove empty items
-    .map(str => str.replace(/^-\s*/, '')); // Optional: remove leading dash if present
-}
+    // Split by </div> and filter out empty strings
+    return inclusionString
+      .split("</div>")
+      .map((str) => str.replace(/<div[^>]*>/g, "").trim()) // Remove opening <div> tags
+      .filter((str) => str.length > 0) // Remove empty items
+      .map((str) => str.replace(/^-\s*/, "")); // Optional: remove leading dash if present
+  }
 
-// In your component
-const bulletItems = parseInclusionToBullets(inclusion); 
+  // In your component
+  const bulletItems = parseInclusionToBullets(inclusion);
 
   const handleSubmit = () => {
     const currDate = new Date().toLocaleDateString();
@@ -333,44 +322,75 @@ const bulletItems = parseInclusionToBullets(inclusion);
     }
   };
 
+  const handleSubmitDriveLink = async () => {
+    if (!driveLink.startsWith("https://drive.google.com/")) {
+      alert("Invalid Google Drive link");
+      return;
+    }
+    try {
+      await axios.post(BASE_URL + SUBMIT_LINK_ENDPOINT, {
+        order_id: orderDetail.order_id,
+        folderUrl: driveLink,
+      });
 
-    const handleSubmitDriveLink = async () => {
-      if (!driveLink.startsWith("https://drive.google.com/")) {
-        alert("Invalid Google Drive link");
-        return;
-      }
-      try {
-        await axios.post(BASE_URL + SUBMIT_LINK_ENDPOINT, {
-          order_id: orderDetail.order_id,
-          folderUrl: driveLink,
-        });
-  
-        await fetch(`${BASE_URL}/api/photo/drive/update-google-sheet`, {
+      await fetch(`${BASE_URL}/api/photo/drive/update-google-sheet`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          orderIdDb: orderDetail.order_id,
+          orderIdCustomer: orderDetail.order_id + 10800,
+          phone: orderDetail.phone_no,
+          fulfillmentDate: orderDetail.order_date
+            ? new Date(orderDetail.order_date).toLocaleDateString("en-GB")
+            : "N/A",
+          services: "Photography",
+          driveLink: driveLink,
+          horaWebLink: "N/A",
+        }),
+      });
+
+      alert("Drive link submitted!");
+      // setPopupOpen(false);
+      setDriveLink("");
+      window.location.href = "/past-order";
+    } catch (err) {
+      console.error(err.response?.data?.error, "testing");
+      alert(err.response?.data?.error);
+    }
+  };
+
+  const handleFileUpload = async () => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.multiple = true;
+    input.onchange = async (e) => {
+      const files = e.target.files;
+      if (!files?.length) return;
+      const formData = new FormData();
+      [...files].forEach((f) => formData.append("files", f));
+
+      const uploadRes = await fetch(
+        "https://horaservices.com:3000/api/multiple_image_upload",
+        {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            orderIdDb: orderDetail.order_id,
-            orderIdCustomer: orderDetail.order_id + 10800,
-            phone: orderDetail.phone_no,
-            fulfillmentDate: orderDetail.order_date
-              ? new Date(orderDetail.order_date).toLocaleDateString("en-GB")
-              : "N/A",
-            services: "Photography",
-            driveLink: driveLink,
-            horaWebLink: "N/A",
-          }),
-        });
-  
-        alert("Drive link submitted!");
-        // setPopupOpen(false);
-        setDriveLink("");
-        window.location.href = "/past-order";
-      } catch (err) {
-        console.error(err.response?.data?.error, "testing");
-        alert(err.response?.data?.error);
-      }
-    };
+          body: formData,
+        }
+      );
+      const uploadData = await uploadRes.json();
 
+      await fetch("https://horaservices.com:3000/api/order/edit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          _id: orderDetail._id,
+          userOrderDishImageArray: uploadData.data,
+        }),
+      });
+
+      window.location.href = "/past-order";
+    };
+    input.click();
+  };
 
   return (
     <>
@@ -541,22 +561,105 @@ const bulletItems = parseInclusionToBullets(inclusion);
                   )}
                 </div>
 
-                <button
+                {/* ============ Dish Images Status & Grid ============ */}
+                <div
                   style={{
-                    backgroundColor: "#25D366", // WhatsApp green
-                    color: "white",
-                    padding: "10px 18px",
-                    border: "none",
-                    borderRadius: "8px",
-                    fontSize: "16px",
-                    fontWeight: "600",
-                    cursor: "pointer",
-                    display: "inline-block",
+                    boxShadow: "0 1px 8px rgba(0,0,0,.18)",
+                    padding: "10px 16px",
+                    marginBottom: "12px",
+                    backgroundColor: "#fff",
                   }}
-                  onClick={() => sendToWhatsApp(orderDetail, decorationItems)}
                 >
-                  Send to WhatsApp
-                </button>
+                  {/* Header Row */}
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      marginBottom: "12px",
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontWeight: "500",
+                        fontSize: "14px",
+                        color: "#333",
+                      }}
+                    >
+                      Current Status
+                    </span>
+
+                    {orderDetail.userOrderDishImageArray?.length > 0 ? (
+                      <span
+                        style={{
+                          color: "#28a745",
+                          fontWeight: "500",
+                          fontSize: "12px",
+                        }}
+                      >
+                        ✓ Actually Photos Are Updated
+                      </span>
+                    ) : (
+                      <span
+                        style={{
+                          color: "#dc3545",
+                          fontWeight: "500",
+                          fontSize: "12px",
+                        }}
+                      >
+                        ✗ Actually Photos Not Submitted
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Images Grid */}
+                  {orderDetail.userOrderDishImageArray?.length > 0 && (
+                    <div
+                      style={{
+                        display: "grid",
+                        gridTemplateColumns:
+                          "repeat(auto-fill, minmax(100px, 1fr))",
+                        gap: "10px",
+                      }}
+                    >
+                      {orderDetail.userOrderDishImageArray.map((img, index) => (
+                        <img
+                          key={index}
+                          // src={img}
+                          src={`https://horaservices.com/api/uploads/${img}`}
+                          alt={`Dish ${index + 1}`}
+                          style={{
+                            width: "100%",
+                            height: "80px",
+                            objectFit: "cover",
+                            borderRadius: "6px",
+                            border: "1px solid #ccc",
+                          }}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* ============ Submit / Re-Submit Button ============ */}
+                {!orderDetail.userOrderDishImageArray?.length && (
+                  <button
+                    style={{
+                      backgroundColor: "#25D366", // WhatsApp green
+                      color: "white",
+                      padding: "10px 18px",
+                      border: "none",
+                      borderRadius: "8px",
+                      fontSize: "16px",
+                      fontWeight: "600",
+                      cursor: "pointer",
+                      display: "inline-block",
+                    }}
+                    onClick={handleFileUpload}
+                  >
+                    Submit Image
+                  </button>
+                )}
               </div>
             );
           })}
@@ -605,30 +708,35 @@ const bulletItems = parseInclusionToBullets(inclusion);
                 </h1>
               </div>
 
-             <div
-  style={{
-    boxShadow: "0 1px 8px rgba(0,0,0,.18)",
-    padding: "10px",
-    marginBottom: "12px",
-    backgroundColor: "#fff",
-  }}
->
-  <label style={{ display: "block", marginBottom: "8px", fontWeight: "bold" }}>
-    Inclusion:
-  </label>
-  <ul
-    style={{
-      listStyleType: "disc",      // Show dot bullets
-      paddingLeft: "20px",        // Indent to show bullets
-      margin: 0
-    }}
-  >
-    {bulletItems.map((item, index) => (
-      <li key={index}>{item}</li>
-    ))}
-  </ul>
-</div>
-
+              <div
+                style={{
+                  boxShadow: "0 1px 8px rgba(0,0,0,.18)",
+                  padding: "10px",
+                  marginBottom: "12px",
+                  backgroundColor: "#fff",
+                }}
+              >
+                <label
+                  style={{
+                    display: "block",
+                    marginBottom: "8px",
+                    fontWeight: "bold",
+                  }}
+                >
+                  Inclusion:
+                </label>
+                <ul
+                  style={{
+                    listStyleType: "disc", // Show dot bullets
+                    paddingLeft: "20px", // Indent to show bullets
+                    margin: 0,
+                  }}
+                >
+                  {bulletItems.map((item, index) => (
+                    <li key={index}>{item}</li>
+                  ))}
+                </ul>
+              </div>
 
               <div
                 style={{
@@ -647,8 +755,17 @@ const bulletItems = parseInclusionToBullets(inclusion);
                         marginBottom: "10px",
                       }}
                     >
- <label style={{ display: "block", marginBottom: "8px", fontWeight: "bold" }}>                      Add-On
-</label>                    </div>
+                      <label
+                        style={{
+                          display: "block",
+                          marginBottom: "8px",
+                          fontWeight: "bold",
+                        }}
+                      >
+                        {" "}
+                        Add-On
+                      </label>{" "}
+                    </div>
                     <ul style={{ paddingLeft: 0, listStyle: "none" }}>
                       {orderDetail.add_on.map((item, index) => (
                         <li
@@ -742,30 +859,74 @@ const bulletItems = parseInclusionToBullets(inclusion);
                 </div>
               )}
 
+              <div
+                style={{
+                  boxShadow: "0 1px 8px rgba(0,0,0,.18)",
+                  padding: "10px 16px",
+                  marginBottom: "12px",
+                  backgroundColor: "#fff",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <span
+                  style={{ fontWeight: "500", fontSize: "13px", color: "#333" }}
+                >
+                  Current Status
+                </span>
 
-                    {orderDetail.orderDriveLink && (
-                <div  style={{
-                    boxShadow: "0 1px 8px rgba(0,0,0,.18)",
-                    padding: "10px",
-                    marginBottom: "12px",
-                    backgroundColor: "#fff",
-                  }}>
-                  <span style={{ color: "#28a745", fontWeight: "500", fontSize: "14px" }}>
-                    ✓ Drive link already submitted
+                {orderDetail.orderDriveLink ? (
+                  <span
+                    style={{
+                      color: "#28a745",
+                      fontWeight: "500",
+                      fontSize: "13px",
+                    }}
+                  >
+                    ✓ Drive Link Submitted
                   </span>
-                </div>
-              )}
-              
-              <textarea
+                ) : (
+                  <span
+                    style={{
+                      color: "#dc3545",
+                      fontWeight: "500",
+                      fontSize: "12px",
+                    }}
+                  >
+                    ✗ Drive Link Not Submitted Yet
+                  </span>
+                )}
+              </div>
+
+              {/* <textarea
                 value={driveLink}
                 style={styles.inputText}
                 onChange={(e) => setDriveLink(e.target.value)}
-                placeholder={orderDetail.orderDriveLink 
-                  ? "Paste new Google Drive folder link to resubmit..." 
-                  : "Paste Google Drive folder link here..."}
-              />
+                placeholder={
+                  orderDetail.orderDriveLink
+                    ? "Paste new Google Drive folder link to resubmit..."
+                    : "Paste Google Drive folder link here..."
+                }
+              /> */}
+              {!orderDetail.orderDriveLink && (
+                <button
+                  style={styles.submitBtn}
+                  onClick={handleSubmitDriveLink}
+                  onMouseEnter={(e) => {
+                    e.target.style.background = "#8a3f85";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.background = "#9c4d97";
+                  }}
+                >
+                  {orderDetail.orderDriveLink
+                    ? "Re-Submit Link"
+                    : "Submit Link"}
+                </button>
+              )}
 
-              <button
+              {/* <button
                 style={styles.submitBtn}
                 onClick={handleSubmitDriveLink}
                 onMouseEnter={(e) => {
@@ -776,7 +937,7 @@ const bulletItems = parseInclusionToBullets(inclusion);
                 }}
               >
                 {orderDetail.orderDriveLink ? "Re-Submit Link" : "Submit Link"}
-              </button>
+              </button> */}
             </div>
           </div>
         </div>
@@ -784,7 +945,7 @@ const bulletItems = parseInclusionToBullets(inclusion);
       <div>
         {/* <h1>sohan</h1>
         <h2>{orderDetail.orderDriveLink}</h2> */}
-       
+
         {/* <div className="otp-container">
           <h2 className="otp-title">Enter OTP</h2>
           <p className="otp-instructions">
@@ -825,180 +986,188 @@ const bulletItems = parseInclusionToBullets(inclusion);
 
 export default OrderDetailTab;
 
-
-  const styles = {
-    container: {
-      maxWidth: "600px",
-      margin: "2px auto",
-      padding: "20px",
-      background: "#f8f9fa",
-      minHeight: "100vh",
-    },
-    heading: {
-      marginBottom: "20px",
-      textAlign: "center",
-      fontSize: "24px",
-      fontWeight: "600",
-      color: "#97538C",
-      fontWeight: "bold",
-    },
-    orderItem: {
-      padding: "15px",
-      marginBottom: "12px",
-      borderRadius: "8px",
-      border: "1px solid #e0e0e0",
-      background: "#fff",
-      boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
-    },
-    topRow: {
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-      marginBottom: "8px",
-    },
-    orderIdText: { 
-      fontSize: "16px", 
-      fontWeight: "500", 
-      color: "#333",
-      fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-    },
-    reviewText: { 
-      fontSize: "13px", 
-      color: "#666",
-      fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-    },
-    button: {
-      padding: "6px 14px",
-      border: "1px solid",
-      borderRadius: "4px",
-      fontSize: "13px",
-      fontWeight: "500",
-      cursor: "pointer",
-      fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-      transition: "all 0.2s ease",
-    },
-    viewDetailsBtn: { 
-      background: "#fff", 
-      color: "#9c4d97",
-      borderColor: "#9c4d97",
-    },
-    uploadDriveBtn: { 
-      background: "#9c4d97", 
-      color: "#fff",
-      border: "none",
-    },
-    submittedBtn: { 
-      background: "#fff", 
-      color: "#666",
-      borderColor: "#d0d0d0",
-      cursor: "default",
-    },
-    statusText: {
-      fontSize: "13px",
-      color: "#28a745",
-      fontWeight: "500",
-      fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-    },
-    bottomRow: {
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-    },
-    overlay: {
-      position: "fixed",
-      top: 0,
-      left: 0,
-      width: "100vw",
-      height: "100vh",
-      background: "rgba(0,0,0,0.5)",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      zIndex: 1000,
-    },
-    modal: {
-      background: "#fff",
-      borderRadius: "12px",
-      padding: "0",
-      width: "500px",
-      maxWidth: "90%",
-      maxHeight: "85vh",
-      overflow: "hidden",
-      boxShadow: "0 10px 40px rgba(0,0,0,0.2)",
-    },
-    modalHeader: {
-      padding: "20px 24px",
-      borderBottom: "1px solid #e0e0e0",
-      background: "#9c4d97",
-      color: "#fff",
-    },
-    modalTitle: { 
-      fontSize: "18px", 
-      fontWeight: "600", 
-      margin: 0,
-      fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-    },
-    modalBody: {
-      padding: "24px",
-      maxHeight: "calc(85vh - 200px)",
-      overflowY: "auto",
-    },
-    detailRow: {
-      display: "flex",
-      marginBottom: "16px",
-      fontSize: "14px",
-      fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-    },
-    detailLabel: {
-      fontWeight: "600",
-      color: "#555",
-      minWidth: "140px",
-      marginRight: "12px",
-    },
-    detailValue: {
-      color: "#333",
-      flex: 1,
-    },
-    inputText: {
-      width: "100%",
-      padding: "10px 12px",
-      border: "1px solid #d0d0d0",
-      borderRadius: "6px",
-      marginTop: "16px",
-      fontSize: "14px",
-      fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-      resize: "vertical",
-      minHeight: "80px",
-    },
-    modalFooter: {
-      padding: "16px 24px",
-      borderTop: "1px solid #e0e0e0",
-      display: "flex",
-      justifyContent: "flex-end",
-      gap: "12px",
-      background: "#f8f9fa",
-    },
-    cancelBtn: {
-      padding: "8px 20px",
-      background: "#fff",
-      color: "#666",
-      border: "1px solid #d0d0d0",
-      borderRadius: "6px",
-      cursor: "pointer",
-      fontSize: "14px",
-      fontWeight: "500",
-      fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-    },
-    submitBtn: {
-      padding: "8px 20px",
-      background: "#9c4d97",
-      color: "#fff",
-      border: "none",
-      borderRadius: "6px",
-      cursor: "pointer",
-      fontSize: "14px",
-      fontWeight: "500",
-      fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-      marginLeft: "83px",
-    },
-  };
+const styles = {
+  container: {
+    maxWidth: "600px",
+    margin: "2px auto",
+    padding: "20px",
+    background: "#f8f9fa",
+    minHeight: "100vh",
+  },
+  heading: {
+    marginBottom: "20px",
+    textAlign: "center",
+    fontSize: "24px",
+    fontWeight: "600",
+    color: "#97538C",
+    fontWeight: "bold",
+  },
+  orderItem: {
+    padding: "15px",
+    marginBottom: "12px",
+    borderRadius: "8px",
+    border: "1px solid #e0e0e0",
+    background: "#fff",
+    boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
+  },
+  topRow: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: "8px",
+  },
+  orderIdText: {
+    fontSize: "16px",
+    fontWeight: "500",
+    color: "#333",
+    fontFamily:
+      "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+  },
+  reviewText: {
+    fontSize: "13px",
+    color: "#666",
+    fontFamily:
+      "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+  },
+  button: {
+    padding: "6px 14px",
+    border: "1px solid",
+    borderRadius: "4px",
+    fontSize: "13px",
+    fontWeight: "500",
+    cursor: "pointer",
+    fontFamily:
+      "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+    transition: "all 0.2s ease",
+  },
+  viewDetailsBtn: {
+    background: "#fff",
+    color: "#9c4d97",
+    borderColor: "#9c4d97",
+  },
+  uploadDriveBtn: {
+    background: "#9c4d97",
+    color: "#fff",
+    border: "none",
+  },
+  submittedBtn: {
+    background: "#fff",
+    color: "#666",
+    borderColor: "#d0d0d0",
+    cursor: "default",
+  },
+  statusText: {
+    fontSize: "13px",
+    color: "#28a745",
+    fontWeight: "500",
+    fontFamily:
+      "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+  },
+  bottomRow: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  overlay: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    width: "100vw",
+    height: "100vh",
+    background: "rgba(0,0,0,0.5)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 1000,
+  },
+  modal: {
+    background: "#fff",
+    borderRadius: "12px",
+    padding: "0",
+    width: "500px",
+    maxWidth: "90%",
+    maxHeight: "85vh",
+    overflow: "hidden",
+    boxShadow: "0 10px 40px rgba(0,0,0,0.2)",
+  },
+  modalHeader: {
+    padding: "20px 24px",
+    borderBottom: "1px solid #e0e0e0",
+    background: "#9c4d97",
+    color: "#fff",
+  },
+  modalTitle: {
+    fontSize: "18px",
+    fontWeight: "600",
+    margin: 0,
+    fontFamily:
+      "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+  },
+  modalBody: {
+    padding: "24px",
+    maxHeight: "calc(85vh - 200px)",
+    overflowY: "auto",
+  },
+  detailRow: {
+    display: "flex",
+    marginBottom: "16px",
+    fontSize: "14px",
+    fontFamily:
+      "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+  },
+  detailLabel: {
+    fontWeight: "600",
+    color: "#555",
+    minWidth: "140px",
+    marginRight: "12px",
+  },
+  detailValue: {
+    color: "#333",
+    flex: 1,
+  },
+  inputText: {
+    width: "100%",
+    padding: "10px 12px",
+    border: "1px solid #d0d0d0",
+    borderRadius: "6px",
+    marginTop: "16px",
+    fontSize: "14px",
+    fontFamily:
+      "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+    resize: "vertical",
+    minHeight: "80px",
+  },
+  modalFooter: {
+    padding: "16px 24px",
+    borderTop: "1px solid #e0e0e0",
+    display: "flex",
+    justifyContent: "flex-end",
+    gap: "12px",
+    background: "#f8f9fa",
+  },
+  cancelBtn: {
+    padding: "8px 20px",
+    background: "#fff",
+    color: "#666",
+    border: "1px solid #d0d0d0",
+    borderRadius: "6px",
+    cursor: "pointer",
+    fontSize: "14px",
+    fontWeight: "500",
+    fontFamily:
+      "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+  },
+  submitBtn: {
+    padding: "8px 20px",
+    background: "#9c4d97",
+    color: "#fff",
+    border: "none",
+    borderRadius: "6px",
+    cursor: "pointer",
+    fontSize: "14px",
+    fontWeight: "500",
+    fontFamily:
+      "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+    marginLeft: "83px",
+  },
+};

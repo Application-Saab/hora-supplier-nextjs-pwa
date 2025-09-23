@@ -55,6 +55,8 @@ const GoogleDriveForm = () => {
       justifyContent: "space-between",
       alignItems: "center",
       marginBottom: "8px",
+      flexWrap: "wrap",
+      gap: "8px",
     },
     orderIdText: { 
       fontSize: "16px", 
@@ -67,31 +69,59 @@ const GoogleDriveForm = () => {
       color: "#666",
       fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
     },
-    button: {
-      padding: "6px 14px",
+    // Improved button base styles
+    buttonBase: {
+      padding: "6px 12px",
       border: "1px solid",
-      borderRadius: "4px",
-      fontSize: "13px",
+      borderRadius: "5px",
+      fontSize: "12px",
       fontWeight: "500",
       cursor: "pointer",
       fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
       transition: "all 0.2s ease",
+      display: "inline-block",
+      textAlign: "center",
+      minWidth: "80px",
+      textDecoration: "none",
+      outline: "none",
+      boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+      whiteSpace: "nowrap",
+    },
+    // Button container for multiple buttons
+    buttonContainer: {
+      display: "flex",
+      gap: "6px",
+      alignItems: "center",
+      flexWrap: "nowrap",
+      justifyContent: "flex-end",
     },
     viewDetailsBtn: { 
       background: "#fff", 
       color: "#9c4d97",
       borderColor: "#9c4d97",
+      fontWeight: "500",
     },
     uploadDriveBtn: { 
-      background: "#9c4d97", 
+      background: "linear-gradient(135deg, #9c4d97 0%, #b55ba3 100%)", 
       color: "#fff",
       border: "none",
+      borderColor: "transparent",
+      fontWeight: "500",
+    },
+    showFinalSetupBtn: {
+      background: "linear-gradient(135deg, #9c4d97 0%, #b55ba3 100%)",
+      color: "#fff",
+      border: "none",
+      borderColor: "transparent",
+      fontWeight: "500",
     },
     submittedBtn: { 
-      background: "#fff", 
-      color: "#666",
-      borderColor: "#d0d0d0",
+      background: "#e9ecef", 
+      color: "#6c757d",
+      borderColor: "#dee2e6",
       cursor: "default",
+      fontWeight: "500",
+      boxShadow: "inset 0 1px 2px rgba(0,0,0,0.1)",
     },
     statusText: {
       fontSize: "13px",
@@ -344,58 +374,86 @@ const handleViewDetails = (order) => {
           <span style={styles.orderIdText}>
             Order Id: {order.order_id + 10800}
           </span>
-          {supplierJobType === 8 ? (
-            <button
-              style={{ ...styles.button, ...styles.viewDetailsBtn }}
-              onClick={() => handleViewDetails(order)}
-              onMouseEnter={(e) => {
-                e.target.style.background = "#f8f0f7";
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.background = "#fff";
-              }}
-            >
-              View Details
-            </button>
-          ) : order.userOrderDishImageArray?.length === 0 ? (
-            <button
-              style={{ ...styles.button, ...styles.uploadDriveBtn }}
-              onClick={handleFileUpload}
-            >
-              Show Final Setup
-            </button>
-          ) : (
-            <div style={styles.statusText}>✔ Status Updated</div>
-          )}
+          
+          {/* Common View Details button shown in all cases */}
+          <button
+            style={{ ...styles.buttonBase, ...styles.viewDetailsBtn }}
+            onClick={() => handleViewDetails(order)}
+            onMouseEnter={(e) => {
+              e.target.style.background = "#f8f0f7";
+              e.target.style.transform = "translateY(-1px)";
+              e.target.style.boxShadow = "0 2px 6px rgba(156,77,151,0.2)";
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.background = "#fff";
+              e.target.style.transform = "translateY(0)";
+              e.target.style.boxShadow = "0 1px 3px rgba(0,0,0,0.1)";
+            }}
+          >
+            View Details
+          </button>
         </div>
 
         <div style={styles.bottomRow}>
           <span style={styles.reviewText}>
             {order.userReviewRatingArray?.[0]
               ? `Rating=${order.userReviewRatingArray[0]}`
-              : "Rating=0-6"}
+              : "No Feedback"}
           </span>
 
-          {supplierJobType === 8 && (
+          {/* Show buttons based on supplierJobType */}
+          {supplierJobType === 8 ? (
+            // Photography orders
             order.orderDriveLink ? (
               <button
-                style={{ ...styles.button, ...styles.submittedBtn }}
+                style={{ ...styles.buttonBase, ...styles.submittedBtn }}
                 disabled
               >
-                Submitted
+                ✓ Submitted
               </button>
             ) : (
               <button
-                style={{ ...styles.button, ...styles.uploadDriveBtn }}
-                onClick={() => handleViewDetails1(order)}
+                style={{ ...styles.buttonBase, ...styles.uploadDriveBtn }}
+                onClick={() => handleViewDetails(order)}
                 onMouseEnter={(e) => {
-                  e.target.style.background = "#8a3f85";
+                  e.target.style.background = "linear-gradient(135deg, #8a3f85 0%, #a14d9a 100%)";
+                  e.target.style.transform = "translateY(-1px)";
+                  e.target.style.boxShadow = "0 3px 6px rgba(156,77,151,0.3)";
                 }}
                 onMouseLeave={(e) => {
-                  e.target.style.background = "#9c4d97";
+                  e.target.style.background = "linear-gradient(135deg, #9c4d97 0%, #b55ba3 100%)";
+                  e.target.style.transform = "translateY(0)";
+                  e.target.style.boxShadow = "0 1px 3px rgba(0,0,0,0.1)";
                 }}
               >
-                Upload Drive link
+                 Upload Drive Link
+              </button>
+            )
+          ) : (
+            // Decoration orders
+            order.userOrderDishImageArray?.length === 0 ? (
+              <button
+                style={{ ...styles.buttonBase, ...styles.showFinalSetupBtn }}
+                onClick={() => handleViewDetails(order)}
+                onMouseEnter={(e) => {
+e.target.style.background = "linear-gradient(135deg, #8a3f85 0%, #a14d9a 100%)";
+                  e.target.style.transform = "translateY(-1px)";
+                  e.target.style.boxShadow = "0 3px 8px rgba(40,167,69,0.3)";
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.background = "linear-gradient(135deg, #9c4d97 0%, #b55ba3 100%)";
+                  e.target.style.transform = "translateY(0)";
+                  e.target.style.boxShadow = "0 1px 3px rgba(0,0,0,0.1)";
+                }}
+              >
+                Show Final Setup
+              </button>
+            ) : (
+              <button
+                style={{ ...styles.buttonBase, ...styles.submittedBtn }}
+                disabled
+              >
+                ✓ Submitted
               </button>
             )
           )}
@@ -408,7 +466,6 @@ const handleViewDetails = (order) => {
     <Layout backLink = "/home">
       <div style={styles.container}>
         <h2 style={styles.heading}>
-          {/* {supplierJobType === 1 ? "Decoration Orders" : "Photography Orders"} */}
           Past Orders
         </h2>
         {loading ? (
@@ -421,142 +478,8 @@ const handleViewDetails = (order) => {
           </ul>
         )}
       </div>
-
-      {popupOpen && selectedOrder && (
-        <div style={styles.overlay} onClick={() => setPopupOpen(false)}>
-          <div style={styles.modal} onClick={(e) => e.stopPropagation()}>
-            <div style={styles.modalHeader}>
-              <h3 style={styles.modalTitle}>Order Details - #{selectedOrder.order_id + 10800}</h3>
-            </div>
-            
-            <div style={styles.modalBody}>
-              <div style={styles.detailRow}>
-                <span style={styles.detailLabel}>Order ID:</span>
-                <span style={styles.detailValue}>{selectedOrder.order_id + 10800}</span>
-              </div>
-              
-              <div style={styles.detailRow}>
-                <span style={styles.detailLabel}>Date:</span>
-                <span style={styles.detailValue}>
-                  {selectedOrder.order_date ? new Date(selectedOrder.order_date).toLocaleDateString("en-GB") : "N/A"}
-                </span>
-              </div>
-              
-              <div style={styles.detailRow}>
-                <span style={styles.detailLabel}>Arrival Time:</span>
-                <span style={styles.detailValue}>{selectedOrder.order_time || "N/A"}</span>
-              </div>
-              
-              <div style={styles.detailRow}>
-                <span style={styles.detailLabel}>Location:</span>
-                <span style={styles.detailValue}>{selectedOrder.order_locality || "N/A"}</span>
-              </div>
-              
-              <div style={styles.detailRow}>
-                <span style={styles.detailLabel}>Address:</span>
-                <span style={styles.detailValue}>{selectedOrder.addressId?.[0]?.address1 || "N/A"}</span>
-              </div>
-              
-              <div style={styles.detailRow}>
-                <span style={styles.detailLabel}>Google Map:</span>
-                <span style={styles.detailValue}>
-                  {selectedOrder.addressId?.[0]?.address2 ? (
-                    <a 
-                      href={selectedOrder.addressId[0].address2} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      style={{ color: "#9c4d97", textDecoration: "none" }}
-                    >
-                      View on Map
-                    </a>
-                  ) : "N/A"}
-                </span>
-              </div>
-              
-              <div style={styles.detailRow}>
-                <span style={styles.detailLabel}>Service:</span>
-                <span style={styles.detailValue}>{itemNames.join(", ") || "N/A"}</span>
-              </div>
-              
-              <div style={styles.detailRow}>
-                <span style={styles.detailLabel}>Add On:</span>
-                <span style={styles.detailValue}>
-                  {selectedOrder.add_on?.length > 0
-                    ? selectedOrder.add_on.map(a => `${a.title} (₹${a.price})`).join(", ")
-                    : "None"}
-                </span>
-              </div>
-              
-              <div style={styles.detailRow}>
-                <span style={styles.detailLabel}>Total Amount:</span>
-                <span style={{ ...styles.detailValue, fontWeight: "600", color: "#9c4d97" }}>
-                  ₹{selectedOrder.total_amount}
-                </span>
-              </div>
-              
-              <div style={styles.detailRow}>
-                <span style={styles.detailLabel}>Comments:</span>
-                <span style={styles.detailValue}>
-                  {selectedOrder.decoration_comments || "No additional comments"}
-                </span>
-              </div>
-
-              {selectedOrder.orderDriveLink && (
-                <div style={{ 
-                  marginTop: "16px", 
-                  padding: "12px", 
-                  background: "#f0f8f0", 
-                  borderRadius: "6px",
-                  border: "1px solid #c3e6c3"
-                }}>
-                  <span style={{ color: "#28a745", fontWeight: "500", fontSize: "14px" }}>
-                    ✓ Drive link already submitted
-                  </span>
-                </div>
-              )}
-              
-              <textarea
-                value={driveLink}
-                style={styles.inputText}
-                onChange={(e) => setDriveLink(e.target.value)}
-                placeholder={selectedOrder.orderDriveLink 
-                  ? "Paste new Google Drive folder link to resubmit..." 
-                  : "Paste Google Drive folder link here..."}
-              />
-            </div>
-
-            <div style={styles.modalFooter}>
-              <button
-                style={styles.cancelBtn}
-                onClick={() => setPopupOpen(false)}
-                onMouseEnter={(e) => {
-                  e.target.style.background = "#f8f9fa";
-                }}
-                onMouseLeave={(e) => {
-                  e.target.style.background = "#fff";
-                }}
-              >
-                Close
-              </button>
-              <button
-                style={styles.submitBtn}
-                onClick={handleSubmitDriveLink}
-                onMouseEnter={(e) => {
-                  e.target.style.background = "#8a3f85";
-                }}
-                onMouseLeave={(e) => {
-                  e.target.style.background = "#9c4d97";
-                }}
-              >
-                {selectedOrder.orderDriveLink ? "Re-Submit Link" : "Submit Link"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </Layout>
   );
 };
-
 
 export default GoogleDriveForm;
