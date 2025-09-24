@@ -94,7 +94,10 @@ function useCapacitorPushNotifications(playSound: () => void) {
       });
 
       PushNotifications.addListener('pushNotificationActionPerformed', (notification: any) => {
-        // Handle notification tap
+        // Handle notification tap: navigate to /new-order
+        if (typeof window !== 'undefined') {
+          window.location.href = '/supplier-new-order';
+        }
       });
     });
   }, [playSound]);

@@ -14,6 +14,8 @@ const Orderlist = () => {
   const router = useRouter();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
+  // Popup state (must be inside the component)
+  const [showPopup, setShowPopup] = useState(false);
 
   //order_status: { type: Number, default: 0 /* 0-Booking ,1-Accepted ,2-pending/in-progress, 3-delivery/completed, 4-failed, 5- handle -> {1,2,3}, 6- expire  */ }
 
@@ -62,7 +64,15 @@ const Orderlist = () => {
         const user = result?.data?.users?.[0];
         const status = user?.status ?? null;
         console.log(status, "stattata");
+        if (status === 0) {
+          console.log("condition0");
+          setShowPopup(true);
+        } else {
+          console.log("condition1");
+          setShowPopup(false);
         setUserStatus(status);
+        
+        }
       } catch (error) {
         console.error("Error fetching user status:", error);
       } finally {
@@ -192,6 +202,7 @@ const Orderlist = () => {
     });
   };
 
+
   if (loading) {
     return (
       <center>
@@ -207,6 +218,54 @@ const Orderlist = () => {
         </div>
       </center>
     );
+  }
+
+  // Show popup if userStatus === 0
+  if (showPopup) {
+  return (
+    <div style={{
+      position: "fixed",
+      top: 0,
+      left: 0,
+      width: "100vw",
+      height: "100vh",
+      background: "rgba(0,0,0,0.4)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      zIndex: 9999
+    }}>
+      <div style={{
+        background: "#fff",
+        padding: "40px 30px",
+        borderRadius: "12px",
+        boxShadow: "0 2px 16px rgba(0,0,0,0.2)",
+        textAlign: "center",
+        minWidth: "300px"
+      }}>
+        <h2 style={{ color: "#D32F2F", marginBottom: "16px" }}>Access Blocked</h2>
+        <p style={{ fontSize: "18px", color: "#333" }}>
+          You have been blocked from accessing the system.<br />
+          Please contact <strong>88888888</strong> for assistance.
+        </p>
+        <button
+          onClick={() => router.push('/home')}
+          style={{
+            padding: "10px 20px",
+            backgroundColor: "#D32F2F",
+            color: "#fff",
+            border: "none",
+            borderRadius: "6px",
+            cursor: "pointer",
+            fontSize: "16px"
+          }}
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  );
+
   }
 
   const bookedOrders = orders.filter((order) => order.order_status === 0);
