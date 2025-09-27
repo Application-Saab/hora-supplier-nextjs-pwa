@@ -7,6 +7,7 @@ import axios from 'axios';
 import { BASE_URL } from '../apiconstant/apiconstant';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useRouter } from 'next/router';
 
 // Only import firebase modules on the client side
 if (typeof window !== 'undefined') {
@@ -48,6 +49,7 @@ function useNotificationAudio() {
 }
 
 function useCapacitorPushNotifications(playSound: () => void) {
+  const router = useRouter();
   useEffect(() => {
     if (typeof window === 'undefined' || !(window as any).Capacitor) return;
     import('@capacitor/push-notifications').then(({ PushNotifications }) => {
@@ -96,7 +98,8 @@ function useCapacitorPushNotifications(playSound: () => void) {
       PushNotifications.addListener('pushNotificationActionPerformed', (notification: any) => {
         // Handle notification tap: navigate to /new-order
         if (typeof window !== 'undefined') {
-          window.location.href = '/supplier-new-order';
+          // window.location.href = '/supplier-new-order';
+          router.push('/supplier-new-order');
         }
       });
     });

@@ -899,6 +899,15 @@ ${decorations}
                 )}
               </div>
 
+{!orderDetail.orderDriveLink && (
+  <textarea
+    value={driveLink}
+    style={styles.inputText}
+    onChange={(e) => setDriveLink(e.target.value)}
+    placeholder="Paste Google Drive folder link here..."
+  />
+)}
+
               {/* <textarea
                 value={driveLink}
                 style={styles.inputText}
