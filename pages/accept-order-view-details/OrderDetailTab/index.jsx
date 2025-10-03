@@ -171,7 +171,7 @@ ${decorations}
     if (addOnItems && addOnItems.length > 0) {
       addOnItems.forEach((item, index) => {
         const itemLabel = [item.name, item.title].filter(Boolean).join(" ");
-        message += `\n${index + 1}. ${itemLabel}: ₹${item.price}`;
+        message += `\n${index + 1}. ${itemLabel}`;
       });
     } else {
       message += ` None`;
