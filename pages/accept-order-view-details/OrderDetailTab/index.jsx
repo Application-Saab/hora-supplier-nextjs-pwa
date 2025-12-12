@@ -58,8 +58,6 @@ const OrderDetailTab = ({
   const inputRefs = useRef([]);
   const [errorMessage, setErrorMessage] = useState("");
 
-  console.log(decorationItems, "decorationItemsd2");
-  console.log(orderDetail, "orderdetails");
 
   const formatOrderMessage = (orderDetail, decorationItemArray) => {
     const orderId = orderDetail?.order_id || "";
@@ -132,8 +130,6 @@ ${decorations}
   };
 
   const sendOrderDetailsToWhatsAppDoc = (orderDetail, decorationItemArray) => {
-    console.log(decorationItemArray, "decorationitems");
-    console.log(JSON.stringify(orderDetail.items), "bro");
 
     // Extract order details
     const orderId = getOrderId(orderDetail.order_id) || "N/A";
@@ -230,7 +226,6 @@ ${decorations}
   const [name, setName] = useState();
   const [inclusion, setInclusion] = useState();
 
-  console.log(name, "name");
 
   const fetchAndMatchItems = async (orderDetail) => {
     try {
@@ -242,7 +237,6 @@ ${decorations}
         try {
           const response = await axios.get(url);
           const apiData = response.data;
-          console.log(apiData, "apidata");
 
           if (apiData?.data?.length > 0) {
             // 🔍 Find the matching item in the entire response array
