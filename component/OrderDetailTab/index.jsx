@@ -25,6 +25,10 @@ const OrderDetailTab = ({
   decorationAddon,
   balanceAmount,
 }) => {
+  const decorationArray = Array.isArray(decorationItems)
+  ? decorationItems
+  : [decorationItems];
+
   const router = useRouter();
   console.log(orderDetail,"orderdtails");
   const { apiOrderId } = router.query;
@@ -268,7 +272,7 @@ const bulletItems = parseInclusionToBullets(inclusion);
         </>
       ) : orderType == 1 ? (
         <div className="decoration-container">
-          {decorationItems?.map((product, index) => {
+          {decorationArray?.map((product, index) => {
             return (
               <div key={product?.id} className="product-container">
                 <div className="product-image-container">

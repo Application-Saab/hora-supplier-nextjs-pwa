@@ -45,6 +45,7 @@ const OrderDetailTab = ({
   balanceAmount,
 }) => {
   const router = useRouter();
+    const decorationArray = Array.isArray(decorationItems) ? decorationItems : [decorationItems];
   const { apiOrderId } = router.query;
   const [tab, setTab] = useState("Menu");
   const [orderStatus, setOrderStatus] = useState(orderDetail?.order_status);
@@ -76,8 +77,8 @@ const OrderDetailTab = ({
     const totalAmount = orderDetail?.total_amount || "";
 
     // Decoration items with inclusions
-    const decorations = decorationItems?.length
-      ? decorationItems
+    const decorations = decorationArray?.length
+      ? decorationArray
           .map((item, i) => {
             const inclusions = item.inclusion?.length
               ? item.inclusion
@@ -501,7 +502,7 @@ ${decorations}
         </>
       ) : orderType === 1 ? (
         <div className="decoration-container">
-          {decorationItems?.map((product, index) => {
+          {decorationArray?.map((product, index) => {
             return (
               <div key={product?.id} className="product-container">
                 <div className="product-image-container">

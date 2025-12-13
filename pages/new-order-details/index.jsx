@@ -78,11 +78,11 @@ const OrderDetail = () => {
       const responseData = await response.json();
       console.log(responseData, "responseDataDecorationOrderDetails");
 
-      setOrderDetail(responseData.data._doc);
-      setDecorationItems(responseData.data.items[0].decoration);
-      setDecorationComments(responseData?.data?._doc.decoration_comments);
-      setDecorationAddon(responseData.data._doc.add_on);
-      setBalanceAmount(responseData.data._doc.balance_amount);
+      setOrderDetail(responseData?.data);
+      setDecorationItems(responseData?.data?.items[0]?.decoration);
+      setDecorationComments(responseData?.data?.decoration_comments);
+      setDecorationAddon(responseData?.data?.add_on);
+      setBalanceAmount(responseData?.data?.balance_amount);
       setLoading(false);
     } catch (error) {
       console.log("fetchDecorationOrderDetails error", error);

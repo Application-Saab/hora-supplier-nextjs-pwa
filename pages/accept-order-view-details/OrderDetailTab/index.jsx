@@ -42,6 +42,9 @@ const OrderDetailTab = ({
   decorationAddon,
   balanceAmount,
 }) => {
+  const decorationItemArray = Array.isArray(decorationItems)
+    ? decorationItems
+    : [decorationItems];
   const router = useRouter();
   const { apiOrderId } = router.query;
   const [tab, setTab] = useState("Menu");
@@ -55,10 +58,8 @@ const OrderDetailTab = ({
   const inputRefs = useRef([]);
   const [errorMessage, setErrorMessage] = useState("");
 
-  console.log(decorationItems, "decorationItemsd2");
-  console.log(orderDetail, "orderdetails");
 
-  const formatOrderMessage = (orderDetail, decorationItems) => {
+  const formatOrderMessage = (orderDetail, decorationItemArray) => {
     const orderId = orderDetail?.order_id || "";
     const orderDate = orderDetail?.order_date
       ? new Date(orderDetail.order_date).toLocaleDateString()
@@ -72,8 +73,8 @@ const OrderDetailTab = ({
     const totalAmount = orderDetail?.total_amount || "";
 
     // Decoration items with inclusions
-    const decorations = decorationItems?.length
-      ? decorationItems
+    const decorations = decorationItemArray?.length
+      ? decorationItemArray
           .map((item, i) => {
             const inclusions = item.inclusion?.length
               ? item.inclusion
@@ -128,9 +129,7 @@ ${decorations}
       .trim();
   };
 
-  const sendOrderDetailsToWhatsAppDoc = (orderDetail, decorationItems) => {
-    console.log(decorationItems, "decorationitems");
-    console.log(JSON.stringify(orderDetail.items), "bro");
+  const sendOrderDetailsToWhatsAppDoc = (orderDetail, decorationItemArray) => {
 
     // Extract order details
     const orderId = getOrderId(orderDetail.order_id) || "N/A";
@@ -178,7 +177,7 @@ ${decorations}
     }
 
     // Add Decoration Items
-    decorationItems.forEach((item) => {
+    decorationItemArray.forEach((item) => {
       message += `\n\n*Product Name:* ${item.name}`;
       message += `\n*Image URL:* https://horaservices.com/api/uploads/${item.featured_image}`;
 
@@ -195,11 +194,11 @@ ${decorations}
     window.open(whatsappLink, "_blank");
   };
 
-  const sendToWhatsApp = (orderDetail, decorationItems) => {
+  const sendToWhatsApp = (orderDetail, decorationItemArray) => {
     const phoneNumber = "919340785987"; // Change to your target number
 
     const message = encodeURIComponent(
-      formatOrderMessage(orderDetail, decorationItems)
+      formatOrderMessage(orderDetail, decorationItemArray)
     );
     const whatsappURL = `https://wa.me/${phoneNumber}?text=${message}`;
     window.open(whatsappURL, "_blank");
@@ -227,7 +226,6 @@ ${decorations}
   const [name, setName] = useState();
   const [inclusion, setInclusion] = useState();
 
-  console.log(name, "name");
 
   const fetchAndMatchItems = async (orderDetail) => {
     try {
@@ -239,7 +237,6 @@ ${decorations}
         try {
           const response = await axios.get(url);
           const apiData = response.data;
-          console.log(apiData, "apidata");
 
           if (apiData?.data?.length > 0) {
             // 🔍 Find the matching item in the entire response array
@@ -522,7 +519,7 @@ ${decorations}
         </>
       ) : orderType === 1 ? (
         <div className="decoration-container">
-          {decorationItems?.map((product, index) => {
+          {decorationItemArray?.map((product, index) => {
             return (
               <div key={product?.id} className="product-container">
                 <div className="product-image-container">
@@ -595,7 +592,7 @@ ${decorations}
                     display: "inline-block",
                   }}
                   onClick={() =>
-                    sendOrderDetailsToWhatsAppDoc(orderDetail, decorationItems)
+                    sendOrderDetailsToWhatsAppDoc(orderDetail, decorationItemArray)
                   }
                 >
                   Send to WhatsApp
