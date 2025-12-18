@@ -17,9 +17,12 @@ import reportLogo from "../../assets/report.png";
 const Home = () => {
 
   let supplierJobType;
+   let supplierID;
 
   if (typeof window !== "undefined") {
    supplierJobType = localStorage.getItem("supplierJobType");
+    supplierID = localStorage.getItem('supplierID');
+
 }
 
   const menuItems = [
@@ -49,7 +52,7 @@ const Home = () => {
       mobileNumber = localStorage.getItem('mobileNumber');
     }	
     const fetchData = async () => {
-      const url = `${BASE_URL}${GET_USER_DETAIL_ENDPOINT}`;
+      const url = `${BASE_URL}${GET_USER_DETAIL_ENDPOINT}/${supplierID}`;
       const requestData = {
         phone: mobileNumber
       };
@@ -138,7 +141,7 @@ const Home = () => {
 <p>&nbsp;&nbsp;&nbsp;&nbsp;- <b>Edited video</b> in <b>3 days</b></p>
 <p>&nbsp;&nbsp;&nbsp;&nbsp;- <b>Album delivery</b> in <b>6 days</b></p>
 <p>5. Only you must attend the shoot – no replacements allowed.</p>
-<p>6. Don't eat or drink in the customer party (This may impact your next orders).</p>
+<p>6. Dont eat or drink in the customer party (This may impact your next orders).</p>
 <p>7. Always wear professional dress.</p>
 <p>8. You should not use phone and take calls during the event.</p>
 <p>9. Photographers have to bring a 10-feet extension wire (Only for umbrella light orders).</p>

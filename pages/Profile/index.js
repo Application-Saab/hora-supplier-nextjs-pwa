@@ -24,6 +24,7 @@ const ProfileUpdate = () => {
     age: '',
     experience: ''
   });
+  let supplierID = localStorage.getItem('supplierID');
 
   const UpdateResumeDetails = async (event) => {
     event.preventDefault();
@@ -40,7 +41,8 @@ const ProfileUpdate = () => {
         "resume":"",
         "experience":jobExperince,
         "job_profile":jobProfile,
-        "order_type": jobType
+        "order_type": jobType,
+        "_id":supplierID,
     }
 
       if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
@@ -82,7 +84,7 @@ const ProfileUpdate = () => {
       if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
         token = localStorage.getItem('token');
       }	
-      const url = BASE_URL + SUPPLIER_UPDATE_PERSONAL_DETAILS; // Define your endpoint
+      const url = `${BASE_URL}${SUPPLIER_UPDATE_PERSONAL_DETAILS}/${supplierID}`; // Define your endpoint
 
       const requestData = {
         "age": userDetails.age,
