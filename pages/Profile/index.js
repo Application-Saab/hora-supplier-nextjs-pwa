@@ -24,11 +24,11 @@ const ProfileUpdate = () => {
     age: '',
     experience: ''
   });
-  let supplierID = localStorage.getItem('supplierID');
+  
 
   const UpdateResumeDetails = async (event) => {
     event.preventDefault();
-
+    let supplierID = localStorage.getItem('supplierID');
     try {
       let token;
       if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
