@@ -246,7 +246,7 @@ const Orderlist = () => {
         <h2 style={{ color: "#D32F2F", marginBottom: "16px" }}>Access Blocked</h2>
         <p style={{ fontSize: "18px", color: "#333" }}>
           You have been blocked from accessing the system.<br />
-          Please contact <strong>+91-8884221487</strong> for assistance.
+          Please contact <strong>+91-8982321487</strong> for assistance.
         </p>
         <button
           onClick={() => router.push('/home')}
