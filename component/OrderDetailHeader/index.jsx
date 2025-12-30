@@ -111,7 +111,67 @@ const OrderDetailHeader = ({ orderDetail }) => {
             </p>
             <p style={{ marginBottom: "2px"}}>
               <strong>Google Map Location:</strong>{" "}
-              <a href={orderDetail.addressId.address2} style={{ fontWeight: "bold" , cursor:"pointer" , wordWrap: "break-word" , color: 'blue' , borderBottom: '1px solid blue' }} target="_blank" rel="noopener">{orderDetail.addressId.address2}</a>
+                <a
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+
+                  const link = orderDetail.addressId.address2;
+
+                  const isValidGoogleMapLink =
+                    link &&
+                    (link.startsWith("http://") || link.startsWith("https://")) &&
+                    link.includes("google.com/maps");
+
+                  if (!isValidGoogleMapLink) {
+                    alert("Google location link is wrong");
+                    return;
+                  }
+
+                  window.open(link, "_blank", "noopener,noreferrer");
+                }}
+                style={{
+                  fontWeight: "bold",
+                  cursor: "pointer",
+                  wordWrap: "break-word",
+                  color: "blue",
+                  borderBottom: "1px solid blue",
+                }}
+              >
+                {orderDetail.addressId.address2}
+              </a>
+              {orderDetail.addressId.address2 && (
+              <button
+                onClick={() => {
+                  const link = orderDetail.addressId.address2;
+
+                  const isValidGoogleMapLink =
+                    link &&
+                    (link.startsWith("http://") || link.startsWith("https://")) &&
+                    link.includes("google.com/maps");
+
+                  if (!isValidGoogleMapLink) {
+                    alert("Google location link is wrong");
+                    return;
+                  }
+
+                  navigator.clipboard.writeText(link);
+                  alert("Google Map link copied!");
+                }}
+                style={{
+                  padding: "4px 6px",
+                  cursor: "pointer",
+                  fontSize: "12px",
+                  marginLeft: "6px",
+                  backgroundColor: "#97538c",
+                  color: "#FAFAFA",
+                  border: "none",
+                  borderRadius: "4px",
+                }}
+              >
+                Copy Link
+              </button>
+              )}
             </p>
             {/* <button style={styles.directionsButton}>Get Directions</button> */}
           </div>
