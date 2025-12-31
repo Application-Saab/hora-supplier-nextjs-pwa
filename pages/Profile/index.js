@@ -25,7 +25,12 @@ const ProfileUpdate = () => {
     experience: ''
   });
   
-let supplierID = localStorage.getItem('supplierID');
+ let supplierID;
+  if (
+    typeof window !== "undefined" && typeof window.localStorage !== "undefined"
+  ) {
+    supplierID = localStorage.getItem("supplierID");
+  }
 
   const UpdateResumeDetails = async (event) => {
     event.preventDefault();

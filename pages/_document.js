@@ -5,7 +5,7 @@ export default function Document() {
     <Html>
       <Head>
         {/* Load CamanJS from CDN */}
-        <script src="https://unpkg.com/caman/dist/caman.full.min.js"></script>
+        {/* <script src="https://unpkg.com/caman/dist/caman.full.min.js"></script> */}
       </Head>
       <body>
         <Main />
