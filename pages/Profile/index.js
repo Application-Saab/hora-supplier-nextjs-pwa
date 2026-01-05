@@ -18,19 +18,21 @@ const ProfileUpdate = () => {
   const [error, setError] = useState(null);
   const [errorProfessional , setErrorProfessional] = useState(null);
   const [showAdditionalFields, setShowAdditionalFields] = useState(false);
+  const [supplierID, setSupplierID] = useState(null);
   const [userDetails, setUserDetails] = useState({
     name: '',
     city: '',
     age: '',
     experience: ''
   });
-  
- let supplierID;
-  if (
-    typeof window !== "undefined" && typeof window.localStorage !== "undefined"
-  ) {
-    supplierID = localStorage.getItem("supplierID");
+
+  useEffect(() => {
+  if (typeof window !== "undefined") {
+    const id = localStorage.getItem("supplierID");
+    setSupplierID(id);
   }
+}, []);
+  
 
   const UpdateResumeDetails = async (event) => {
     event.preventDefault();
