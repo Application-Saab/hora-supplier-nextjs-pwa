@@ -12,7 +12,6 @@ import { useRouter } from "next/router";
 import {
   BASE_URL,
   ACCEPT_ORDER,
-  GET_PHOTOGRAPHY_BY_NAME,
 } from "../../apiconstant/apiconstant";
 import checkImage from "../../assets/tick.jpeg";
 import axios from "axios";
@@ -46,62 +45,26 @@ const OrderDetailTab = ({
   // console.log(orderDetail, "orderDetailsss");
 
   // const [name, setname] = useState();
-  const [name, setName] = useState();
-  
-    const [inclusion, setInclusion] = useState();
 
-  const fetchAndMatchItems = async (orderDetail) => {
-    try {
-      const { items } = orderDetail;
-      if (!items || items.length === 0) return;
+function parseInclusionToBullets(inclusionData) {
+  if (!inclusionData) return [];
 
-      for (const itemId of items) {
-        const url = `${BASE_URL}${GET_PHOTOGRAPHY_BY_NAME}`;
-        try {
-          const response = await axios.get(url);
-          const apiData = response.data;
+  // If array, take first element
+  const inclusionString = Array.isArray(inclusionData)
+    ? inclusionData[0]
+    : inclusionData;
 
-          if (apiData?.data?.length > 0) {
-            // 🔍 Find the matching item in the entire response array
-            const matchedItem = apiData.data.find(
-              (item) => item._id === itemId
-            );
+  if (typeof inclusionString !== "string") return [];
 
-            if (matchedItem) {
-              console.log(`✅ Match found for ID ${itemId}:`, matchedItem.name);
-              setName(matchedItem.name); // overwrites previous; store in array if needed
-               setInclusion(matchedItem.inclusion[0]);
-            } else {
-              console.log(`❌ No match for ID ${itemId}`);
-            }
-          }
-        } catch (axiosError) {
-          console.error(
-            `Error fetching data for ID ${itemId}:`,
-            axiosError.message
-          );
-        }
-      }
-    } catch (error) {
-      console.error("Error in fetchAndMatchItems:", error);
-    }
-  };
-
-  fetchAndMatchItems(orderDetail);
-
-  function parseInclusionToBullets(inclusionString) {
-  if (!inclusionString) return [];
-
-  // Split by </div> and filter out empty strings
   return inclusionString
-    .split('</div>')
-    .map(str => str.replace(/<div[^>]*>/g, '').trim()) // Remove opening <div> tags
-    .filter(str => str.length > 0) // Remove empty items
-    .map(str => str.replace(/^-\s*/, '')); // Optional: remove leading dash if present
+    .split("</div>")
+    .map(str => str.replace(/<div[^>]*>/g, "").trim())
+    .filter(str => str.length > 0)
+    .map(str => str.replace(/^-\s*/, ""));
 }
 
 // In your component
-const bulletItems = parseInclusionToBullets(inclusion); 
+const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography?.inclusion); 
 
 
   const getItemInclusion = (inclusion) => {
@@ -378,7 +341,7 @@ const bulletItems = parseInclusionToBullets(inclusion);
                     fontWeight: "#222",
                   }}
                 >
-                  {name}
+                  {orderDetail?.items?.[0]?.photography?.name}
                 </h1>
               </div>
 

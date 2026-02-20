@@ -13,7 +13,6 @@ import {
   BASE_URL,
   ACCEPT_ORDER,
   START_ORDER,
-  GET_PHOTOGRAPHY_BY_NAME,
 } from "../../../apiconstant/apiconstant";
 
 import checkImage from "../../../assets/tick.jpeg";
@@ -223,50 +222,6 @@ ${decorations}
   // console.log(orderDet/ail, "orderDetailsss");
 
   // const [name, setname] = useState();
-  const [name, setName] = useState();
-  const [inclusion, setInclusion] = useState();
-
-
-  const fetchAndMatchItems = async (orderDetail) => {
-    try {
-      const { items } = orderDetail;
-      if (!items || items.length === 0) return;
-
-      for (const itemId of items) {
-        const url = `${BASE_URL}${GET_PHOTOGRAPHY_BY_NAME}`;
-        try {
-          const response = await axios.get(url);
-          const apiData = response.data;
-
-          if (apiData?.data?.length > 0) {
-            // 🔍 Find the matching item in the entire response array
-            const matchedItem = apiData.data.find(
-              (item) => item._id === itemId
-            );
-
-            console.log(matchedItem.inclusion[0], "matcheditem");
-
-            if (matchedItem) {
-              console.log(`✅ Match found for ID ${itemId}:`, matchedItem.name);
-              setName(matchedItem.name); // overwrites previous; store in array if needed
-              setInclusion(matchedItem.inclusion[0]);
-            } else {
-              console.log(`❌ No match for ID ${itemId}`);
-            }
-          }
-        } catch (axiosError) {
-          console.error(
-            `Error fetching data for ID ${itemId}:`,
-            axiosError.message
-          );
-        }
-      }
-    } catch (error) {
-      console.error("Error in fetchAndMatchItems:", error);
-    }
-  };
-
-  fetchAndMatchItems(orderDetail);
 
   const getItemInclusion = (inclusion) => {
     if (!Array.isArray(inclusion) || inclusion.length === 0) {
@@ -364,19 +319,25 @@ ${decorations}
     }
   };
 
-  function parseInclusionToBullets(inclusionString) {
-    if (!inclusionString) return [];
+  function parseInclusionToBullets(inclusionData) {
+  if (!inclusionData) return [];
 
-    // Split by </div> and filter out empty strings
-    return inclusionString
-      .split("</div>")
-      .map((str) => str.replace(/<div[^>]*>/g, "").trim()) // Remove opening <div> tags
-      .filter((str) => str.length > 0) // Remove empty items
-      .map((str) => str.replace(/^-\s*/, "")); // Optional: remove leading dash if present
-  }
+  // If array, take first element
+  const inclusionString = Array.isArray(inclusionData)
+    ? inclusionData[0]
+    : inclusionData;
 
-  // In your component
-  const bulletItems = parseInclusionToBullets(inclusion);
+  if (typeof inclusionString !== "string") return [];
+
+  return inclusionString
+    .split("</div>")
+    .map(str => str.replace(/<div[^>]*>/g, "").trim())
+    .filter(str => str.length > 0)
+    .map(str => str.replace(/^-\s*/, ""));
+}
+
+// In your component
+const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography?.inclusion); 
 
   const handleSubmit = () => {
     const currDate = new Date().toLocaleDateString();
@@ -641,7 +602,7 @@ ${decorations}
                     fontWeight: "#222",
                   }}
                 >
-                  {name}
+                  {orderDetail?.items?.[0]?.photography?.name}
                 </h1>
               </div>
 
