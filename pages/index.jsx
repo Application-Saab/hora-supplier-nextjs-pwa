@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Storage } from "@capacitor/storage";
+import { Preferences } from '@capacitor/preferences'
 import axios from "axios";
 import { useTimer } from "../apiconstant/useTimer";
 // import login from "../apiconstant/login";
@@ -27,24 +27,39 @@ const Login = () => {
   const router = useRouter();
 
 
-  const loadAuthToken = () => {
+  // const loadAuthToken = () => {
+  //   const token = localStorage.getItem("token");
+  //   const supplierJobProfile = localStorage.getItem("supplierJobProfile");
+
+  //   if (token) {
+  //     console.log("Token found:", supplierJobProfile);
+  //     setIsUserLoggedIn(true);
+
+  //     if (supplierJobProfile && supplierJobProfile !== null ) {
+  //       router.push("/home");
+  //     } else {
+  //       router.push("/Profile");
+  //     }
+  //   } else {
+  //     console.log("No token found. User is logged out.");
+  //   }
+  // };
+const loadAuthToken = () => {
+  if (typeof window !== "undefined") {
     const token = localStorage.getItem("token");
     const supplierJobProfile = localStorage.getItem("supplierJobProfile");
 
     if (token) {
-      console.log("Token found:", supplierJobProfile);
       setIsUserLoggedIn(true);
 
-      if (supplierJobProfile && supplierJobProfile !== null ) {
+      if (supplierJobProfile) {
         router.push("/home");
       } else {
         router.push("/Profile");
       }
-    } else {
-      console.log("No token found. User is logged out.");
     }
-  };
-
+  }
+};
   useEffect(() => {
 
 
@@ -54,10 +69,11 @@ const Login = () => {
 
 
   const saveAuthToken = async (token) => {
-    await Storage.set({
-      key: "authToken",
-      value: token,
-    });
+   await Preferences.set({
+  key: 'token',
+  value: token,
+})
+
   };
 
   const handleMobileNumberChange = (e) => {
@@ -125,10 +141,15 @@ const Login = () => {
         const supplierIsPersonalStatus = localStorage.getItem("supplierIsPersonalStatus");
         const supplierJobProfile = localStorage.getItem("supplierJobProfile");
         await saveAuthToken(response.data.token);
-        await Storage.set({
-          key: 'supplierJobProfile',
-          value: response.data.data.job_profile, // The token received from your backend
-        });
+       await Preferences.set({
+  key: 'token',
+  value: response.data.token,
+});
+
+await Preferences.set({
+  key: 'supplierJobProfile',
+  value: response.data.data.job_profile,
+});
      
         // if (supplierIsPersonalStatus == 1) {
         if (supplierJobProfile != null) {
