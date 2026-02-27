@@ -13,7 +13,6 @@ import {
   BASE_URL,
   ACCEPT_ORDER,
   START_ORDER,
-  GET_PHOTOGRAPHY_BY_NAME,
 } from "../../../apiconstant/apiconstant";
 
 import checkImage from "../../../assets/tick.jpeg";
@@ -75,21 +74,21 @@ const OrderDetailTab = ({
     // Decoration items with inclusions
     const decorations = decorationItemArray?.length
       ? decorationItemArray
-          .map((item, i) => {
-            const inclusions = item.inclusion?.length
-              ? item.inclusion
-                  .map((inc) =>
-                    inc
-                      .replace(/<div>/g, "• ")
-                      .replace(/<\/div>/g, "\n")
-                      .trim()
-                  )
-                  .join("")
-              : "No inclusions";
+        .map((item, i) => {
+          const inclusions = item.inclusion?.length
+            ? item.inclusion
+              .map((inc) =>
+                inc
+                  .replace(/<div>/g, "• ")
+                  .replace(/<\/div>/g, "\n")
+                  .trim()
+              )
+              .join("")
+            : "No inclusions";
 
-            return `${i + 1}. ${item.name}\n${inclusions}`;
-          })
-          .join("\n\n")
+          return `${i + 1}. ${item.name}\n${inclusions}`;
+        })
+        .join("\n\n")
       : "No decoration items";
 
     return `
@@ -223,50 +222,6 @@ ${decorations}
   // console.log(orderDet/ail, "orderDetailsss");
 
   // const [name, setname] = useState();
-  const [name, setName] = useState();
-  const [inclusion, setInclusion] = useState();
-
-
-  const fetchAndMatchItems = async (orderDetail) => {
-    try {
-      const { items } = orderDetail;
-      if (!items || items.length === 0) return;
-
-      for (const itemId of items) {
-        const url = `${BASE_URL}${GET_PHOTOGRAPHY_BY_NAME}`;
-        try {
-          const response = await axios.get(url);
-          const apiData = response.data;
-
-          if (apiData?.data?.length > 0) {
-            // 🔍 Find the matching item in the entire response array
-            const matchedItem = apiData.data.find(
-              (item) => item._id === itemId
-            );
-
-            console.log(matchedItem.inclusion[0], "matcheditem");
-
-            if (matchedItem) {
-              console.log(`✅ Match found for ID ${itemId}:`, matchedItem.name);
-              setName(matchedItem.name); // overwrites previous; store in array if needed
-              setInclusion(matchedItem.inclusion[0]);
-            } else {
-              console.log(`❌ No match for ID ${itemId}`);
-            }
-          }
-        } catch (axiosError) {
-          console.error(
-            `Error fetching data for ID ${itemId}:`,
-            axiosError.message
-          );
-        }
-      }
-    } catch (error) {
-      console.error("Error in fetchAndMatchItems:", error);
-    }
-  };
-
-  fetchAndMatchItems(orderDetail);
 
   const getItemInclusion = (inclusion) => {
     if (!Array.isArray(inclusion) || inclusion.length === 0) {
@@ -364,19 +319,24 @@ ${decorations}
     }
   };
 
-  function parseInclusionToBullets(inclusionString) {
-    if (!inclusionString) return [];
+  function parseInclusionToBullets(inclusionData) {
+    if (!inclusionData) return [];
 
-    // Split by </div> and filter out empty strings
+    // If array, take first element
+    const inclusionString = Array.isArray(inclusionData)
+      ? inclusionData[0]
+      : inclusionData;
+
+    if (typeof inclusionString !== "string") return [];
     return inclusionString
       .split("</div>")
-      .map((str) => str.replace(/<div[^>]*>/g, "").trim()) // Remove opening <div> tags
-      .filter((str) => str.length > 0) // Remove empty items
-      .map((str) => str.replace(/^-\s*/, "")); // Optional: remove leading dash if present
+      .map(str => str.replace(/<div[^>]*>/g, "").trim())
+      .filter(str => str.length > 0)
+      .map(str => str.replace(/^-\s*/, ""));
   }
 
   // In your component
-  const bulletItems = parseInclusionToBullets(inclusion);
+  const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography?.inclusion);
 
   const handleSubmit = () => {
     const currDate = new Date().toLocaleDateString();
@@ -525,9 +485,8 @@ ${decorations}
                 <div className="product-image-container">
                   <Image
                     // src={`https://horaservices.com/api/uploads/${product?.featured_image}`}
-                    src={`https://horaservices.com/api/uploads/compressed_webp/${
-                      product.featured_image.split(".")[0]
-                    }.webp`}
+                    src={`https://horaservices.com/api/uploads/compressed_webp/${product.featured_image.split(".")[0]
+                      }.webp`}
                     alt={product?.name}
                     className="product-image"
                     height={300}
@@ -547,13 +506,48 @@ ${decorations}
                   <div className="product-add-ons prod_sec">
                     <p className="product-page-heading">AddOns:</p>
                     <ul>
-                      {decorationAddon.map((item, index) => (
-                        <li key={index}>
-                          <div>
-                            {item.name} {item.title}
-                          </div>
-                        </li>
-                      ))}
+                      {decorationAddon.map((item, index) => {
+                        let rawTitle =
+                          item?.addOnId?.title ||
+                          item?.name ||
+                          item?.title ||
+                          "Addon";
+
+                        // Quantity extract
+                        const quantityMatch = rawTitle.match(/Quantity\s*(\d+)/i);
+                        const extractedQuantity = quantityMatch
+                          ? Number(quantityMatch[1])
+                          : null;
+
+                        // Clean name
+                        const cleanedTitle = rawTitle
+                          .replace(/\s*-\s*Quantity\s*\d+/i, "")
+                          .trim();
+
+                        const quantity =
+                          extractedQuantity ||
+                          Number(item?.quantity) ||
+                          1;
+
+                        const price = Number(
+                          item?.priceAtPurchase ||
+                          item?.price ||
+                          0
+                        );
+
+                        const total =
+                          item?.totalPrice
+                            ? Number(item.totalPrice)
+                            : price * quantity;
+
+                        return (
+                          <li key={index}>
+                            <div>
+                              {cleanedTitle} : ₹{price} × {quantity} = ₹{total}
+                            </div>
+                          </li>
+                        );
+                      })}
                     </ul>
                   </div>
 
@@ -641,7 +635,7 @@ ${decorations}
                     fontWeight: "#222",
                   }}
                 >
-                  {name}
+                  {orderDetail?.items?.[0]?.photography?.name}
                 </h1>
               </div>
 
@@ -715,8 +709,15 @@ ${decorations}
                           className="inclusionstyle"
                         >
                           <img
-                            src={item.image}
-                            alt={item.title}
+                            src={
+                              item?.image
+                                ? item.image
+                                : item?.addOnId?.image
+                                  // ? `https://horaservices.com/api/uploads/compressed_webp/${item.addOnId.image}`
+                                  ? `${BASE_URL}/images/${item.addOnId.image}`
+                                  : "/placeholder.png"
+                            }
+                            alt={item?.addOnId?.title || item?.title}
                             style={{
                               height: 40,
                               width: 40,
@@ -729,7 +730,7 @@ ${decorations}
                             <div
                               style={{ fontWeight: "bold", fontSize: "16px" }}
                             >
-                              {item.title || "NA"}
+                              {item?.addOnId?.title || item?.title || "NA"}
                             </div>
                             <div
                               style={{
@@ -738,7 +739,7 @@ ${decorations}
                                 marginTop: "2px",
                               }}
                             >
-                              {item.description || "No description"}
+                              {item?.addOnId?.description || item?.description || "No description"}
                             </div>
                             <div
                               style={{
@@ -747,7 +748,7 @@ ${decorations}
                                 marginTop: "2px",
                               }}
                             >
-                              ₹{item.price ?? 0}
+                              ₹{item.priceAtPurchase || item?.price || 0}
                             </div>
                           </div>
                         </li>

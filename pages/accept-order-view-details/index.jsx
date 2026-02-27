@@ -5,7 +5,8 @@ import {
   BASE_URL,
   GET_DECORATION_DETAILS,
   ORDER_DETAILS_ENDPOINT,
-  GET_BOOKING_ORDER_DETAILS
+  GET_BOOKING_ORDER_DETAILS,
+  GET_PHOTOGRAPHY_ORDER_DETAILS,
 } from "../../apiconstant/apiconstant";
 import { useRouter } from "next/router";
 import Layout from "../../component/Layout";
@@ -35,8 +36,7 @@ const OrderDetail = () => {
     if (
       orderType == 2 ||
       orderType === 6 ||
-      orderType === 7 ||
-      orderType === 8
+      orderType === 7 
     ) {
       fetchOrderDetailsMenu();
     } else if (orderType === 1) {
@@ -50,6 +50,12 @@ const OrderDetail = () => {
       fetchOrderDetails();
     }
   }, [orderType, orderId, apiOrderId]);
+
+    useEffect(() => {
+      if(orderType == 8 ){
+        fetchPhotographyDetails();
+      }
+    }, [orderType])
 
   const fetchOrderDetailsMenu = async () => {
     try {
@@ -67,6 +73,27 @@ const OrderDetail = () => {
       console.log("error", error);
     }
   };
+
+    const fetchPhotographyDetails = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(
+          BASE_URL + GET_PHOTOGRAPHY_ORDER_DETAILS + "/" + orderId
+        );
+        const responseData = await response.json();
+        console.log(responseData, "responseDataDecorationOrderDetails");
+  
+        setOrderDetail(responseData?.data);
+        setDecorationItems(responseData?.data?.items[0]?.decoration);
+        setDecorationComments(responseData?.data?.decoration_comments);
+        setDecorationAddon(responseData?.data?.add_on);
+        setBalanceAmount(responseData?.data?.balance_amount);
+        setLoading(false);
+      } catch (error) {
+        console.log("fetchDecorationOrderDetails error", error);
+        setLoading(false);
+      }
+    };
 
   const fetchDecorationOrderDetails = async () => {
     try {

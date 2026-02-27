@@ -21,3 +21,4 @@ export const IMAGE_UPLOAD = "/api/multiple_image_upload";
 export const COMPLETE_ORDER = "/api/order/completeOrder";
 
 export const GET_PHOTOGRAPHY_BY_NAME = "/api/photography/searchByTag/66c96b4e22ed47b72117e09a"
+export const GET_PHOTOGRAPHY_ORDER_DETAILS = "/api/order/order_details_photography"

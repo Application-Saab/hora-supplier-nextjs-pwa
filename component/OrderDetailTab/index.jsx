@@ -12,7 +12,6 @@ import { useRouter } from "next/router";
 import {
   BASE_URL,
   ACCEPT_ORDER,
-  GET_PHOTOGRAPHY_BY_NAME,
 } from "../../apiconstant/apiconstant";
 import checkImage from "../../assets/tick.jpeg";
 import axios from "axios";
@@ -45,63 +44,24 @@ const OrderDetailTab = ({
 
   // console.log(orderDetail, "orderDetailsss");
 
-  // const [name, setname] = useState();
-  const [name, setName] = useState();
-  
-    const [inclusion, setInclusion] = useState();
+function parseInclusionToBullets(inclusionData) {
+  if (!inclusionData) return [];
 
-  const fetchAndMatchItems = async (orderDetail) => {
-    try {
-      const { items } = orderDetail;
-      if (!items || items.length === 0) return;
+  // If array, take first element
+  const inclusionString = Array.isArray(inclusionData)
+    ? inclusionData[0]
+    : inclusionData;
 
-      for (const itemId of items) {
-        const url = `${BASE_URL}${GET_PHOTOGRAPHY_BY_NAME}`;
-        try {
-          const response = await axios.get(url);
-          const apiData = response.data;
-
-          if (apiData?.data?.length > 0) {
-            // 🔍 Find the matching item in the entire response array
-            const matchedItem = apiData.data.find(
-              (item) => item._id === itemId
-            );
-
-            if (matchedItem) {
-              console.log(`✅ Match found for ID ${itemId}:`, matchedItem.name);
-              setName(matchedItem.name); // overwrites previous; store in array if needed
-               setInclusion(matchedItem.inclusion[0]);
-            } else {
-              console.log(`❌ No match for ID ${itemId}`);
-            }
-          }
-        } catch (axiosError) {
-          console.error(
-            `Error fetching data for ID ${itemId}:`,
-            axiosError.message
-          );
-        }
-      }
-    } catch (error) {
-      console.error("Error in fetchAndMatchItems:", error);
-    }
-  };
-
-  fetchAndMatchItems(orderDetail);
-
-  function parseInclusionToBullets(inclusionString) {
-  if (!inclusionString) return [];
-
-  // Split by </div> and filter out empty strings
+  if (typeof inclusionString !== "string") return [];
   return inclusionString
-    .split('</div>')
-    .map(str => str.replace(/<div[^>]*>/g, '').trim()) // Remove opening <div> tags
-    .filter(str => str.length > 0) // Remove empty items
-    .map(str => str.replace(/^-\s*/, '')); // Optional: remove leading dash if present
+   .split("</div>")
+    .map(str => str.replace(/<div[^>]*>/g, "").trim())
+    .filter(str => str.length > 0)
+    .map(str => str.replace(/^-\s*/, ""));
 }
 
 // In your component
-const bulletItems = parseInclusionToBullets(inclusion); 
+const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography?.inclusion);  
 
 
   const getItemInclusion = (inclusion) => {
@@ -300,15 +260,46 @@ const bulletItems = parseInclusionToBullets(inclusion);
                   <div className="product-add-ons prod_sec">
                     <p className="product-page-heading">AddOns:</p>
                     <ul>
-                      {decorationAddon.map((item, index) => (
-                        <li key={index}>
-                          <div>
-                            {item.name}
-                            {item.title}
-                          </div>
-                        </li>
-                      ))}
-                    </ul>
+  {decorationAddon.map((item, index) => {
+    let rawTitle =
+      item?.addOnId?.title ||
+      item?.name ||
+      item?.title ||
+      "Addon";
+
+    const quantityMatch = rawTitle.match(/Quantity\s*(\d+)/i);
+
+    const extractedQuantity = quantityMatch
+      ? Number(quantityMatch[1])
+      : null;
+
+    const cleanedTitle = rawTitle
+      .replace(/\s*-\s*Quantity\s*\d+/i, "")
+      .trim();
+
+    const quantity =
+      extractedQuantity ||
+      Number(item?.quantity) ||
+      1;
+
+    const price = Number(
+      item?.priceAtPurchase ||
+      item?.price ||
+      0
+    );
+
+    const total =
+      item?.totalPrice
+        ? Number(item.totalPrice)
+        : price * quantity;
+
+    return (
+      <li key={index}>
+        <span>{cleanedTitle}</span> : ₹{price} × {quantity} = ₹{total}
+      </li>
+    );
+  })}
+</ul>
                   </div>
 
                   <div className="prod_sec balanc_amount">
@@ -378,7 +369,7 @@ const bulletItems = parseInclusionToBullets(inclusion);
                     fontWeight: "#222",
                   }}
                 >
-                  {name}
+                  {orderDetail?.items?.[0]?.photography?.name}
                 </h1>
               </div>
 
@@ -451,8 +442,15 @@ const bulletItems = parseInclusionToBullets(inclusion);
                           className="inclusionstyle"
                         >
                           <img
-                            src={item.image}
-                            alt={item.title}
+                            src={
+                          item?.image
+    ? item.image
+    : item?.addOnId?.image
+    // ? `https://horaservices.com/api/uploads/compressed_webp/${item.addOnId.image}`
+    ? `${BASE_URL}/images/${item.addOnId.image}`
+    : "/placeholder.png"
+}
+                            alt={item?.addOnId?.title || item?.title}
                             style={{
                               height: 50,
                               width: 50,
@@ -463,13 +461,13 @@ const bulletItems = parseInclusionToBullets(inclusion);
                           />
                           <div>
                             <div style={{ fontWeight: "bold" }}>
-                              {item.title || "NA"}
+                              {item?.addOnId?.title || item?.title || "NA"}
                             </div>
                             <div style={{ fontSize: "14px", color: "#555" }}>
-                              {item.description || "No description"}
+                              {item?.addOnId?.description || item?.description || "No description"}
                             </div>
                             <div style={{ fontSize: "13px", color: "#888" }}>
-                              ₹{item.price ?? 0} × {item.quantity ?? 1}
+                              ₹{item?.priceAtPurchase || item?.price || 0} × {item.quantity ?? 1}
                             </div>
                           </div>
                         </div>
