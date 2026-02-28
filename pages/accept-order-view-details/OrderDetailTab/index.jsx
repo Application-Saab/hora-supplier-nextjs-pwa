@@ -506,48 +506,13 @@ ${decorations}
                   <div className="product-add-ons prod_sec">
                     <p className="product-page-heading">AddOns:</p>
                     <ul>
-                      {decorationAddon.map((item, index) => {
-                        let rawTitle =
-                          item?.addOnId?.title ||
-                          item?.name ||
-                          item?.title ||
-                          "Addon";
-
-                        // Quantity extract
-                        const quantityMatch = rawTitle.match(/Quantity\s*(\d+)/i);
-                        const extractedQuantity = quantityMatch
-                          ? Number(quantityMatch[1])
-                          : null;
-
-                        // Clean name
-                        const cleanedTitle = rawTitle
-                          .replace(/\s*-\s*Quantity\s*\d+/i, "")
-                          .trim();
-
-                        const quantity =
-                          extractedQuantity ||
-                          Number(item?.quantity) ||
-                          1;
-
-                        const price = Number(
-                          item?.priceAtPurchase ||
-                          item?.price ||
-                          0
-                        );
-
-                        const total =
-                          item?.totalPrice
-                            ? Number(item.totalPrice)
-                            : price * quantity;
-
-                        return (
-                          <li key={index}>
-                            <div>
-                              {cleanedTitle} : ₹{price} × {quantity} = ₹{total}
-                            </div>
-                          </li>
-                        );
-                      })}
+                      {decorationAddon.map((item, index) => (
+                        <li key={index}>
+                          <div>
+                            {item?.addOnId?.title || item?.name || item?.title || "N/A"}
+                          </div>
+                        </li>
+                      ))}
                     </ul>
                   </div>
 
@@ -713,11 +678,10 @@ ${decorations}
                               item?.image
                                 ? item.image
                                 : item?.addOnId?.image
-                                  // ? `https://horaservices.com/api/uploads/compressed_webp/${item.addOnId.image}`
-                                  ? `${BASE_URL}/images/${item.addOnId.image}`
+                                  ? `https://horaservices.com/api/uploads/compressed_webp/${item.addOnId.image}`
                                   : "/placeholder.png"
                             }
-                            alt={item?.addOnId?.title || item?.title}
+                            alt={item?.addOnId?.title || item?.title || item?.name}
                             style={{
                               height: 40,
                               width: 40,
