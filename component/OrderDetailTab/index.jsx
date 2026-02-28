@@ -266,8 +266,7 @@ const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography
                       {decorationAddon.map((item, index) => (
                         <li key={index}>
                           <div>
-                            {item.name}
-                            {item.title}
+                            {item?.addOnId?.title || item?.name ||item?.title || "N/A" }
                           </div>
                         </li>
                       ))}
@@ -414,8 +413,15 @@ const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography
                           className="inclusionstyle"
                         >
                           <img
-                            src={item.image}
-                            alt={item.title}
+                            src={
+                          item?.image
+                       ? item.image
+                       : item?.addOnId?.image
+                       ? `https://horaservices.com/api/uploads/compressed_webp/${item.addOnId.image}`
+                       : "/placeholder.png"
+                        }
+     
+                            alt={item?.addOnId?.title || item?.title || item?.name}
                             style={{
                               height: 50,
                               width: 50,
@@ -426,13 +432,13 @@ const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography
                           />
                           <div>
                             <div style={{ fontWeight: "bold" }}>
-                              {item.title || "NA"}
+                              {item?.addOnId?.title || item?.title || "NA"}
                             </div>
                             <div style={{ fontSize: "14px", color: "#555" }}>
-                              {item.description || "No description"}
+                              {item?.addOnId?.description || item?.description || "No description"}
                             </div>
                             <div style={{ fontSize: "13px", color: "#888" }}>
-                              ₹{item.price ?? 0} × {item.quantity ?? 1}
+                              ₹{item?.priceAtPurchase || item?.price || 0} × {item.quantity ?? 1}
                             </div>
                           </div>
                         </div>

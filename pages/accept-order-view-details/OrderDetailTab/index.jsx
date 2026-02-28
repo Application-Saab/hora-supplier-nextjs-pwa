@@ -511,7 +511,7 @@ const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography
                       {decorationAddon.map((item, index) => (
                         <li key={index}>
                           <div>
-                            {item.name} {item.title}
+                            {item?.addOnId?.title || item?.name || item?.title || "N/A"}
                           </div>
                         </li>
                       ))}
@@ -676,8 +676,14 @@ const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography
                           className="inclusionstyle"
                         >
                           <img
-                            src={item.image}
-                            alt={item.title}
+                            src={
+                              item?.image
+                                ? item.image
+                                : item?.addOnId?.image
+                                  ? `https://horaservices.com/api/uploads/compressed_webp/${item.addOnId.image}`
+                                  : "/placeholder.png"
+                            }
+                            alt={item?.addOnId?.title || item?.title || item?.name}
                             style={{
                               height: 40,
                               width: 40,
@@ -690,7 +696,7 @@ const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography
                             <div
                               style={{ fontWeight: "bold", fontSize: "16px" }}
                             >
-                              {item.title || "NA"}
+                               {item?.addOnId?.title || item?.title || "NA"}
                             </div>
                             <div
                               style={{
@@ -699,7 +705,7 @@ const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography
                                 marginTop: "2px",
                               }}
                             >
-                              {item.description || "No description"}
+                              {item?.addOnId?.description || item?.description || "No description"}
                             </div>
                             <div
                               style={{
@@ -708,7 +714,7 @@ const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography
                                 marginTop: "2px",
                               }}
                             >
-                              ₹{item.price ?? 0}
+                              ₹{item?.priceAtPurchase || item?.price || 0}
                             </div>
                           </div>
                         </li>
