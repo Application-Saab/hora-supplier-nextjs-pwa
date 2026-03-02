@@ -260,46 +260,14 @@ const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography
                   <div className="product-add-ons prod_sec">
                     <p className="product-page-heading">AddOns:</p>
                     <ul>
-  {decorationAddon.map((item, index) => {
-    let rawTitle =
-      item?.addOnId?.title ||
-      item?.name ||
-      item?.title ||
-      "Addon";
-
-    const quantityMatch = rawTitle.match(/Quantity\s*(\d+)/i);
-
-    const extractedQuantity = quantityMatch
-      ? Number(quantityMatch[1])
-      : null;
-
-    const cleanedTitle = rawTitle
-      .replace(/\s*-\s*Quantity\s*\d+/i, "")
-      .trim();
-
-    const quantity =
-      extractedQuantity ||
-      Number(item?.quantity) ||
-      1;
-
-    const price = Number(
-      item?.priceAtPurchase ||
-      item?.price ||
-      0
-    );
-
-    const total =
-      item?.totalPrice
-        ? Number(item.totalPrice)
-        : price * quantity;
-
-    return (
-      <li key={index}>
-        <span>{cleanedTitle}</span> : ₹{price} × {quantity} = ₹{total}
-      </li>
-    );
-  })}
-</ul>
+                      {decorationAddon.map((item, index) => (
+                        <li key={index}>
+                          <div>
+                            {item?.addOnId?.title || item?.name ||item?.title || "N/A" }
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
 
                   <div className="prod_sec balanc_amount">
@@ -444,13 +412,13 @@ const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography
                           <img
                             src={
                           item?.image
-    ? item.image
-    : item?.addOnId?.image
-    // ? `https://horaservices.com/api/uploads/compressed_webp/${item.addOnId.image}`
-    ? `${BASE_URL}/images/${item.addOnId.image}`
-    : "/placeholder.png"
-}
-                            alt={item?.addOnId?.title || item?.title}
+                       ? item.image
+                       : item?.addOnId?.image
+                       ? `https://horaservices.com/api/uploads/compressed_webp/${item.addOnId.image}`
+                       : "/placeholder.png"
+                        }
+     
+                            alt={item?.addOnId?.title || item?.title || item?.name}
                             style={{
                               height: 50,
                               width: 50,
