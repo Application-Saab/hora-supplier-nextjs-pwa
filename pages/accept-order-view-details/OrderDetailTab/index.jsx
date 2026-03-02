@@ -508,10 +508,36 @@ ${decorations}
                     <ul>
                       {decorationAddon.map((item, index) => (
                         <li key={index}>
-                          <div>
-                            {item?.addOnId?.title || item?.name || item?.title || "N/A"}
-                          </div>
-                        </li>
+  {(() => {
+    let rawTitle =
+      item?.addOnId?.title ||
+      item?.name ||
+      item?.title ||
+      "N/A";
+
+    // check if quantity exists inside title
+    const quantityMatch = rawTitle.match(/Quantity\s*(\d+)/i);
+
+    const extractedQuantity = quantityMatch
+      ? Number(quantityMatch[1])
+      : null;
+
+    // remove quantity part from title if exists
+    const cleanedTitle = rawTitle
+      .replace(/\s*-\s*Quantity\s*\d+/i, "")
+      .trim();
+
+    const finalQuantity =
+      extractedQuantity ?? Number(item?.quantity) ?? 1;
+
+    return (
+      <>
+        <div>{cleanedTitle}</div>
+        <div>Quantity : {finalQuantity}</div>
+      </>
+    );
+  })()}
+</li>
                       ))}
                     </ul>
                   </div>
@@ -712,7 +738,7 @@ ${decorations}
                                 marginTop: "2px",
                               }}
                             >
-                              ₹{item.priceAtPurchase || item?.price || 0}
+                              quantity :  {item?.quantity || 1}
                             </div>
                           </div>
                         </li>
