@@ -74,21 +74,21 @@ const OrderDetailTab = ({
     // Decoration items with inclusions
     const decorations = decorationItemArray?.length
       ? decorationItemArray
-          .map((item, i) => {
-            const inclusions = item.inclusion?.length
-              ? item.inclusion
-                  .map((inc) =>
-                    inc
-                      .replace(/<div>/g, "• ")
-                      .replace(/<\/div>/g, "\n")
-                      .trim()
-                  )
-                  .join("")
-              : "No inclusions";
+        .map((item, i) => {
+          const inclusions = item.inclusion?.length
+            ? item.inclusion
+              .map((inc) =>
+                inc
+                  .replace(/<div>/g, "• ")
+                  .replace(/<\/div>/g, "\n")
+                  .trim()
+              )
+              .join("")
+            : "No inclusions";
 
-            return `${i + 1}. ${item.name}\n${inclusions}`;
-          })
-          .join("\n\n")
+          return `${i + 1}. ${item.name}\n${inclusions}`;
+        })
+        .join("\n\n")
       : "No decoration items";
 
     return `
@@ -486,9 +486,8 @@ const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography
                 <div className="product-image-container">
                   <Image
                     // src={`https://horaservices.com/api/uploads/${product?.featured_image}`}
-                    src={`https://horaservices.com/api/uploads/compressed_webp/${
-                      product.featured_image.split(".")[0]
-                    }.webp`}
+                    src={`https://horaservices.com/api/uploads/compressed_webp/${product.featured_image.split(".")[0]
+                      }.webp`}
                     alt={product?.name}
                     className="product-image"
                     height={300}

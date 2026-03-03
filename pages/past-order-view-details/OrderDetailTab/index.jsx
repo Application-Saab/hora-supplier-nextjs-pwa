@@ -45,7 +45,7 @@ const OrderDetailTab = ({
 }) => {
   console.log("orderdetailsf from helo =----------------------", orderDetail);
   const router = useRouter();
-    const decorationArray = Array.isArray(decorationItems) ? decorationItems : [decorationItems];
+  const decorationArray = Array.isArray(decorationItems) ? decorationItems : [decorationItems];
   const { apiOrderId } = router.query;
   const [tab, setTab] = useState("Menu");
   const [orderStatus, setOrderStatus] = useState(orderDetail?.order_status);
@@ -79,21 +79,21 @@ const OrderDetailTab = ({
     // Decoration items with inclusions
     const decorations = decorationArray?.length
       ? decorationArray
-          .map((item, i) => {
-            const inclusions = item.inclusion?.length
-              ? item.inclusion
-                  .map((inc) =>
-                    inc
-                      .replace(/<div>/g, "• ")
-                      .replace(/<\/div>/g, "\n")
-                      .trim()
-                  )
-                  .join("")
-              : "No inclusions";
+        .map((item, i) => {
+          const inclusions = item.inclusion?.length
+            ? item.inclusion
+              .map((inc) =>
+                inc
+                  .replace(/<div>/g, "• ")
+                  .replace(/<\/div>/g, "\n")
+                  .trim()
+              )
+              .join("")
+            : "No inclusions";
 
-            return `${i + 1}. ${item.name}\n${inclusions}`;
-          })
-          .join("\n\n")
+          return `${i + 1}. ${item.name}\n${inclusions}`;
+        })
+        .join("\n\n")
       : "No decoration items";
 
     return `
@@ -473,9 +473,8 @@ const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography
                 <div className="product-image-container">
                   <Image
                     // src={`https://horaservices.com/api/uploads/${product?.featured_image}`}
-                    src={`https://horaservices.com/api/uploads/compressed_webp/${
-                      product.featured_image.split(".")[0]
-                    }.webp`}
+                    src={`https://horaservices.com/api/uploads/compressed_webp/${product.featured_image.split(".")[0]
+                      }.webp`}
                     alt={product?.name}
                     className="product-image"
                     height={300}
@@ -897,14 +896,14 @@ const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography
                 )}
               </div>
 
-{!orderDetail.orderDriveLink && (
-  <textarea
-    value={driveLink}
-    style={styles.inputText}
-    onChange={(e) => setDriveLink(e.target.value)}
-    placeholder="Paste Google Drive folder link here..."
-  />
-)}
+              {!orderDetail.orderDriveLink && (
+                <textarea
+                  value={driveLink}
+                  style={styles.inputText}
+                  onChange={(e) => setDriveLink(e.target.value)}
+                  placeholder="Paste Google Drive folder link here..."
+                />
+              )}
 
               {/* <textarea
                 value={driveLink}

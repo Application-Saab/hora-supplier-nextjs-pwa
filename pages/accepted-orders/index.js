@@ -46,15 +46,21 @@ const Orderlist = () => {
   }
 
   useEffect(() => {
-    const today = new Date();
-    const dates = Array.from({ length: 13 }, (_, index) => {
-      const date = new Date();
-      date.setDate(today.getDate() + index);
-      return date.toISOString().split("T")[0];
-    });
-    setAvailableDates(dates);
-    setSelectedDate(dates[0]);
-  }, []);
+  const today = new Date();
+  const dates = Array.from({ length: 13 }, (_, index) => {
+    const date = new Date();
+    date.setDate(today.getDate() + index);
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+  });
+
+  setAvailableDates(dates);
+  setSelectedDate(dates[0]);
+}, []);
 
   useEffect(() => {
     const fetchOrderList = async () => {
@@ -82,9 +88,11 @@ const Orderlist = () => {
         const responseData = await response.json();
 
         if (responseData && responseData.data && responseData.data.order) {
-          const sortedOrders = responseData.data.order.sort(
-            (a, b) => new Date(b.order_date) - new Date(a.order_date)
-          );
+         const sortedOrders = responseData.data.order.sort((a, b) => {
+  const dateA = a.order_date.split("T")[0];
+  const dateB = b.order_date.split("T")[0];
+  return dateB.localeCompare(dateA);
+});
 
           setOrders(sortedOrders);
         } else {
@@ -144,10 +152,20 @@ const Orderlist = () => {
     }
   };
 
-  const formatDate = (dateString) => {
-    const options = { day: "numeric", month: "short", year: "numeric" };
-    return new Date(dateString).toLocaleDateString("en-GB", options);
-  };
+const formatDate = (dateString) => {
+  if (!dateString) return "";
+
+  const cleanDate = dateString.split("T")[0];
+  const [year, month, day] = cleanDate.split("-");
+
+  const date = new Date(year, month - 1, day);
+
+  return date.toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+};
 
   const openContinueShopping = () => {
     router.push("/");
