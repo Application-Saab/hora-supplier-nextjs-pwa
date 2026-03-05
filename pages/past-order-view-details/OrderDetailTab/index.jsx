@@ -498,7 +498,6 @@ const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography
                         <li key={index}>
                           {(() => {
     let rawTitle =
-      item?.addOnId?.title ||
       item?.name ||
       item?.title ||
       "N/A";
@@ -771,12 +770,10 @@ const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography
                           <img
                             src={
                               item?.image
-                                ? item.image
-                                : item?.addOnId?.image
-                                  ? `https://horaservices.com/api/uploads/compressed_webp/${item.addOnId.image}`
+                                  ? `https://horaservices.com/api/uploads/compressed_webp/${item?.image}`
                                   : "/placeholder.png"
                             }
-                            alt={item?.addOnId?.title || item?.title || item?.name}
+                            alt={item?.title || item?.name}
                             style={{
                               height: 40,
                               width: 40,
@@ -789,7 +786,7 @@ const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography
                             <div
                               style={{ fontWeight: "bold", fontSize: "16px" }}
                             >
-                              {item?.addOnId?.title || item?.title || "NA"}
+                              {item?.title || "NA"}
                             </div>
                             <div
                               style={{
@@ -798,7 +795,7 @@ const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography
                                 marginTop: "2px",
                               }}
                             >
-                              {item?.addOnId?.description || item?.description || "No description"}
+                              {item?.description || "No description"}
                             </div>
                             <div
                               style={{

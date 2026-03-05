@@ -267,7 +267,6 @@ const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography
                         <li key={index}>
                           {(() => {
     let rawTitle =
-      item?.addOnId?.title ||
       item?.name ||
       item?.title ||
       "N/A";
@@ -441,13 +440,11 @@ const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography
                           <img
                             src={
                           item?.image
-                       ? item.image
-                       : item?.addOnId?.image
-                       ? `https://horaservices.com/api/uploads/compressed_webp/${item.addOnId.image}`
+                       ? `https://horaservices.com/api/uploads/compressed_webp/${item?.image}`
                        : "/placeholder.png"
                         }
      
-                            alt={item?.addOnId?.title || item?.title || item?.name}
+                            alt={item?.title || item?.name}
                             style={{
                               height: 50,
                               width: 50,
@@ -458,10 +455,10 @@ const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography
                           />
                           <div>
                             <div style={{ fontWeight: "bold" }}>
-                              {item?.addOnId?.title || item?.title || "NA"}
+                              {item?.title || "NA"}
                             </div>
                             <div style={{ fontSize: "14px", color: "#555" }}>
-                              {item?.addOnId?.description || item?.description || "No description"}
+                              {item?.description || "No description"}
                             </div>
                             <div style={{ fontSize: "13px", color: "#888" }}>
                               quantity :  {item?.quantity || 1}
