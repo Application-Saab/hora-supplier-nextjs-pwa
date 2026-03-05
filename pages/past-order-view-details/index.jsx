@@ -36,7 +36,7 @@ const OrderDetail = () => {
     if (
       orderType == 2 ||
       orderType === 6 ||
-      orderType === 7
+      orderType === 7 
     ) {
       fetchOrderDetailsMenu();
     } else if (orderType === 1) {
@@ -50,7 +50,6 @@ const OrderDetail = () => {
       fetchOrderDetails();
     }
   }, [orderType, orderId, apiOrderId]);
-
 
   useEffect(() => {
         if(orderType == 8 ){
@@ -78,6 +77,7 @@ const OrderDetail = () => {
           setLoading(false);
         }
       };
+  
 
   const fetchOrderDetailsMenu = async () => {
     try {

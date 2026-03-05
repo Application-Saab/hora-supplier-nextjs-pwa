@@ -74,7 +74,7 @@ const OrderDetail = () => {
     }
   };
 
-    const fetchPhotographyDetails = async () => {
+  const fetchPhotographyDetails = async () => {
       try {
         setLoading(true);
         const response = await fetch(

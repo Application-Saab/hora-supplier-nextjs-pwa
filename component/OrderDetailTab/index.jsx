@@ -44,6 +44,8 @@ const OrderDetailTab = ({
 
   // console.log(orderDetail, "orderDetailsss");
 
+  // const [name, setname] = useState();
+
 function parseInclusionToBullets(inclusionData) {
   if (!inclusionData) return [];
 
@@ -53,15 +55,16 @@ function parseInclusionToBullets(inclusionData) {
     : inclusionData;
 
   if (typeof inclusionString !== "string") return [];
+
   return inclusionString
-   .split("</div>")
+    .split("</div>")
     .map(str => str.replace(/<div[^>]*>/g, "").trim())
     .filter(str => str.length > 0)
     .map(str => str.replace(/^-\s*/, ""));
 }
 
 // In your component
-const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography?.inclusion);  
+const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography?.inclusion); 
 
 
   const getItemInclusion = (inclusion) => {
@@ -262,7 +265,7 @@ const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography
                     <ul>
                       {decorationAddon.map((item, index) => (
                         <li key={index}>
-  {(() => {
+                          {(() => {
     let rawTitle =
       item?.addOnId?.title ||
       item?.name ||
@@ -291,7 +294,7 @@ const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography
       </>
     );
   })()}
-</li>
+                        </li>
                       ))}
                     </ul>
                   </div>

@@ -96,7 +96,6 @@ const OrderDetail = () => {
     }
   };
 
-
   const fetchDecorationOrderDetails = async () => {
     try {
       setLoading(true);

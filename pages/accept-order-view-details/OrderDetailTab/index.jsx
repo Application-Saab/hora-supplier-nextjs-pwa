@@ -320,23 +320,24 @@ ${decorations}
   };
 
   function parseInclusionToBullets(inclusionData) {
-    if (!inclusionData) return [];
+  if (!inclusionData) return [];
 
-    // If array, take first element
-    const inclusionString = Array.isArray(inclusionData)
-      ? inclusionData[0]
-      : inclusionData;
+  // If array, take first element
+  const inclusionString = Array.isArray(inclusionData)
+    ? inclusionData[0]
+    : inclusionData;
 
-    if (typeof inclusionString !== "string") return [];
-    return inclusionString
-      .split("</div>")
-      .map(str => str.replace(/<div[^>]*>/g, "").trim())
-      .filter(str => str.length > 0)
-      .map(str => str.replace(/^-\s*/, ""));
-  }
+  if (typeof inclusionString !== "string") return [];
 
-  // In your component
-  const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography?.inclusion);
+  return inclusionString
+    .split("</div>")
+    .map(str => str.replace(/<div[^>]*>/g, "").trim())
+    .filter(str => str.length > 0)
+    .map(str => str.replace(/^-\s*/, ""));
+}
+
+// In your component
+const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography?.inclusion); 
 
   const handleSubmit = () => {
     const currDate = new Date().toLocaleDateString();
@@ -508,7 +509,7 @@ ${decorations}
                     <ul>
                       {decorationAddon.map((item, index) => (
                         <li key={index}>
-  {(() => {
+                          {(() => {
     let rawTitle =
       item?.addOnId?.title ||
       item?.name ||
@@ -537,7 +538,7 @@ ${decorations}
       </>
     );
   })()}
-</li>
+                        </li>
                       ))}
                     </ul>
                   </div>
@@ -720,7 +721,7 @@ ${decorations}
                             <div
                               style={{ fontWeight: "bold", fontSize: "16px" }}
                             >
-                              {item?.addOnId?.title || item?.title || "NA"}
+                               {item?.addOnId?.title || item?.title || "NA"}
                             </div>
                             <div
                               style={{
