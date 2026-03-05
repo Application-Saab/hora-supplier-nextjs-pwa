@@ -13,9 +13,11 @@ import Navbar from "../../component/Navbar";
 import Link from "next/link";
 import Layout from "../../component/Layout";
 import reportLogo from "../../assets/report.png";
+import { useRouter } from "next/router";
+
 
 const Home = () => {
-
+const router = useRouter();
   let supplierJobType;
    let supplierID;
 
@@ -39,7 +41,7 @@ const Home = () => {
     // { id: 6, name: "Order Reports", icon: reportLogo, path: "/orders-details" },
     // { id: 6, name: "Decoration Image Upload", icon: reportLogo, path: "decoration-image-upload" },  
     { id: 6, name: "Past Order", icon: reportLogo, path: "/past-order" },
-    
+      
   ];
   const [error, setError] = useState(null);
 
@@ -174,7 +176,12 @@ const Home = () => {
     )}
   </>
         
-      
+ <div
+  onClick={() => router.push("/partner-privacy-policy")}
+  style={{ display: "flex", alignItems: "center", margin: "10px", justifyContent: "center" }}
+>
+  Privacy Policy
+</div>
       </div>
       </Layout>
     </>
