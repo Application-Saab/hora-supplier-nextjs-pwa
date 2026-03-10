@@ -16,7 +16,7 @@ import {
 import checkImage from "../../assets/tick.jpeg";
 import axios from "axios";
 
-const OrderDetailTab = ({
+const OrderDetailTab = ({ 
   orderDetail,
   orderType,
   decorationItems,
@@ -263,34 +263,33 @@ const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography
                     <ul>
                       {decorationAddon.map((item, index) => (
                         <li key={index}>
-                          {(() => {
-    let rawTitle =
-      item?.name ||
-      item?.title ||
-      "N/A";
+                          <div>
+                            {(() => {
+                                const rawTitle =
+                                  item?.name || item?.title ||
+                                  "N/A";
 
-    // check if quantity exists inside title
-    const quantityMatch = rawTitle.match(/Quantity\s*(\d+)/i);
+                                const quantityMatch = rawTitle?.match(/Quantity\s*(\d+)/i);
+                                const extractedQuantity = quantityMatch
+                                  ? Number(quantityMatch[1])
+                                  : null;
 
-    const extractedQuantity = quantityMatch
-      ? Number(quantityMatch[1])
-      : null;
+                                const cleanedTitle = rawTitle?.replace(
+                                  /\s*-\s*Quantity\s*\d+/i,
+                                  ""
+                                ).trim();
 
-    // remove quantity part from title if exists
-    const cleanedTitle = rawTitle
-      .replace(/\s*-\s*Quantity\s*\d+/i, "")
-      .trim();
+                                const quantity =
+                                  extractedQuantity || Number(item?.quantity) || 1;
 
-    const finalQuantity =
-      extractedQuantity ?? Number(item?.quantity) ?? 1;
+                                return (
+                                  <>
+                                    {cleanedTitle} x  {quantity} 
+                                  </>
+                                );
+                              })()}
 
-    return (
-      <>
-        <div>{cleanedTitle}</div>
-        <div>Quantity : {finalQuantity}</div>
-      </>
-    );
-  })()}
+                          </div>
                         </li>
                       ))}
                     </ul>
@@ -436,13 +435,8 @@ const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography
                           className="inclusionstyle"
                         >
                           <img
-                            src={
-                          item?.image
-                       ? `https://horaservices.com/api/uploads/compressed_webp/${item?.image}`
-                       : "/placeholder.png"
-                        }
-     
-                            alt={item?.title || item?.name}
+                            src={item.image}
+                            alt={item.title}
                             style={{
                               height: 50,
                               width: 50,

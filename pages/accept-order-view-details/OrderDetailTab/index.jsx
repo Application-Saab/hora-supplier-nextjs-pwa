@@ -509,34 +509,32 @@ const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography
                     <ul>
                       {decorationAddon.map((item, index) => (
                         <li key={index}>
-                          {(() => {
-    let rawTitle =
-      item?.name ||
-      item?.title ||
-      "N/A";
+                          <div>
+                            {(() => {
+                                const rawTitle =
+                                  item?.name || item?.title ||
+                                  "N/A";
 
-    // check if quantity exists inside title
-    const quantityMatch = rawTitle.match(/Quantity\s*(\d+)/i);
+                                const quantityMatch = rawTitle?.match(/Quantity\s*(\d+)/i);
+                                const extractedQuantity = quantityMatch
+                                  ? Number(quantityMatch[1])
+                                  : null;
 
-    const extractedQuantity = quantityMatch
-      ? Number(quantityMatch[1])
-      : null;
+                                const cleanedTitle = rawTitle?.replace(
+                                  /\s*-\s*Quantity\s*\d+/i,
+                                  ""
+                                ).trim();
 
-    // remove quantity part from title if exists
-    const cleanedTitle = rawTitle
-      .replace(/\s*-\s*Quantity\s*\d+/i, "")
-      .trim();
-
-    const finalQuantity =
-      extractedQuantity ?? Number(item?.quantity) ?? 1;
-
-    return (
-      <>
-        <div>{cleanedTitle}</div>
-        <div>Quantity : {finalQuantity}</div>
-      </>
-    );
-  })()}
+                                const quantity =
+                                  extractedQuantity || Number(item?.quantity) || 1;
+                                
+                                return (
+                                  <>
+                                    {cleanedTitle} x  {quantity} 
+                                  </>
+                                );
+                              })()}
+                          </div>
                         </li>
                       ))}
                     </ul>
@@ -702,8 +700,6 @@ const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography
                           <img
                             src={
                               item?.image
-                                  ? `https://horaservices.com/api/uploads/compressed_webp/${item?.image}`
-                                  : "/placeholder.png"
                             }
                             alt={item?.title || item?.name}
                             style={{
