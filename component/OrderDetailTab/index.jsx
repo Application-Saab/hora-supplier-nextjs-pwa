@@ -29,7 +29,6 @@ const OrderDetailTab = ({
   : [decorationItems];
 
   const router = useRouter();
-  console.log(orderDetail,"orderdtails");
   const { apiOrderId } = router.query;
   if (
     typeof window !== "undefined" &&
@@ -42,7 +41,6 @@ const OrderDetailTab = ({
   const [tab, setTab] = useState("Menu");
   const [orderStatus, setOrderStatus] = useState(orderDetail?.order_status);
 
-  // console.log(orderDetail, "orderDetailsss");
 
   // const [name, setname] = useState();
 

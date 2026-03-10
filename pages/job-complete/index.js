@@ -89,7 +89,6 @@ const PictureUpload = () => {
 
       if (response.ok) {
         const result = await response.json();
-        console.log("✅ Order updated:", result);
         alert("Order updated with images!");
         setUploadSuccess(true);
       } else {

@@ -244,7 +244,6 @@ const formatDate = (dateString) => {
   };
 
   const openSupplierPopup = async (order) => {
-    console.log(order, "order111");
     const { _id, order_id, type, fromId } = order;
 
     const apiOrderId = _id;
@@ -257,7 +256,7 @@ const formatDate = (dateString) => {
         `https://horaservices.com:3000/api/admin/getUserDetails/${orderId}`
       );
 
-      console.log(response, "response");
+    
 
       if (!response.ok) {
         throw new Error("Failed to fetch user details");
@@ -275,7 +274,6 @@ const formatDate = (dateString) => {
         button: "Call Customer",
         executorPhone: executorPhone,
         onButtonClick: (phone) => {
-          console.log(phone, "phone");
           if (phone) {
             window.location.href = `tel:${phone}`;
           } else {
@@ -472,7 +470,6 @@ const formatDate = (dateString) => {
                                         body: "",
                                         button: "OK",
                                       });
-                                      console.log(order, "order");
                                       setIsPopupVisible(true);
                                     }
                                   }}

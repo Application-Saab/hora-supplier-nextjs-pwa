@@ -59,7 +59,6 @@ const SupplierRating = () => {
         });
 
         const responseData = await response.json();
-        console.log(responseData, "responsedata");
 
         if (responseData && responseData.data && responseData.data.order) {
           const sortedOrders = responseData.data.order.sort(

@@ -32,7 +32,6 @@ const Login = () => {
     const supplierJobProfile = localStorage.getItem("supplierJobProfile");
 
     if (token) {
-      console.log("Token found:", supplierJobProfile);
       setIsUserLoggedIn(true);
 
       if (supplierJobProfile && supplierJobProfile !== null ) {

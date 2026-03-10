@@ -81,7 +81,6 @@ const OrderDetail = () => {
           BASE_URL + GET_PHOTOGRAPHY_ORDER_DETAILS + "/" + orderId
         );
         const responseData = await response.json();
-        console.log(responseData, "responseDataDecorationOrderDetails");
   
         setOrderDetail(responseData?.data);
         setDecorationItems(responseData?.data?.items[0]?.decoration);
@@ -102,7 +101,7 @@ const OrderDetail = () => {
         BASE_URL + GET_BOOKING_ORDER_DETAILS + "/" + orderId
       );
       const responseData = await response.json();
-      console.log(responseData, "responsedata");
+
 
       setOrderDetail(responseData?.data);
       // setOrderDetail(responseData?.data?._doc);

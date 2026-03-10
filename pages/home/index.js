@@ -30,7 +30,7 @@ const router = useRouter();
   const menuItems = [
     { id: 1, name: "New Orders", icon: bellLogo, path: "/supplier-new-order" },
     // { id: 2, name: "My Wallet", icon: walletLogo, path: "/home" },
-    { id: 3, name: "My Account", icon: myAccountLogo, path: "/MyAcount" },
+    { id: 3, name: "My Account", icon: myAccountLogo, path: "/MyAccount" },
     {
       id: 4,
       name: "Accepted Orders",

@@ -63,12 +63,12 @@ const Orderlist = () => {
         // users array
         const user = result?.data?.users?.[0];
         const status = user?.status ?? null;
-        console.log(status, "stattata");
+
         if (status === 0) {
-          console.log("condition0");
+  
           setShowPopup(true);
         } else {
-          console.log("condition1");
+  
           setShowPopup(false);
         setUserStatus(status);
         
@@ -106,7 +106,6 @@ const Orderlist = () => {
         });
 
         const responseData = await response.json();
-        console.log(responseData, "responsedata");
 
         if (responseData && responseData.data && responseData.data.order) {
           const sortedOrders = responseData.data.order.sort(

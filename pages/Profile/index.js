@@ -40,7 +40,6 @@ const ProfileUpdate = () => {
       let token;
       if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
         token = localStorage.getItem('token');
-        console.log(token,"fsdfsdfd");
       }	
       const url = BASE_URL + UPDATE_RESUME_PROFILE;
 

@@ -43,7 +43,6 @@ const OrderDetailTab = ({
   decorationAddon,
   balanceAmount,
 }) => {
-  console.log("orderdetailsf from helo =----------------------", orderDetail);
   const router = useRouter();
   const decorationArray = Array.isArray(decorationItems) ? decorationItems : [decorationItems];
   const { apiOrderId } = router.query;
@@ -58,10 +57,8 @@ const OrderDetailTab = ({
   const inputRefs = useRef([]);
   const [errorMessage, setErrorMessage] = useState("");
 
-  console.log(decorationItems, "decorationItemsd2");
 
   const [driveLink, setDriveLink] = useState("");
-  console.log(orderDetail, "orderdetails");
 
   const formatOrderMessage = (orderDetail, decorationItems) => {
     const orderId = orderDetail?.order_id || "";
@@ -131,13 +128,11 @@ ${decorations}
     }
   }, []);
 
-  // console.log(orderDet/ail, "orderDetailsss");
 
   // const [name, setname] = useState();
   const [name, setName] = useState();
   const [inclusion, setInclusion] = useState();
 
-  console.log(name, "name");
 
   const getItemInclusion = (inclusion) => {
     if (!Array.isArray(inclusion) || inclusion.length === 0) {
@@ -162,7 +157,6 @@ ${decorations}
     );
   };
 
-  // console.log(getItemInclusion(inclusion),"fdsfsdfds");
 
   const cancelOrder = async () => {
     try {
