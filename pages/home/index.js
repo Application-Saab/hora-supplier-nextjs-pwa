@@ -78,6 +78,7 @@ const router = useRouter();
             localStorage.setItem("supplierName", response.data.data.name);
             localStorage.setItem("supplierJobType", response.data.data.order_type);
             localStorage.setItem("supplierAge", response.data.data.age);
+            localStorage.setItem("status", response?.data?.data?.status);
           }	
 
 

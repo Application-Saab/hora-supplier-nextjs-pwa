@@ -159,6 +159,7 @@ const Login = () => {
     setOtp("");
     setIsOtpSent(true);
     setOtpError("");
+    resetTimer(); 
     await sendOtp();
   };
 
@@ -231,9 +232,18 @@ const Login = () => {
             </div>
           ) : isOtpSent ? (
             <div className="d-flex justify-content-center mt-4 resend-timer">
-              <p className="m-0 p-0 text-center" style={{ color: "#8A8A8A" }}>
-                Resend Code in {time} sec
-              </p>
+     {isTimeUp ? (
+      <p
+        style={{ color: "#9252AA", cursor: "pointer" }}
+        onClick={resendOtp}
+      >
+        Resend Code
+      </p>
+    ) : (
+      <p className="m-0 p-0 text-center" style={{ color: "#8A8A8A" }}>
+        Resend Code in {time} sec
+      </p>
+    )}
             </div>
           ) : null}
 

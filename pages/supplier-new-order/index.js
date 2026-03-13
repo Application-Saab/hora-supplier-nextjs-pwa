@@ -13,15 +13,16 @@ import Layout from "../../component/Layout";
 const Orderlist = () => {
   const router = useRouter();
   const [orders, setOrders] = useState([]);
-  const [loading, setLoading] = useState(false);
   // Popup state (must be inside the component)
   const [showPopup, setShowPopup] = useState(false);
+  const [ordersLoaded, setOrdersLoaded] = useState(false);
 
   //order_status: { type: Number, default: 0 /* 0-Booking ,1-Accepted ,2-pending/in-progress, 3-delivery/completed, 4-failed, 5- handle -> {1,2,3}, 6- expire  */ }
 
   let supplierJobType;
   let supplierID;
   let supplierCity;
+  let status;
 
   if (
     typeof window !== "undefined" &&
@@ -30,14 +31,13 @@ const Orderlist = () => {
     supplierJobType = localStorage.getItem("supplierJobType");
     supplierID = localStorage.getItem("supplierID");
     supplierCity = localStorage.getItem("supplierCity");
+    status = localStorage.getItem("status");
   }
 
   if (supplierCity === "Bengaluru") {
     supplierCity = "Bangalore"; // Adjusting for city name
   }
 
-  // checking the status of the vendor sohan verma 06/06/2025
-  const [userStatus, setUserStatus] = useState(null);
   // let phoneNumber = localStorage.getItem("mobileNumber");
   let phoneNumber = null;
   if (typeof window !== "undefined") {
@@ -45,49 +45,24 @@ const Orderlist = () => {
   }
 
   useEffect(() => {
-    const fetchUserStatus = async () => {
-      try {
-        setLoading(true);
-
-        const response = await fetch(
-          "https://horaservices.com:3000/api/admin/admin_user_list",
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ phone: phoneNumber }),
-          }
-        );
-
-        const result = await response.json();
-
-        // users array
-        const user = result?.data?.users?.[0];
-        const status = user?.status ?? null;
-
-        if (status === 0) {
-  
+     if (Number(status) === 0) {
           setShowPopup(true);
         } else {
-  
           setShowPopup(false);
-        setUserStatus(status);
-        
         }
-      } catch (error) {
-        console.error("Error fetching user status:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUserStatus();
   }, []);
+
+
+  
+
 
   useEffect(() => {
     const fetchOrderList = async () => {
-      if (userStatus !== 1) return; // sohan verma 06/06/2025
+      if (Number(status) !== 1) {
+    setOrdersLoaded(true);
+    return;
+     }// sohan verma 06/06/2025
       try {
-        setLoading(true);
         const response = await fetch(BASE_URL + ORDERLIST_ENDPOINT, {
           method: "POST",
           headers: {
@@ -119,12 +94,12 @@ const Orderlist = () => {
       } catch (error) {
         console.log("Error fetching orders:", error);
       } finally {
-        setLoading(false);
+        setOrdersLoaded(true);   
       }
     };
 
     fetchOrderList();
-  }, [supplierID, userStatus]);
+  }, [supplierID, Number(status)]);
 
   
 
@@ -202,12 +177,12 @@ const Orderlist = () => {
   };
 
 
-  if (loading) {
+  if (!ordersLoaded ) {
     return (
       <center>
         <div className="custom-spinner">
           <div>
-            <div className="spinner-border" role="status">
+             <div className="spinner-border" role="status">
               <span className="visually-hidden">Loading...</span>
             </div>
             <div style={{ color: "#9252AA", textAlign: "center" }}>
