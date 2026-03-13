@@ -319,11 +319,7 @@ const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography
     }
   };
 
-  const handleFileUpload = async () => {
-    const input = document.createElement("input");
-    input.type = "file";
-    input.multiple = true;
-    input.onchange = async (e) => {
+      const handleFileUpload = async (e) => {
       const files = e.target.files;
       if (!files?.length) return;
       const formData = new FormData();
@@ -349,8 +345,6 @@ const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography
 
       window.location.href = "/past-order";
     };
-    input.click();
-  };
 
   return (
     <>
@@ -493,8 +487,7 @@ const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography
                           <div>
                             {(() => {
                                 const rawTitle =
-                                  item?.name || item?.title ||
-                                  "N/A";
+                                  item?.name || item?.title
 
                                 const quantityMatch = rawTitle?.match(/Quantity\s*(\d+)/i);
                                 const extractedQuantity = quantityMatch
@@ -509,9 +502,10 @@ const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography
                                 const quantity =
                                   extractedQuantity || Number(item?.quantity) || 1;
                                 return (
-                                  <>
-                                    {cleanedTitle} x  {quantity} 
-                                  </>
+                                <>
+                                 <div>{cleanedTitle || "N/A"}</div>
+                                <div>{cleanedTitle && `Quantity : ${quantity}`}</div>
+                                </>
                                 );
                               })()}
                           </div>
@@ -533,11 +527,11 @@ const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography
                       <p className="product-page-heading">
                         Additional Comments:
                       </p>
-                      <ul className="comments-text aarti">
+                      <ol className="comments-text aarti">
                         {decorationComments.split("-").map((comment, index) => (
                           <li key={index}>{comment.trim()}</li>
                         ))}
-                      </ul>
+                      </ol>
                     </div>
                   )}
                 </div>
@@ -622,6 +616,15 @@ const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography
                   )}
                 </div>
 
+                <input
+                type="file"
+                id="fileUpload"
+                multiple
+                accept="image/*"
+                style={{ display: "none" }}
+                onChange={handleFileUpload}
+                />
+
                 {/* ============ Submit / Re-Submit Button ============ */}
                 {!orderDetail.userOrderDishImageArray?.length && (
                   <button
@@ -636,9 +639,9 @@ const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography
                       cursor: "pointer",
                       display: "inline-block",
                     }}
-                    onClick={handleFileUpload}
+                    onClick={() => document.getElementById("fileUpload").click()}
                   >
-                    Submit Image
+                    Submit Image 
                   </button>
                 )}
               </div>
@@ -828,15 +831,13 @@ const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography
                   }}
                 >
                   <p className="product-page-heading">Additional Comments:</p>
-                  <ul className="comments-text aarti">
-                    <ul className="comments-text aarti">
+                    <ol className="comments-text aarti">
                       {decorationComments
                         .split(/[,\n;\-]+/)
                         .map((comment, index) => (
                           <li key={index}>{comment.trim()}</li>
                         ))}
-                    </ul>
-                  </ul>
+                    </ol>
                 </div>
               )}
 

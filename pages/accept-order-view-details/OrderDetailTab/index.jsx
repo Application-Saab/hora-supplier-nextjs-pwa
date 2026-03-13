@@ -136,15 +136,15 @@ ${decorations}
       new Date(orderDetail.order_date).toLocaleDateString() || "N/A";
     // const orderType = getOrderType(orderDetails._doc.type) || "N/A";
     const address = orderDetail.addressId?.address1 || "N/A";
-    const googleMapLocation = orderDetail.addressId?.address2 || "N/A";
+    const googleMapLocation = orderDetail.addressId?.address2;
     const orderTime = orderDetail.order_time || "N/A";
     const decorationComments = orderDetail.decoration_comments || "N/A";
     const addOnItems = orderDetail.add_on || [];
 
     // Create a Google Maps link
-    const googleMapUrl = `https://www.google.com/maps/search/?q=${encodeURIComponent(
-      googleMapLocation
-    )}`;
+    const googleMapUrl = googleMapLocation ? `https://www.google.com/maps/search/?q=${encodeURIComponent(
+      googleMapLocation 
+    )}` : "N/A";
 
     // Calculate balance amount
     let balanceAmount = 0;
@@ -512,8 +512,7 @@ const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography
                           <div>
                             {(() => {
                                 const rawTitle =
-                                  item?.name || item?.title ||
-                                  "N/A";
+                                  item?.name || item?.title;
 
                                 const quantityMatch = rawTitle?.match(/Quantity\s*(\d+)/i);
                                 const extractedQuantity = quantityMatch
@@ -530,7 +529,8 @@ const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography
                                 
                                 return (
                                   <>
-                                    {cleanedTitle} x  {quantity} 
+                                  <div>{cleanedTitle || "N/A"}</div>
+                                <div>{cleanedTitle && `Quantity : ${quantity}`}</div>
                                   </>
                                 );
                               })()}
@@ -553,11 +553,11 @@ const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography
                       <p className="product-page-heading">
                         Additional Comments:
                       </p>
-                      <ul className="comments-text aarti">
+                      <ol className="comments-text aarti">
                         {decorationComments.split("-").map((comment, index) => (
                           <li key={index}>{comment.trim()}</li>
                         ))}
-                      </ul>
+                      </ol>
                     </div>
                   )}
                 </div>
@@ -769,15 +769,13 @@ const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography
                   }}
                 >
                   <p className="product-page-heading">Additional Comments:</p>
-                  <ul className="comments-text aarti">
-                    <ul className="comments-text aarti">
+                    <ol className="comments-text aarti">
                       {decorationComments
                         .split(/[,\n;\-]+/)
                         .map((comment, index) => (
                           <li key={index}>{comment.trim()}</li>
                         ))}
-                    </ul>
-                  </ul>
+                    </ol>
                 </div>
               )}
             </div>
@@ -788,7 +786,7 @@ const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography
         <div className="otp-container">
           <h2 className="otp-title">Enter OTP</h2>
           <p className="otp-instructions">
-            Please enter the OTP sent to your number
+            Please take OTP from the customer side and enter it
           </p>
           <div className="otp-inputs">
             {otp1.map((_, index) => (
