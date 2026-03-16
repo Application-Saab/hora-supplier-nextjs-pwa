@@ -266,8 +266,7 @@ const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography
                           <div>
                             {(() => {
                                 const rawTitle =
-                                  item?.name || item?.title ||
-                                  "N/A";
+                                  item?.name || item?.title;
 
                                 const quantityMatch = rawTitle?.match(/Quantity\s*(\d+)/i);
                                 const extractedQuantity = quantityMatch
@@ -283,9 +282,10 @@ const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography
                                   extractedQuantity || Number(item?.quantity) || 1;
 
                                 return (
-                                  <>
-                                    {cleanedTitle} x  {quantity} 
-                                  </>
+                                <>
+                                <div>{cleanedTitle || "N/A"}</div>
+                                <div>{cleanedTitle && `Quantity : ${quantity}`}</div>
+                                </>
                                 );
                               })()}
 
@@ -308,13 +308,13 @@ const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography
                       <p className="product-page-heading">
                         Additional Comments:
                       </p>
-                      <ul className="comments-text aarti">
+                      <ol className="comments-text">
                         {decorationComments
                           .split(/[,\n;\-]+/)
                           .map((comment, index) => (
                             <li key={index}>{comment.trim()}</li>
                           ))}
-                      </ul>
+                      </ol>
                     </div>
                   )}
                 </div>
@@ -490,15 +490,13 @@ const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography
                   }}
                 >
                   <p className="product-page-heading">Additional Comments:</p>
-                  <ul className="comments-text aarti">
-                    <ul className="comments-text aarti">
+                    <ol className="comments-text">
                       {decorationComments
                         .split(/[,\n;\-]+/)
                         .map((comment, index) => (
                           <li key={index}>{comment.trim()}</li>
                         ))}
-                    </ul>
-                  </ul>
+                    </ol>
                 </div>
               )}
             </div>
