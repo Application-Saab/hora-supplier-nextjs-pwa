@@ -11,7 +11,6 @@ import {
 } from "../apiconstant/apiconstant";
 import { useRouter } from "next/router";
 import Image from "next/image";
-import "bootstrap/dist/css/bootstrap.min.css";
 import logo from '../assets/new_logo_light.png.png';
 // import "../styles/login.css"; // Ensure it's not a CSS module if using classNames directly
 
@@ -34,7 +33,7 @@ const Login = () => {
     if (token) {
       setIsUserLoggedIn(true);
 
-      if (supplierJobProfile && supplierJobProfile !== null ) {
+      if (supplierJobProfile) {
         router.push("/home");
       } else {
         router.push("/Profile");
@@ -121,17 +120,11 @@ const Login = () => {
         localStorage.setItem("mobileNumber", mobileNumber);
         localStorage.setItem("token", response.data.token);
         localStorage.setItem("supplierID", response.data.data._id);
-        const supplierIsPersonalStatus = localStorage.getItem("supplierIsPersonalStatus");
         const supplierJobProfile = localStorage.getItem("supplierJobProfile");
         await saveAuthToken(response.data.token);
-        await Storage.set({
-          key: 'supplierJobProfile',
-          value: response.data.data.job_profile, // The token received from your backend
-        });
+        localStorage.setItem("supplierJobProfile", response?.data?.data?.job_profile);
      
-        // if (supplierIsPersonalStatus == 1) {
         if (supplierJobProfile != null) {
-          console.log("logged in false")
           router.push("/home");
         } else {
           router.push("/Profile");
@@ -159,6 +152,7 @@ const Login = () => {
     setOtp("");
     setIsOtpSent(true);
     setOtpError("");
+    resetTimer(); 
     await sendOtp();
   };
 
@@ -229,13 +223,22 @@ const Login = () => {
                 Resend Code
               </p>
             </div>
-          ) : isOtpSent ? (
+          ) : !otpError && isOtpSent && (
             <div className="d-flex justify-content-center mt-4 resend-timer">
-              <p className="m-0 p-0 text-center" style={{ color: "#8A8A8A" }}>
-                Resend Code in {time} sec
-              </p>
+     {isTimeUp ? (
+      <p
+        style={{ color: "#9252AA", cursor: "pointer" }}
+        onClick={resendOtp}
+      >
+        Resend Code
+      </p>
+    ) : (
+      <p className="m-0 p-0 text-center" style={{ color: "#8A8A8A" }}>
+        Resend Code in {time} sec
+      </p>
+    )}
             </div>
-          ) : null}
+          )}
 
           {error && <p className="error-message">{error}</p>}
         </div>

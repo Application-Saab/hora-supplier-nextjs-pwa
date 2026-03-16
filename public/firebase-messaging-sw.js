@@ -12,7 +12,7 @@ firebase.initializeApp({
 });
 
 const messaging = firebase.messaging();
-
+ 
 // Handle background messages
 messaging.onBackgroundMessage(function(payload) {
   console.log('[firebase-messaging-sw.js] Received background message ', payload);
@@ -21,7 +21,7 @@ messaging.onBackgroundMessage(function(payload) {
     body: payload.notification.body,
     icon: '/icon-192x192.png', // You can customize this
     data: {
-      url: '/supplier-new-order', // Hardcoded URL to open on click
+      url: payload.data?.url || '/supplier-new-order', // Hardcoded URL to open on click
     }
   };
 
