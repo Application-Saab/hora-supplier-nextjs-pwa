@@ -553,7 +553,7 @@ const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography
                       <p className="product-page-heading">
                         Additional Comments:
                       </p>
-                      <ol className="comments-text aarti">
+                      <ol className="comments-text">
                         {decorationComments.split("-").map((comment, index) => (
                           <li key={index}>{comment.trim()}</li>
                         ))}
@@ -769,7 +769,7 @@ const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography
                   }}
                 >
                   <p className="product-page-heading">Additional Comments:</p>
-                    <ol className="comments-text aarti">
+                    <ol className="comments-text">
                       {decorationComments
                         .split(/[,\n;\-]+/)
                         .map((comment, index) => (
