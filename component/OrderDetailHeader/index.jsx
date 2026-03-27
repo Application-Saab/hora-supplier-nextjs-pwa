@@ -51,44 +51,44 @@ const OrderDetailHeader = ({ orderDetail }) => {
   //   // Save OTP to localStorage
   //   localStorage.setItem("orderStartOtp", otp);
   // }, [otp]);
+    let otp;
+
+   useEffect(() => {
+      otp = orderDetail.otp; 
+      // Save OTP to localStorage
+      localStorage.setItem("otp", otp);
+    }, [otp]);
 
   return (
     // <Layout navTitle="Order Details">
     <div>
       {/* Booking Details Section */}
       <div style={styles.bookingContainer}>
-        <div style={styles.bookingHeader}>
-          <p style={styles.headerText}>Booking Details</p>
-        </div>
 
         {/* Left and Right Column for Details */}
-        <div style={styles.detailsRow}>
-          <div style={styles.leftColumn}>
-            {orderDetail?.order_id && (
-              <p style={{ marginBottom: "2px"}}>
-                <strong>Id:</strong> {getOrderId(orderDetail.order_id)}
-              </p>
-            )}
+        <div>
+          <div className="headerDateContainer">
             {orderDetail?.order_date && (
-              <p style={{ marginBottom: "2px"}}>
-                <strong>Date:</strong> {formatDate(orderDetail.order_date)}
+              <p style={{ marginBottom: "2px" }}>
+                <span className="fw-semiBold myOrderDetails-heading">Date:</span> {formatDate(orderDetail.order_date)}
               </p>
             )}
 
-            <p style={{ marginBottom: "2px"}}>
-              <strong>Arrival Time:</strong>
-            
-  {orderDetail?.order_time && (() => {
-    const firstTime = orderDetail.order_time.split(" - ")[0];
-    const [hour, period] = firstTime.split(" ");
-    return `${hour} ${period}`;
-  })()}
+            <p style={{ marginBottom: "2px" }}>
+              <span className="fw-semiBold myOrderDetails-heading">Arrival Time:</span>
+
+              {orderDetail?.order_time && (() => {
+                const firstTime = orderDetail.order_time.split(" - ")[0];
+                const [hour, period] = firstTime.split(" ");
+                return `${hour} ${period}`;
+              })()}
 
             </p>
-
+          </div>
+          <div style={styles.leftColumn}>
             {orderDetail?.order_locality && (
-              <p style={{ marginBottom: "2px"}}>
-                <strong>Location:</strong> {orderDetail.order_locality}
+              <p style={{ marginBottom: "2px" }}>
+                <span className="fw-semiBold myOrderDetails-heading">Location:</span> {orderDetail.order_locality}
               </p>
             )}
           </div>
@@ -106,12 +106,12 @@ const OrderDetailHeader = ({ orderDetail }) => {
 
         {orderDetail.addressId?.address1 && (
           <div style={styles.centeredAddress}>
-            <p style={{ marginBottom: "2px"}}>
-              <strong>Address:</strong> {orderDetail.addressId.address1}
+            <p style={{ marginBottom: "2px" }}>
+              <span className="fw-semiBold myOrderDetails-heading">Address:</span> {orderDetail.addressId.address1}
             </p>
-            <p style={{ marginBottom: "2px"}}>
-              <strong>Google Map Location:</strong>{" "}
-              <a href={orderDetail.addressId.address2} style={{ fontWeight: "bold" , cursor:"pointer" , wordWrap: "break-word" , color: 'blue' , borderBottom: '1px solid blue' }} target="_blank" rel="noopener">{orderDetail.addressId.address2}</a>
+            <p style={{ marginBottom: "2px" }}>
+              <span className="fw-semiBold myOrderDetails-heading">Google Map Location:</span>{" "}
+              <a href={orderDetail.addressId.address2} style={{ fontWeight: "bold", cursor: "pointer", wordWrap: "break-word", color: 'blue', borderBottom: '1px solid blue' }} target="_blank" rel="noopener">{orderDetail.addressId.address2}</a>
             </p>
             {/* <button style={styles.directionsButton}>Get Directions</button> */}
           </div>
@@ -124,13 +124,11 @@ const OrderDetailHeader = ({ orderDetail }) => {
 
 const styles = {
   bookingContainer: {
-    // backgroundColor: "#9252aa", // Blue color
+    backgroundColor: "#fff", // Blue color
     color: "white",
-    padding: "7px 20px 4px",
+    padding: "8px",
     borderRadius: "15px",
     width: "100%",
-    marginBottom: "12px",
-    marginTop: "6px",
   },
   bookingHeader: {
     display: "flex",

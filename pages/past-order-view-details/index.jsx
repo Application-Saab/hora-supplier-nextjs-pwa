@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import OrderDetailHeader from "./OrderDetailHeader/index";
+import OrderDetailHeader from "../../component/OrderDetailHeader/index";
 import OrderDetailTab from "./OrderDetailTab/index";
 import {
   BASE_URL,

@@ -52,7 +52,7 @@ const OrderDetailHeader = ({ orderDetail }) => {
   let otp;
 
   useEffect(() => {
-    otp = orderDetail.otp;
+    otp = orderDetail.otp; 
     // Save OTP to localStorage
     localStorage.setItem("otp", otp);
   }, [otp]);

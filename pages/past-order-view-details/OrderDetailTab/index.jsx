@@ -17,6 +17,8 @@ import {
 
 import checkImage from "../../../assets/tick.jpeg";
 import axios from "axios";
+import logo from '../../../assets/new_logo_light.png.png'
+import checkIcon from '../../../assets/checkIcon.png'
 
 // const BASE_URL = "";
 // const ORDER_CANCEL = "";
@@ -146,16 +148,60 @@ ${decorations}
       statement.split("-").filter((item) => item.trim() !== "")
     );
     const inclusionList = inclusionItems.map((item, index) => (
-      <li key={index} className="inclusionstyle">
-        {item.trim()}
-      </li>
+      <div className="info-row" key={index}>
+        <div className="info-icon">
+          <Image
+            src={checkIcon}
+            alt="Info"
+            style={{ height: 13, width: 13, marginRight: '5px' }}
+          />
+        </div>
+        <div>
+          {item.trim()}
+        </div>
+      </div>
     ));
     return (
       <div>
+        <div className="fw-semiBold myOrderDetails-heading">
+          Inclusions
+        </div>
         <ul>{inclusionList}</ul>
       </div>
     );
   };
+
+  const getPhtographyInclusion = (items) => {
+  if (!Array.isArray(items) || items.length === 0) return null;
+
+  const inclusionList = items.map((item, index) => (
+    <div className="info-row" key={index}>
+      <div className="info-icon">
+        <Image
+          src={checkIcon}
+          alt="Info"
+          style={{
+            height: 13,
+            width: 13,
+            marginRight: "5px",
+            marginTop: "5px",
+          }}
+        />
+      </div>
+      <div>{item.trim()}</div>
+    </div>
+  ));
+
+  return (
+    <div>
+      <div className="fw-semiBold myOrderDetails-heading">
+        Inclusions
+      </div>
+
+      <div>{inclusionList}</div>
+    </div>
+  );
+};
 
 
   const cancelOrder = async () => {
@@ -457,37 +503,59 @@ const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography
         <div className="decoration-container">
           {decorationArray?.map((product, index) => {
             return (
-              <div key={product?.id} className="product-container">
-                <div className="product-image-container">
-                  <Image
-                    // src={`https://horaservices.com/api/uploads/${product?.featured_image}`}
-                    src={`https://horaservices.com/api/uploads/compressed_webp/${product.featured_image.split(".")[0]
-                      }.webp`}
-                    alt={product?.name}
-                    className="product-image"
-                    height={300}
-                    width={300}
-                    style={{ height: "auto", width: "auto" }}
-                  />
+              <div key={product?.id} className="orderlist-decDetails">
+                <div className="myOrder-decDetailsLeft">
+                  <>
+                    <Image
+                      src={`https://horaservices.com/api/uploads/compressed_webp/${product.featured_image.split(".")[0]
+                        }.webp`}
+                      alt={product?.name}
+                      height={300}
+                      width={300}
+                      style={{ height: "auto", width: "100%" }}
+                    />
+                    <div
+                      style={{
+                        position: "absolute",
+                        bottom: 9,
+                        right: 4,
+                      }}
+                    >
+                      <span>
+                        <Image src={logo} style={{ width: "50px", height: "55px" }} className="hora-watermark-image" />
+                      </span>
+                    </div>
+                  </>
                 </div>
-                <div className="product-info">
-                  <p className="product-name">{product?.name}</p>
-                  {/* <p className="product-price">₹{product?.price}</p> */}
 
-                  <h6 className="product-inclusion">
-                    <div class="product-page-heading">Inclusion</div>
-                    {getItemInclusion(product?.inclusion)}
-                  </h6>
+                <div className="myOrder-decDetailsRight">
+                  <h1>
+                    {product.name}
+                  </h1>
 
-                  <div className="product-add-ons prod_sec">
-                    <p className="product-page-heading">AddOns:</p>
-                    <ul>
-                      {decorationAddon.map((item, index) => (
-                        <li key={index}>
-                          <div>
-                            {(() => {
+                  <div style={{ marginBottom: "12px" }}>
+                    {getItemInclusion(product.inclusion)}
+                  </div>
+
+                  {decorationAddon.length > 0 &&
+                    <div className="product-add-ons prod_sec" style={{ marginBottom: "12px" }}>
+                      <div className="fw-semiBold myOrderDetails-heading">
+                        Add-Ons
+                      </div>
+                      <ul>
+                        {decorationAddon.map((item, index) => (
+                          <div key={index} className="info-row">
+                            <div className="info-icon">
+                              <Image
+                                src={checkIcon}
+                                alt="Info"
+                                style={{ height: 13, width: 13, marginRight: "5px" }}
+                              />
+                            </div>
+                            <div>
+                              {(() => {
                                 const rawTitle =
-                                  item?.name || item?.title
+                                  item?.name || item?.title;
 
                                 const quantityMatch = rawTitle?.match(/Quantity\s*(\d+)/i);
                                 const extractedQuantity = quantityMatch
@@ -501,92 +569,104 @@ const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography
 
                                 const quantity =
                                   extractedQuantity || Number(item?.quantity) || 1;
+
                                 return (
-                                <>
-                                 <div>{cleanedTitle || "N/A"}</div>
-                                <div>{cleanedTitle && `Quantity : ${quantity}`}</div>
-                                </>
+                                  <>
+                                    <div>{cleanedTitle || "N/A"}</div>
+                                    <div>{cleanedTitle && `Quantity : ${quantity}`}</div>
+                                  </>
                                 );
                               })()}
+
+                            </div>
                           </div>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <div className="prod_sec balanc_amount">
-                    <div className="product-page-heading">
-                      {/* Balance Amount: */}
-                      Amount
-                    </div>
-                    <div>₹{balanceAmount}</div>
-                  </div>
-
-                  {decorationComments && (
-                    <div className="comment-container prod_sec">
-                      <p className="product-page-heading">
-                        Additional Comments:
-                      </p>
-                      <ol className="comments-text">
-                        {decorationComments.split("-").map((comment, index) => (
-                          <li key={index}>{comment.trim()}</li>
                         ))}
-                      </ol>
+                      </ul>
                     </div>
-                  )}
-                </div>
+                  }
+                  {/* Additional Comments */}
+                  <div>
+                    <div className="fw-semiBold myOrderDetails-heading">
+                      Additional Comments
+                    </div>
+                    {decorationComments && (
+                    <div>
+                    {decorationComments.split('\n').map((comment, index) => (
+                       <div key={index} className="info-row">
+                          <div className="info-icon">
+                          <Image
+                           src={checkIcon}
+                           alt="Info"
+                           className="info-icon-img"
+                           />
+                          </div>
 
-                {/* ============ Dish Images Status & Grid ============ */}
-                <div
-                  style={{
-                    boxShadow: "0 1px 8px rgba(0,0,0,.18)",
-                    padding: "10px 16px",
-                    marginBottom: "12px",
-                    backgroundColor: "#fff",
-                  }}
-                >
-                  {/* Header Row */}
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      marginBottom: "12px",
-                    }}
-                  >
-                    <span
-                      style={{
-                        fontWeight: "500",
-                        fontSize: "14px",
-                        color: "#333",
-                      }}
-                    >
-                      Current Status
+                       <div>{comment}</div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                  </div>
+                  <div className="fw-semiBold myOrderDetails-heading">
+                    Price Details
+                  </div>
+
+                  <span className="priceDetails-container" style={{ fontSize: "14px", color: "#97538C" }}>
+
+                    <span className="myOrder-amountList">
+                      <span className="myOrder-labelStyle">Amount :</span>
+                      <span>₹ {balanceAmount || 0}</span>
                     </span>
+                  </span>
+                  <div className="fw-semiBold myOrderDetails-heading">
+                    Venue Details
+                  </div>
 
-                    {orderDetail.userOrderDishImageArray?.length > 0 ? (
-                      <span
+                  <div style={{ fontSize: "13.17px" }}>
+                    <div style={{ marginBottom: "8px" }}>
+                      <span className="fw-semiBold">Address :</span>
+                      <span> {' '}
+                        {orderDetail?.addressId?.address1 || "NA"}
+                      </span>
+                    </div>
+                    <div style={{ marginBottom: "8px" }}>
+                      <span className="fw-semiBold">City :</span>
+                      <span>{' '}{orderDetail?.addressId?.city || "NA"}</span>
+                    </div>
+                    <div style={{ marginBottom: "8px" }}>
+                      <span className="fw-semiBold">Pin Code :</span>
+                      <span>{' '}{orderDetail?.order_pincode || "NA"}</span>
+                    </div>
+                  </div>
+                
+                  {/* ============ Dish Images Status & Grid ============ */}
+
+                  <div className="fw-semiBold myOrderDetails-heading">
+                    Current Status
+                  </div>
+                  {orderDetail.userOrderDishImageArray?.length > 0 ? (
+                      <div
                         style={{
                           color: "#28a745",
                           fontWeight: "500",
                           fontSize: "12px",
+                          marginBottom:"10px",
                         }}
                       >
                         ✓ Actually Photos Are Updated
-                      </span>
+                      </div>
                     ) : (
-                      <span
+                      <div
                         style={{
                           color: "#dc3545",
                           fontWeight: "500",
                           fontSize: "12px",
+                          marginBottom:"10px",
                         }}
                       >
                         ✗ Actually Photos Not Submitted
-                      </span>
+                      </div>
                     )}
-                  </div>
-
                   {/* Images Grid */}
                   {orderDetail.userOrderDishImageArray?.length > 0 && (
                     <div
@@ -614,7 +694,6 @@ const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography
                       ))}
                     </div>
                   )}
-                </div>
 
                 <input
                 type="file"
@@ -626,6 +705,7 @@ const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography
                 />
 
                 {/* ============ Submit / Re-Submit Button ============ */}
+                <div className="send-whatApp-Container">
                 {!orderDetail.userOrderDishImageArray?.length && (
                   <button
                     style={{
@@ -644,221 +724,88 @@ const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography
                     Submit Image 
                   </button>
                 )}
+                </div>
+                </div>
               </div>
             );
           })}
         </div>
       ) : orderType == 8 ? (
-        <div className="decoration-container">
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "flex-start",
-              paddingTop: "10px",
-              position: "relative",
-            }}
-            className="decDetails"
-          >
-            <div
-              style={{ width: "50%", textAlign: "center" }}
-              className="decDetailsLeft"
-            ></div>
-            <div
-              style={{
-                width: "50%",
-                paddingLeft: "20px",
-                paddingRight: "50px",
-              }}
-              className="decDetailsRight"
-            >
-              <div
-                style={{
-                  boxShadow: "0 1px 8px rgba(0,0,0,.18)",
-                  padding: "10px",
-                  marginBottom: "12px",
-                  backgroundColor: "#fff",
-                }}
-              >
-                <h1
-                  style={{
-                    fontSize: "16px",
-                    color: "#222",
-                    fontSize: "21px",
-                    fontWeight: "#222",
-                  }}
-                >
-                  {orderDetail?.items?.[0]?.photography?.name}
-                </h1>
-              </div>
+        <div className="photography-decDetailsRight">
+                  <h1 className="mb-2">
+                   {orderDetail?.items?.[0]?.photography?.name || "Photography Service"}
+                  </h1>
+                  <div style={{ marginBottom: "12px" }}>
+                    {getPhtographyInclusion(bulletItems)}
+                  </div>
+                  <div className="fw-semiBold myOrderDetails-heading">
+                    Add-ons
+                  </div>
 
-              <div
-                style={{
-                  boxShadow: "0 1px 8px rgba(0,0,0,.18)",
-                  padding: "10px",
-                  marginBottom: "12px",
-                  backgroundColor: "#fff",
-                }}
-              >
-                <label
-                  style={{
-                    display: "block",
-                    marginBottom: "8px",
-                    fontWeight: "bold",
-                  }}
-                >
-                  Inclusion:
-                </label>
-                <ul
-                  style={{
-                    listStyleType: "disc", // Show dot bullets
-                    paddingLeft: "20px", // Indent to show bullets
-                    margin: 0,
-                  }}
-                >
-                  {bulletItems.map((item, index) => (
-                    <li key={index}>{item}</li>
-                  ))}
-                </ul>
-              </div>
-
-              <div
-                style={{
-                  boxShadow: "0 1px 8px rgba(0,0,0,.18)",
-                  padding: "10px",
-                  marginBottom: "12px",
-                  backgroundColor: "#fff",
-                }}
-              >
-                {orderDetail?.add_on?.length > 0 && (
-                  <>
-                    <div
-                      style={{
-                        fontSize: "21px",
-                        borderBottom: "1px solid #e7eff9",
-                        marginBottom: "10px",
-                      }}
-                    >
-                      <label
-                        style={{
-                          display: "block",
-                          marginBottom: "8px",
-                          fontWeight: "bold",
-                        }}
-                      >
-                        {" "}
-                        Add-On
-                      </label>{" "}
-                    </div>
-                    <ul style={{ paddingLeft: 0, listStyle: "none" }}>
-                      {orderDetail.add_on.map((item, index) => (
-                        <li
-                          key={index}
-                          style={{
-                            display: "flex",
-                            alignItems: "flex-start",
-                            marginBottom: "15px",
-                          }}
-                          className="inclusionstyle"
-                        >
-                          <img
-                            src={item.image}
-                            alt={item?.title}
-                            style={{
-                              height: 40,
-                              width: 40,
-                              marginRight: 10,
-                              objectFit: "cover",
-                              borderRadius: 4,
-                            }}
-                          />
-                          <div>
-                            <div
-                              style={{ fontWeight: "bold", fontSize: "16px" }}
-                            >
+                  {orderDetail?.add_on?.length > 0 ? (
+                    orderDetail.add_on.map((item, index) => (
+                      <div key={index} className="info-row">
+                        <Image
+                          src={checkIcon}
+                          alt=""
+                          width={13}
+                          height={13}
+                          style={{ height: 13, width: 13, marginRight: '5px', marginTop: "5px" }}
+                        />
+                        <div>
+                          <div style={{ fontWeight: "bold" }}>
                               {item?.title || "NA"}
                             </div>
-                            <div
-                              style={{
-                                fontSize: "14px",
-                                color: "#555",
-                                marginTop: "2px",
-                              }}
-                            >
+                            <div style={{ fontSize: "14px", color: "#555" }}>
                               {item?.description || "No description"}
                             </div>
-                            <div
-                              style={{
-                                fontSize: "13px",
-                                color: "#888",
-                                marginTop: "2px",
-                              }}
-                            >
-                             quantity :  {item?.quantity || 1}
+                            <div style={{ fontSize: "13px", color: "#888" }}>
+                              quantity :  {item?.quantity || 1}
                             </div>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div style={{ fontSize: 13 }}>NA</div>
+                  )}
+                  <div className="fw-semiBold myOrderDetails-heading">
+                    Additional Comments
+                  </div> 
+                  
+                  {decorationComments && (
+                    <div>
+                    {decorationComments.split('\n').map((comment, index) => (
+                       <div key={index} className="info-row">
+                          <div className="info-icon">
+                          <Image
+                           src={checkIcon}
+                           alt="Info"
+                           width={13}
+                           height={13}
+                           style={{ height: 13, width: 13, marginRight: '5px', marginTop: "5px" }}
+                           />
                           </div>
-                        </li>
-                      ))}
-                    </ul>
-                  </>
+
+                       <div>{comment}</div>
+                      </div>
+                    ))}
+                  </div>
                 )}
-              </div>
 
-              <div
-                className="prod_sec balanc_amount"
-                style={{
-                  boxShadow: "0 1px 8px rgba(0,0,0,.18)",
-                  padding: "10px",
-                  marginBottom: "12px",
-                  backgroundColor: "#fff",
-                }}
-              >
-                <div className="product-page-heading">
-                  {/* Balance Amount: */}
-                  Amount:
-                </div>
-                <div>₹{balanceAmount}</div>
-              </div>
+                  <div className="fw-semiBold myOrderDetails-heading">
+                    Price Details
+                  </div>
+                  <span className="priceDetails-container" style={{ fontSize: "14px", color: "#97538C" }}>
+                    <span className="myOrder-amountList">
+                      <span className="myOrder-labelStyle"> Amount :</span>
+                      <span>₹ {balanceAmount || 0}</span>
+                    </span>
+                  </span>
 
-              {decorationComments && (
-                <div
-                  className="comment-container prod_sec"
-                  style={{
-                    boxShadow: "0 1px 8px rgba(0,0,0,.18)",
-                    padding: "10px",
-                    marginBottom: "12px",
-                    backgroundColor: "#fff",
-                  }}
-                >
-                  <p className="product-page-heading">Additional Comments:</p>
-                    <ol className="comments-text">
-                      {decorationComments
-                        .split(/[,\n;\-]+/)
-                        .map((comment, index) => (
-                          <li key={index}>{comment.trim()}</li>
-                        ))}
-                    </ol>
-                </div>
-              )}
-
-              <div
-                style={{
-                  boxShadow: "0 1px 8px rgba(0,0,0,.18)",
-                  padding: "10px 16px",
-                  marginBottom: "12px",
-                  backgroundColor: "#fff",
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <span
-                  style={{ fontWeight: "500", fontSize: "13px", color: "#333" }}
-                >
-                  Current Status
-                </span>
-
-                {orderDetail.orderDriveLink ? (
+              <div className="fw-semiBold myOrderDetails-heading">
+                    Current Status
+                  </div>
+                  {orderDetail.orderDriveLink ? (
                   <span
                     style={{
                       color: "#28a745",
@@ -879,7 +826,7 @@ const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography
                     ✗ Drive Link Not Submitted Yet
                   </span>
                 )}
-              </div>
+                
 
               {!orderDetail.orderDriveLink && (
                 <textarea
@@ -889,18 +836,8 @@ const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography
                   placeholder="Paste Google Drive folder link here..."
                 />
               )}
-
-              {/* <textarea
-                value={driveLink}
-                style={styles.inputText}
-                onChange={(e) => setDriveLink(e.target.value)}
-                placeholder={
-                  orderDetail.orderDriveLink
-                    ? "Paste new Google Drive folder link to resubmit..."
-                    : "Paste Google Drive folder link here..."
-                }
-              /> */}
               {!orderDetail.orderDriveLink && (
+                <div className="drivelinkBtnContainer">
                 <button
                   style={styles.submitBtn}
                   onClick={handleSubmitDriveLink}
@@ -915,22 +852,8 @@ const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography
                     ? "Re-Submit Link"
                     : "Submit Link"}
                 </button>
+                </div>
               )}
-
-              {/* <button
-                style={styles.submitBtn}
-                onClick={handleSubmitDriveLink}
-                onMouseEnter={(e) => {
-                  e.target.style.background = "#8a3f85";
-                }}
-                onMouseLeave={(e) => {
-                  e.target.style.background = "#9c4d97";
-                }}
-              >
-                {orderDetail.orderDriveLink ? "Re-Submit Link" : "Submit Link"}
-              </button> */}
-            </div>
-          </div>
         </div>
       ) : null}
       <div>
@@ -1159,6 +1082,5 @@ const styles = {
     fontWeight: "500",
     fontFamily:
       "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-    marginLeft: "83px",
   },
 };

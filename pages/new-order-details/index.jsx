@@ -157,8 +157,8 @@ const OrderDetail = () => {
   return (
     <>
     <Layout backLink = "/supplier-new-order">
-      <div className="orderheader-orderdetail">
-        <OrderDetailHeader orderDetail={orderDetail} />
+      <div className="">
+        <OrderDetailHeader orderDetail={orderDetail} /> 
         <div className="order-detail-page-decoration">
           <OrderDetailTab
             orderDetail={orderDetail}
