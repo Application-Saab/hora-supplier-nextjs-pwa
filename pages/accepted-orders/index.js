@@ -1,19 +1,12 @@
 
 import React, { useEffect, useState } from "react";
 import { BASE_URL, ORDERLIST_ENDPOINT } from "../../apiconstant/apiconstant";
-import { FaRegCalendarAlt, FaClock, FaUsers } from "react-icons/fa";
-import { IoCalendarClear } from "react-icons/io5";
-import { FiClock } from "react-icons/fi";
-import clock from "../../assets/bell.png";
-import people from "../../assets/people.png";
-import date_time_icon from "../../assets/date-time-icon.png";
 import { useRouter } from "next/router";
-import Image from "next/image";
 import Layout from "../../component/Layout";
 import Popup from "../../apiconstant/popup";
 import informationImage from "../../assets/information.webp";
 import dangerImage from "../../assets/danger.png";
-import OrderList from "../../component/OrderList";
+import OrderList from "../../component/OrderList/index.jsx";
 
 const Orderlist = () => {
   const router = useRouter();
@@ -85,8 +78,8 @@ const Orderlist = () => {
             toId: supplierID,
           }),
         });
-
-        const responseData = await response.json();
+if(response.ok){
+const responseData = await response.json();
 
         if (responseData && responseData.data && responseData.data.order) {
           const sortedOrders = responseData.data.order.sort((a, b) => {
@@ -99,6 +92,10 @@ const Orderlist = () => {
         } else {
           console.log("No orders found");
         }
+}
+else{
+  alert("Failed to fetch orders. Please try again later.");
+} 
       } catch (error) {
         console.log("Error fetching orders:", error);
       } finally {
@@ -348,10 +345,8 @@ const Orderlist = () => {
                             orderType={getOrderType(order?.type)}
                             orderDate={formatDate(order.order_date)}
                             orderTime={order.order_time}
-                            noOfPeople={order.no_of_people}
-                            orderLocality={order.order_locality}
                             balanceAmount={order.balance_amount}
-                            totalAmount={order.total_amount}
+                            noOfPeople={order.no_of_people}
                             viewDetailsHandler={() => handleViewDetail(order)}
                             customerDetailsBtnShow={true}
                             customerDetailsHandler={() => {

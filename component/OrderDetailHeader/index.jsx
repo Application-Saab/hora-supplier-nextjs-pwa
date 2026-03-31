@@ -1,66 +1,21 @@
-import React, { useState, useEffect } from "react";
-import { CiCalendar } from "react-icons/ci";
-import { GoClock } from "react-icons/go";
-import { MdPeopleAlt } from "react-icons/md";
-import Layout from "../Layout";
+import React, { useEffect } from "react";
 
 const OrderDetailHeader = ({ orderDetail }) => {
-  const getOrderId = (e) => {
-    const orderId1 = 10800 + e;
-    const updateOrderId = "#" + orderId1;
-    if (
-      typeof window !== "undefined" &&
-      typeof window.localStorage !== "undefined"
-    ) {
-      localStorage.setItem("orderId", updateOrderId);
-    }
-    return updateOrderId;
-  };
-  const getOrderStatus = (orderStatusValue) => {
-    if (orderStatusValue === 0) {
-      return { status: "Booked", className: "status-booked-detail" };
-    }
-    if (orderStatusValue == 1) {
-      return { status: "Accepted", className: "status-accepted-detail" };
-    }
-    if (orderStatusValue === 2) {
-      return { status: "In-progress", className: "status-in-progress--detail" };
-    }
-    if (orderStatusValue === 3) {
-      return { status: "Completed", className: "status-completed-detail" };
-    }
-    if (orderStatusValue === 4) {
-      return { status: "Cancelled", className: "status-cancelled-detail" };
-    }
-    if (orderStatusValue === 5) {
-      return { status: "", className: "status-empty-detail" };
-    }
-    if (orderStatusValue === 6) {
-      return { status: "Expired", className: "status-expired-detail" };
-    }
-  };
-
-  const orderStatus = getOrderStatus(orderDetail?.order_status);
 
   const formatDate = (dateString) => {
     const options = { day: "numeric", month: "short", year: "numeric" };
     return new Date(dateString).toLocaleDateString("en-GB", options);
   };
-  // useEffect(() => {
-  //   otp = orderDetail.otp;
-  //   // Save OTP to localStorage
-  //   localStorage.setItem("orderStartOtp", otp);
-  // }, [otp]);
-    let otp;
 
-   useEffect(() => {
-      otp = orderDetail.otp; 
-      // Save OTP to localStorage
-      localStorage.setItem("otp", otp);
-    }, [otp]);
+  let otp;
+
+  useEffect(() => {
+    otp = orderDetail.otp;
+    // Save OTP to localStorage
+    localStorage.setItem("otp", otp);
+  }, [otp]);
 
   return (
-    // <Layout navTitle="Order Details">
     <div>
       {/* Booking Details Section */}
       <div style={styles.bookingContainer}>
@@ -69,12 +24,12 @@ const OrderDetailHeader = ({ orderDetail }) => {
         <div>
           <div className="headerDateContainer">
             {orderDetail?.order_date && (
-              <p style={{ marginBottom: "2px" }}>
+              <p className="mt-2">
                 <span className="fw-semiBold myOrderDetails-heading">Date:</span> {formatDate(orderDetail.order_date)}
               </p>
             )}
 
-            <p style={{ marginBottom: "2px" }}>
+            <p className="mt-2">
               <span className="fw-semiBold myOrderDetails-heading">Arrival Time:</span>
 
               {orderDetail?.order_time && (() => {
@@ -87,33 +42,23 @@ const OrderDetailHeader = ({ orderDetail }) => {
           </div>
           <div style={styles.leftColumn}>
             {orderDetail?.order_locality && (
-              <p style={{ marginBottom: "2px" }}>
+              <p className="mt-2">
                 <span className="fw-semiBold myOrderDetails-heading">Location:</span> {orderDetail.order_locality}
               </p>
             )}
           </div>
-
-          {/* <div style={styles.rightColumn}>
-            {orderDetail && orderDetail.no_of_people > 0 && (
-              <p>
-                <strong>People: </strong> {orderDetail.no_of_people}
-              </p>
-            )}
-
-           
-          </div> */}
         </div>
 
         {orderDetail.addressId?.address1 && (
           <div style={styles.centeredAddress}>
-            <p style={{ marginBottom: "2px" }}>
+            <p className="mt-2">
               <span className="fw-semiBold myOrderDetails-heading">Address:</span> {orderDetail.addressId.address1}
             </p>
-            <p style={{ marginBottom: "2px" }}>
+            <p className="mt-2">
               <span className="fw-semiBold myOrderDetails-heading">Google Map Location:</span>{" "}
               <a href={orderDetail.addressId.address2} style={{ fontWeight: "bold", cursor: "pointer", wordWrap: "break-word", color: 'blue', borderBottom: '1px solid blue' }} target="_blank" rel="noopener">{orderDetail.addressId.address2}</a>
             </p>
-            {/* <button style={styles.directionsButton}>Get Directions</button> */}
+
           </div>
         )}
       </div>
@@ -130,37 +75,8 @@ const styles = {
     borderRadius: "15px",
     width: "100%",
   },
-  bookingHeader: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: "2px",
-  },
-  headerText: {
-    fontSize: "12px",
-    fontWeight: "bold",
-  },
-  callButton: {
-    backgroundColor: "#ff726f", // Red color for call button
-    color: "white",
-    borderRadius: "50%",
-    border: "none",
-    width: "30px",
-    height: "30px",
-    fontSize: "16px",
-    cursor: "pointer",
-  },
-  detailsRow: {
-    display: "flex",
-    justifyContent: "space-between",
-    marginBottom: "2px",
-  },
   leftColumn: {
     textAlign: "left",
-    flex: "1",
-  },
-  rightColumn: {
-    textAlign: "right",
     flex: "1",
   },
   centeredAddress: {
@@ -168,16 +84,7 @@ const styles = {
     marginTop: "2px",
     fontSize: "14px",
   },
-  directionsButton: {
-    marginTop: "10px",
-    padding: "8px 15px",
-    backgroundColor: "transparent",
-    color: "#ff726f",
-    border: "none",
-    cursor: "pointer",
-    marginLeft: "100px",
-    textDecoration: "underline",
-  },
+
 };
 
 export default OrderDetailHeader;

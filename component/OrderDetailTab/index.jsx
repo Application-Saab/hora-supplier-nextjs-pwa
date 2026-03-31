@@ -1,22 +1,14 @@
-import React, { useState, useEffect } from "react";
-// import daal_image from "../../assets/daal_image.png";
+import React, { useState } from "react";
 import OrderDetailsMenu from "../OrderDetailsMenu";
 import OrderDetailsIngre from "../OrderDetailsIngre";
-// import { BASE_URL, ORDER_CANCEL } from "../../utils/apiconstants";
-// import { useNavigate } from "react-router-dom";
 import OrderDetailsAppliances from "../OrderDetailsAppliances";
-import logo from '../../assets/new_logo_light.png.png'
-import checkIcon from '../../assets/checkIcon.png'
-// import { useRouter } from "next/navigation";
-import Image from "next/image";
-
 import { useRouter } from "next/router";
 import {
   BASE_URL,
   ACCEPT_ORDER,
 } from "../../apiconstant/apiconstant";
-import checkImage from "../../assets/tick.jpeg";
-import axios from "axios";
+import Decoration from "../Decoration";
+import Photography from "../Photography";
 
 const OrderDetailTab = ({
   orderDetail,
@@ -66,73 +58,6 @@ const OrderDetailTab = ({
   // In your component
   const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography?.inclusion);
 
-
-  const getItemInclusion = (inclusion) => {
-    if (!Array.isArray(inclusion) || inclusion.length === 0) {
-      return null;
-    }
-    const htmlString = inclusion[0];
-    const withoutTags = htmlString.replace(/<[^>]*>/g, ""); // Remove HTML tags
-    const withoutSpecialChars = withoutTags.replace(/&#[^;]*;/g, " "); // Replace &# sequences with space
-    const statements = withoutSpecialChars.split("<div>");
-    const inclusionItems = statements.flatMap((statement) =>
-      statement.split("-").filter((item) => item.trim() !== "")
-    );
-    const inclusionList = inclusionItems.map((item, index) => (
-      <div className="info-row" key={index}>
-        <div className="info-icon">
-          <Image
-            src={checkIcon}
-            alt="Info"
-            style={{ height: 13, width: 13, marginRight: '5px', marginTop: "5px" }}
-          />
-        </div>
-        <div>
-          {item.trim()}
-        </div>
-      </div>
-    ));
-    return (
-      <div>
-        <div className="fw-semiBold myOrderDetails-heading">
-          Inclusions
-        </div>
-        <ul>{inclusionList}</ul>
-      </div>
-    );
-  };
-const getPhtographyInclusion = (items) => {
-  if (!Array.isArray(items) || items.length === 0) return null;
-
-  const inclusionList = items.map((item, index) => (
-    <div className="info-row" key={index}>
-      <div className="info-icon">
-        <Image
-          src={checkIcon}
-          alt="Info"
-          style={{
-            height: 13,
-            width: 13,
-            marginRight: "5px",
-            marginTop: "5px",
-          }}
-        />
-      </div>
-      <div>{item.trim()}</div>
-    </div>
-  ));
-
-  return (
-    <div>
-      <div className="fw-semiBold myOrderDetails-heading">
-        Inclusions
-      </div>
-
-      <div>{inclusionList}</div>
-    </div>
-  );
-};
-
   const acceptOrder = async () => {
     try {
       const token = await localStorage.getItem("token");
@@ -178,7 +103,7 @@ const getPhtographyInclusion = (items) => {
     }
   };
 
-  return (
+  return ( 
     <>
       {parseInt(orderType) == 2 ? (
         <div>
@@ -277,222 +202,20 @@ const getPhtographyInclusion = (items) => {
           </div>
         </>
       ) : orderType == 1 ? (
-        <div className="decoration-container">
-          {decorationArray?.map((product, index) => {
-            return (
-              <div key={product?.id} className="orderlist-decDetails">
-                <div className="myOrder-decDetailsLeft">
-                  <>
-                    <Image
-                      src={`https://horaservices.com/api/uploads/compressed_webp/${product.featured_image.split(".")[0]
-                        }.webp`}
-                      alt={product?.name}
-                      height={300}
-                      width={300}
-                      style={{ height: "auto", width: "100%" }}
-                    />
-                    <div
-                      style={{
-                        position: "absolute",
-                        bottom: 9,
-                        right: 4,
-                      }}
-                    >
-                      <span>
-                        <Image src={logo} style={{ width: "50px", height: "55px" }} className="hora-watermark-image" />
-                      </span>
-                    </div>
-                  </>
-                </div>
-
-                <div className="myOrder-decDetailsRight">
-                  <h1>
-                    {product.name}
-                  </h1>
-
-                  <div style={{ marginBottom: "12px" }}>
-                    {getItemInclusion(product.inclusion)}
-                  </div>
-
-                  {decorationAddon.length > 0 &&
-                    <div className="product-add-ons prod_sec" style={{ marginBottom: "12px" }}>
-                      <div className="fw-semiBold myOrderDetails-heading">
-                        Add-Ons
-                      </div>
-                      <ul>
-                        {decorationAddon.map((item, index) => (
-                          <div key={index} className="info-row">
-                            <div className="info-icon">
-                              <Image
-                                src={checkIcon}
-                                alt="Info"
-                                style={{ height: 13, width: 13, marginRight: '5px', marginTop: "5px" }}
-                              />
-                            </div>
-                            <div>
-                              {(() => {
-                                const rawTitle =
-                                  item?.name || item?.title;
-
-                                const quantityMatch = rawTitle?.match(/Quantity\s*(\d+)/i);
-                                const extractedQuantity = quantityMatch
-                                  ? Number(quantityMatch[1])
-                                  : null;
-
-                                const cleanedTitle = rawTitle?.replace(
-                                  /\s*-\s*Quantity\s*\d+/i,
-                                  ""
-                                ).trim();
-
-                                const quantity =
-                                  extractedQuantity || Number(item?.quantity) || 1;
-
-                                return (
-                                  <>
-                                    <div>{cleanedTitle || "N/A"}</div>
-                                    <div>{cleanedTitle && `Quantity : ${quantity}`}</div>
-                                  </>
-                                );
-                              })()}
-
-                            </div>
-                          </div>
-                        ))}
-                      </ul>
-                    </div>
-                  }
-                  {/* Additional Comments */}
-                  <div>
-                    <div className="fw-semiBold myOrderDetails-heading">
-                      Additional Comments
-                    </div>
-                    {decorationComments && (
-                    <div>
-                    {decorationComments.split('\n').map((comment, index) => (
-                       <div key={index} className="info-row">
-                          <div className="info-icon">
-                          <Image
-                           src={checkIcon}
-                           alt="Info"
-                           className="info-icon-img"
-                           style={{ height: 13, width: 13, marginRight: '5px', marginTop: "5px" }}
-                           />
-                          </div>
-
-                       <div>{comment}</div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-                  </div>
-                  <div className="fw-semiBold myOrderDetails-heading">
-                    Price Details
-                  </div>
-
-                  <span className="priceDetails-container" style={{ fontSize: "14px", color: "#97538C" }}>
-
-                    <span className="myOrder-amountList">
-                      <span className="myOrder-labelStyle"> Amount :</span>
-                      <span>₹ {balanceAmount || 0}</span>
-                    </span>
-                  </span>
-                  <div className="fw-semiBold myOrderDetails-heading">
-                    Venue Details
-                  </div>
-
-                  <div style={{ fontSize: "13.17px" }}>
-                    <div style={{ marginBottom: "8px" }}>
-                      <span className="fw-semiBold">Address :</span>
-                      <span> {' '}
-                        {orderDetail?.addressId?.address1 || "NA"}
-                      </span>
-                    </div>
-                    <div style={{ marginBottom: "8px" }}>
-                      <span className="fw-semiBold">City :</span>
-                      <span>{' '}{orderDetail?.addressId?.city || "NA"}</span>
-                    </div>
-                    <div style={{ marginBottom: "8px" }}>
-                      <span className="fw-semiBold">Pin Code :</span>
-                      <span>{' '}{orderDetail?.order_pincode || "NA"}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
+        <Decoration 
+        orderDetail={orderDetail}
+        decorationComments={decorationComments}
+        decorationAddon={decorationAddon}
+        balanceAmount={balanceAmount}
+        decorationArray={decorationArray}
+        />
       ) : orderType == 8 ? (
-        <div className="photography-decDetailsRight">
-                  <h1 className="mb-2">
-                    {orderDetail?.items?.[0]?.photography?.name || "Photography Service"}
-                  </h1>
-                  <div style={{ marginBottom: "12px" }}>
-                    {getPhtographyInclusion(bulletItems)}
-                  </div>
-                  <div className="fw-semiBold myOrderDetails-heading">
-                    Add-ons
-                  </div>
-
-                  {orderDetail?.add_on?.length > 0 ? (
-                    orderDetail.add_on.map((item, index) => (
-                      <div key={index} className="info-row">
-                        <Image
-                          src={checkIcon}
-                          alt=""
-                          width={13}
-                          height={13}
-                          style={{ height: 13, width: 13, marginRight: '5px', marginTop: "5px" }}
-                        />
-                        <div>
-                          <div style={{ fontWeight: "bold" }}>
-                              {item?.title || "NA"}
-                            </div>
-                            <div style={{ fontSize: "14px", color: "#555" }}>
-                              {item?.description || "No description"}
-                            </div>
-                            <div style={{ fontSize: "13px", color: "#888" }}>
-                              quantity :  {item?.quantity || 1}
-                            </div>
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <div style={{ fontSize: 13 }}>NA</div>
-                  )}
-                   <div className="fw-semiBold myOrderDetails-heading">
-                    Additional Comments
-                  </div> 
-                  
-                  {decorationComments && (
-                    <div>
-                    {decorationComments.split('\n').map((comment, index) => (
-                       <div key={index} className="info-row">
-                          <div className="info-icon">
-                          <Image
-                           src={checkIcon}
-                           alt="Info"
-                           width={13}
-                           height={13}
-                           style={{ height: 13, width: 13, marginRight: '5px', marginTop: "5px" }}
-                           />
-                          </div>
-
-                       <div>{comment}</div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                  <div className="fw-semiBold myOrderDetails-heading">
-                    Price Details
-                  </div>
-                  <span className="priceDetails-container" style={{ fontSize: "14px", color: "#97538C" }}>
-                    <span className="myOrder-amountList">
-                      <span className="myOrder-labelStyle"> Amount :</span>
-                      <span>₹ {balanceAmount || 0}</span>
-                    </span>
-                  </span>
-        </div>
+        <Photography
+        orderDetail={orderDetail}
+        decorationComments={decorationComments}
+        balanceAmount={balanceAmount}
+        bulletItems={bulletItems}
+        />
       ) : null}
 
       <div className="accept-btn-container" onClick={acceptOrder}>

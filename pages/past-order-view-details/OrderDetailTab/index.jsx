@@ -1,24 +1,16 @@
 import React, { useState, useEffect, useRef } from "react";
-// import daal_image from "../../assets/daal_image.png";
 import OrderDetailsMenu from "../OrderDetailsMenu";
 import OrderDetailsIngre from "../OrderDetailsIngre";
-// import { BASE_URL, ORDER_CANCEL } from "../../utils/apiconstants";
-// import { useNavigate } from "react-router-dom";
 import OrderDetailsAppliances from "../OrderDetailsAppliances";
-// import { useRouter } from "next/navigation";
-import Image from "next/image";
-import { Form } from "react-bootstrap";
 import { useRouter } from "next/router";
 import {
   BASE_URL,
-  ACCEPT_ORDER, 
+  ACCEPT_ORDER,
   START_ORDER,
 } from "../../../apiconstant/apiconstant";
-
-import checkImage from "../../../assets/tick.jpeg";
 import axios from "axios";
-import logo from '../../../assets/new_logo_light.png.png'
-import checkIcon from '../../../assets/checkIcon.png'
+import Decoration from "../../../component/Decoration";
+import Photography from "../../../component/Photography";
 
 // const BASE_URL = "";
 // const ORDER_CANCEL = "";
@@ -130,80 +122,6 @@ ${decorations}
     }
   }, []);
 
-
-  // const [name, setname] = useState();
-  const [name, setName] = useState();
-  const [inclusion, setInclusion] = useState();
-
-
-  const getItemInclusion = (inclusion) => {
-    if (!Array.isArray(inclusion) || inclusion.length === 0) {
-      return null;
-    }
-    const htmlString = inclusion[0];
-    const withoutTags = htmlString.replace(/<[^>]*>/g, ""); // Remove HTML tags
-    const withoutSpecialChars = withoutTags.replace(/&#[^;]*;/g, " "); // Replace &# sequences with space
-    const statements = withoutSpecialChars.split("<div>");
-    const inclusionItems = statements.flatMap((statement) =>
-      statement.split("-").filter((item) => item.trim() !== "")
-    );
-    const inclusionList = inclusionItems.map((item, index) => (
-      <div className="info-row" key={index}>
-        <div className="info-icon">
-          <Image
-            src={checkIcon}
-            alt="Info"
-            style={{ height: 13, width: 13, marginRight: '5px' }}
-          />
-        </div>
-        <div>
-          {item.trim()}
-        </div>
-      </div>
-    ));
-    return (
-      <div>
-        <div className="fw-semiBold myOrderDetails-heading">
-          Inclusions
-        </div>
-        <ul>{inclusionList}</ul>
-      </div>
-    );
-  };
-
-  const getPhtographyInclusion = (items) => {
-  if (!Array.isArray(items) || items.length === 0) return null;
-
-  const inclusionList = items.map((item, index) => (
-    <div className="info-row" key={index}>
-      <div className="info-icon">
-        <Image
-          src={checkIcon}
-          alt="Info"
-          style={{
-            height: 13,
-            width: 13,
-            marginRight: "5px",
-            marginTop: "5px",
-          }}
-        />
-      </div>
-      <div>{item.trim()}</div>
-    </div>
-  ));
-
-  return (
-    <div>
-      <div className="fw-semiBold myOrderDetails-heading">
-        Inclusions
-      </div>
-
-      <div>{inclusionList}</div>
-    </div>
-  );
-};
-
-
   const cancelOrder = async () => {
     try {
       const token = await localStorage.getItem("token");
@@ -276,24 +194,24 @@ ${decorations}
   };
 
   function parseInclusionToBullets(inclusionData) {
-  if (!inclusionData) return [];
+    if (!inclusionData) return [];
 
-  // If array, take first element
-  const inclusionString = Array.isArray(inclusionData)
-    ? inclusionData[0]
-    : inclusionData;
+    // If array, take first element
+    const inclusionString = Array.isArray(inclusionData)
+      ? inclusionData[0]
+      : inclusionData;
 
-  if (typeof inclusionString !== "string") return [];
+    if (typeof inclusionString !== "string") return [];
 
-  return inclusionString
-    .split("</div>")
-    .map(str => str.replace(/<div[^>]*>/g, "").trim())
-    .filter(str => str.length > 0)
-    .map(str => str.replace(/^-\s*/, ""));
-}
+    return inclusionString
+      .split("</div>")
+      .map(str => str.replace(/<div[^>]*>/g, "").trim())
+      .filter(str => str.length > 0)
+      .map(str => str.replace(/^-\s*/, ""));
+  }
 
-// In your component
-const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography?.inclusion); 
+  // In your component
+  const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography?.inclusion);
 
 
   const handleSubmit = () => {
@@ -365,32 +283,32 @@ const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography
     }
   };
 
-      const handleFileUpload = async (e) => {
-      const files = e.target.files;
-      if (!files?.length) return;
-      const formData = new FormData();
-      [...files].forEach((f) => formData.append("files", f));
+  const handleFileUpload = async (e) => {
+    const files = e.target.files;
+    if (!files?.length) return;
+    const formData = new FormData();
+    [...files].forEach((f) => formData.append("files", f));
 
-      const uploadRes = await fetch(
-        "https://horaservices.com:3000/api/multiple_image_upload",
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
-      const uploadData = await uploadRes.json();
-
-      await fetch("https://horaservices.com:3000/api/order/edit", {
+    const uploadRes = await fetch(
+      "https://horaservices.com:3000/api/multiple_image_upload",
+      {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          _id: orderDetail._id,
-          userOrderDishImageArray: uploadData.data,
-        }),
-      });
+        body: formData,
+      }
+    );
+    const uploadData = await uploadRes.json();
 
-      window.location.href = "/past-order";
-    };
+    await fetch("https://horaservices.com:3000/api/order/edit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        _id: orderDetail._id,
+        userOrderDishImageArray: uploadData.data,
+      }),
+    });
+
+    window.location.href = "/past-order";
+  };
 
   return (
     <>
@@ -500,360 +418,163 @@ const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography
           </div>
         </>
       ) : orderType === 1 ? (
-        <div className="decoration-container">
-          {decorationArray?.map((product, index) => {
-            return (
-              <div key={product?.id} className="orderlist-decDetails">
-                <div className="myOrder-decDetailsLeft">
-                  <>
-                    <Image
-                      src={`https://horaservices.com/api/uploads/compressed_webp/${product.featured_image.split(".")[0]
-                        }.webp`}
-                      alt={product?.name}
-                      height={300}
-                      width={300}
-                      style={{ height: "auto", width: "100%" }}
-                    />
-                    <div
-                      style={{
-                        position: "absolute",
-                        bottom: 9,
-                        right: 4,
-                      }}
-                    >
-                      <span>
-                        <Image src={logo} style={{ width: "50px", height: "55px" }} className="hora-watermark-image" />
-                      </span>
-                    </div>
-                  </>
-                </div>
-
-                <div className="myOrder-decDetailsRight">
-                  <h1>
-                    {product.name}
-                  </h1>
-
-                  <div style={{ marginBottom: "12px" }}>
-                    {getItemInclusion(product.inclusion)}
-                  </div>
-
-                  {decorationAddon.length > 0 &&
-                    <div className="product-add-ons prod_sec" style={{ marginBottom: "12px" }}>
-                      <div className="fw-semiBold myOrderDetails-heading">
-                        Add-Ons
-                      </div>
-                      <ul>
-                        {decorationAddon.map((item, index) => (
-                          <div key={index} className="info-row">
-                            <div className="info-icon">
-                              <Image
-                                src={checkIcon}
-                                alt="Info"
-                                style={{ height: 13, width: 13, marginRight: "5px" }}
-                              />
-                            </div>
-                            <div>
-                              {(() => {
-                                const rawTitle =
-                                  item?.name || item?.title;
-
-                                const quantityMatch = rawTitle?.match(/Quantity\s*(\d+)/i);
-                                const extractedQuantity = quantityMatch
-                                  ? Number(quantityMatch[1])
-                                  : null;
-
-                                const cleanedTitle = rawTitle?.replace(
-                                  /\s*-\s*Quantity\s*\d+/i,
-                                  ""
-                                ).trim();
-
-                                const quantity =
-                                  extractedQuantity || Number(item?.quantity) || 1;
-
-                                return (
-                                  <>
-                                    <div>{cleanedTitle || "N/A"}</div>
-                                    <div>{cleanedTitle && `Quantity : ${quantity}`}</div>
-                                  </>
-                                );
-                              })()}
-
-                            </div>
-                          </div>
-                        ))}
-                      </ul>
-                    </div>
-                  }
-                  {/* Additional Comments */}
-                  <div>
-                    <div className="fw-semiBold myOrderDetails-heading">
-                      Additional Comments
-                    </div>
-                    {decorationComments && (
-                    <div>
-                    {decorationComments.split('\n').map((comment, index) => (
-                       <div key={index} className="info-row">
-                          <div className="info-icon">
-                          <Image
-                           src={checkIcon}
-                           alt="Info"
-                           className="info-icon-img"
-                           />
-                          </div>
-
-                       <div>{comment}</div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-                  </div>
-                  <div className="fw-semiBold myOrderDetails-heading">
-                    Price Details
-                  </div>
-
-                  <span className="priceDetails-container" style={{ fontSize: "14px", color: "#97538C" }}>
-
-                    <span className="myOrder-amountList">
-                      <span className="myOrder-labelStyle">Amount :</span>
-                      <span>₹ {balanceAmount || 0}</span>
-                    </span>
-                  </span>
-                  <div className="fw-semiBold myOrderDetails-heading">
-                    Venue Details
-                  </div>
-
-                  <div style={{ fontSize: "13.17px" }}>
-                    <div style={{ marginBottom: "8px" }}>
-                      <span className="fw-semiBold">Address :</span>
-                      <span> {' '}
-                        {orderDetail?.addressId?.address1 || "NA"}
-                      </span>
-                    </div>
-                    <div style={{ marginBottom: "8px" }}>
-                      <span className="fw-semiBold">City :</span>
-                      <span>{' '}{orderDetail?.addressId?.city || "NA"}</span>
-                    </div>
-                    <div style={{ marginBottom: "8px" }}>
-                      <span className="fw-semiBold">Pin Code :</span>
-                      <span>{' '}{orderDetail?.order_pincode || "NA"}</span>
-                    </div>
-                  </div>
-                
-                  {/* ============ Dish Images Status & Grid ============ */}
-
-                  <div className="fw-semiBold myOrderDetails-heading">
-                    Current Status
-                  </div>
-                  {orderDetail.userOrderDishImageArray?.length > 0 ? (
-                      <div
-                        style={{
-                          color: "#28a745",
-                          fontWeight: "500",
-                          fontSize: "12px",
-                          marginBottom:"10px",
-                        }}
-                      >
-                        ✓ Actually Photos Are Updated
-                      </div>
-                    ) : (
-                      <div
-                        style={{
-                          color: "#dc3545",
-                          fontWeight: "500",
-                          fontSize: "12px",
-                          marginBottom:"10px",
-                        }}
-                      >
-                        ✗ Actually Photos Not Submitted
-                      </div>
-                    )}
-                  {/* Images Grid */}
-                  {orderDetail.userOrderDishImageArray?.length > 0 && (
-                    <div
-                      style={{
-                        display: "grid",
-                        gridTemplateColumns:
-                          "repeat(auto-fill, minmax(100px, 1fr))",
-                        gap: "10px",
-                      }}
-                    >
-                      {orderDetail.userOrderDishImageArray.map((img, index) => (
-                        <img
-                          key={index}
-                          // src={img}
-                          src={`https://horaservices.com/api/uploads/${img}`}
-                          alt={`Dish ${index + 1}`}
-                          style={{
-                            width: "100%",
-                            height: "80px",
-                            objectFit: "cover",
-                            borderRadius: "6px",
-                            border: "1px solid #ccc",
-                          }}
-                        />
-                      ))}
-                    </div>
-                  )}
-
-                <input
-                type="file"
-                id="fileUpload"
-                multiple
-                accept="image/*"
-                style={{ display: "none" }}
-                onChange={handleFileUpload}
-                />
-
-                {/* ============ Submit / Re-Submit Button ============ */}
-                <div className="send-whatApp-Container">
-                {!orderDetail.userOrderDishImageArray?.length && (
-                  <button
-                    style={{
-                      backgroundColor: "#25D366", // WhatsApp green
-                      color: "white",
-                      padding: "10px 18px",
-                      border: "none",
-                      borderRadius: "8px",
-                      fontSize: "16px",
-                      fontWeight: "600",
-                      cursor: "pointer",
-                      display: "inline-block",
-                    }}
-                    onClick={() => document.getElementById("fileUpload").click()}
-                  >
-                    Submit Image 
-                  </button>
-                )}
-                </div>
-                </div>
+        <div>
+          <Decoration
+            orderDetail={orderDetail}
+            decorationComments={decorationComments}
+            decorationAddon={decorationAddon}
+            balanceAmount={balanceAmount}
+            decorationArray={decorationArray}
+          />
+          {/* ============ Dish Images Status & Grid ============ */}
+          <div className="actual-image-container">
+            <div className="fw-semiBold">
+              Current Status
+            </div>
+            {orderDetail.userOrderDishImageArray?.length > 0 ? (
+              <div
+                style={{
+                  color: "#28a745",
+                  fontWeight: "500",
+                  fontSize: "12px",
+                  marginBottom: "10px",
+                }}
+              >
+                ✓ Actually Photos Are Updated
               </div>
-            );
-          })}
-        </div>
-      ) : orderType == 8 ? (
-        <div className="photography-decDetailsRight">
-                  <h1 className="mb-2">
-                   {orderDetail?.items?.[0]?.photography?.name || "Photography Service"}
-                  </h1>
-                  <div style={{ marginBottom: "12px" }}>
-                    {getPhtographyInclusion(bulletItems)}
-                  </div>
-                  <div className="fw-semiBold myOrderDetails-heading">
-                    Add-ons
-                  </div>
-
-                  {orderDetail?.add_on?.length > 0 ? (
-                    orderDetail.add_on.map((item, index) => (
-                      <div key={index} className="info-row">
-                        <Image
-                          src={checkIcon}
-                          alt=""
-                          width={13}
-                          height={13}
-                          style={{ height: 13, width: 13, marginRight: '5px', marginTop: "5px" }}
-                        />
-                        <div>
-                          <div style={{ fontWeight: "bold" }}>
-                              {item?.title || "NA"}
-                            </div>
-                            <div style={{ fontSize: "14px", color: "#555" }}>
-                              {item?.description || "No description"}
-                            </div>
-                            <div style={{ fontSize: "13px", color: "#888" }}>
-                              quantity :  {item?.quantity || 1}
-                            </div>
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <div style={{ fontSize: 13 }}>NA</div>
-                  )}
-                  <div className="fw-semiBold myOrderDetails-heading">
-                    Additional Comments
-                  </div> 
-                  
-                  {decorationComments && (
-                    <div>
-                    {decorationComments.split('\n').map((comment, index) => (
-                       <div key={index} className="info-row">
-                          <div className="info-icon">
-                          <Image
-                           src={checkIcon}
-                           alt="Info"
-                           width={13}
-                           height={13}
-                           style={{ height: 13, width: 13, marginRight: '5px', marginTop: "5px" }}
-                           />
-                          </div>
-
-                       <div>{comment}</div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                  <div className="fw-semiBold myOrderDetails-heading">
-                    Price Details
-                  </div>
-                  <span className="priceDetails-container" style={{ fontSize: "14px", color: "#97538C" }}>
-                    <span className="myOrder-amountList">
-                      <span className="myOrder-labelStyle"> Amount :</span>
-                      <span>₹ {balanceAmount || 0}</span>
-                    </span>
-                  </span>
-
-              <div className="fw-semiBold myOrderDetails-heading">
-                    Current Status
-                  </div>
-                  {orderDetail.orderDriveLink ? (
-                  <span
+            ) : (
+              <div
+                style={{
+                  color: "#dc3545",
+                  fontWeight: "500",
+                  fontSize: "12px",
+                  marginBottom: "10px",
+                }}
+              >
+                ✗ Actually Photos Not Submitted
+              </div>
+            )}
+            {/* Images Grid */}
+            {orderDetail.userOrderDishImageArray?.length > 0 && (
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns:
+                    "repeat(auto-fill, minmax(100px, 1fr))",
+                  gap: "10px",
+                }}
+              >
+                {orderDetail.userOrderDishImageArray.map((img, index) => (
+                  <img
+                    key={index}
+                    // src={img}
+                    src={`https://horaservices.com/api/uploads/${img}`}
+                    alt={`Dish ${index + 1}`}
                     style={{
-                      color: "#28a745",
-                      fontWeight: "500",
-                      fontSize: "13px",
+                      width: "100%",
+                      height: "80px",
+                      objectFit: "cover",
+                      borderRadius: "6px",
+                      border: "1px solid #ccc",
                     }}
-                  >
-                    ✓ Drive Link Submitted
-                  </span>
-                ) : (
-                  <span
-                    style={{
-                      color: "#dc3545",
-                      fontWeight: "500",
-                      fontSize: "12px",
-                    }}
-                  >
-                    ✗ Drive Link Not Submitted Yet
-                  </span>
-                )}
-                
+                  />
+                ))}
+              </div>
+            )}
 
-              {!orderDetail.orderDriveLink && (
-                <textarea
-                  value={driveLink}
-                  style={styles.inputText}
-                  onChange={(e) => setDriveLink(e.target.value)}
-                  placeholder="Paste Google Drive folder link here..."
-                />
-              )}
-              {!orderDetail.orderDriveLink && (
-                <div className="drivelinkBtnContainer">
+            <input
+              type="file"
+              id="fileUpload"
+              multiple
+              accept="image/*"
+              style={{ display: "none" }}
+              onChange={handleFileUpload}
+            />
+
+            {/* ============ Submit / Re-Submit Button ============ */}
+            <div className="send-whatApp-Container">
+              {!orderDetail.userOrderDishImageArray?.length && (
                 <button
-                  style={styles.submitBtn}
-                  onClick={handleSubmitDriveLink}
-                  onMouseEnter={(e) => {
-                    e.target.style.background = "#8a3f85";
+                  style={{
+                    backgroundColor: "#25D366", // WhatsApp green
+                    color: "white",
+                    padding: "10px 18px",
+                    border: "none",
+                    borderRadius: "8px",
+                    fontSize: "16px",
+                    fontWeight: "600",
+                    cursor: "pointer",
+                    display: "inline-block",
                   }}
-                  onMouseLeave={(e) => {
-                    e.target.style.background = "#9c4d97";
-                  }}
+                  onClick={() => document.getElementById("fileUpload").click()}
                 >
-                  {orderDetail.orderDriveLink
-                    ? "Re-Submit Link"
-                    : "Submit Link"}
+                  Submit Image
                 </button>
-                </div>
               )}
+            </div>
+          </div>
+        </div>
+
+      ) : orderType == 8 ? (
+        <div>
+        <Photography
+        orderDetail={orderDetail}
+        decorationComments={decorationComments}
+        balanceAmount={balanceAmount}
+        bulletItems={bulletItems}
+          />
+          <div className="actual-image-container">
+          <div className="fw-semiBold">
+            Current Status
+          </div>
+          {orderDetail.orderDriveLink ? (
+            <span
+              style={{
+                color: "#28a745",
+                fontWeight: "500",
+                fontSize: "13px",
+              }}
+            >
+              ✓ Drive Link Submitted
+            </span>
+          ) : (
+            <span
+              style={{
+                color: "#dc3545",
+                fontWeight: "500",
+                fontSize: "12px",
+              }}
+            >
+              ✗ Drive Link Not Submitted Yet
+            </span>
+          )}
+          {!orderDetail.orderDriveLink && (
+            <textarea
+              value={driveLink}
+              style={styles.inputText}
+              onChange={(e) => setDriveLink(e.target.value)}
+              placeholder="Paste Google Drive folder link here..."
+            />
+          )}
+          {!orderDetail.orderDriveLink && (
+            <div className="drivelinkBtnContainer">
+              <button
+                style={styles.submitBtn}
+                onClick={handleSubmitDriveLink}
+                onMouseEnter={(e) => {
+                  e.target.style.background = "#8a3f85";
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.background = "#9c4d97";
+                }}
+              >
+                {orderDetail.orderDriveLink
+                  ? "Re-Submit Link"
+                  : "Submit Link"}
+              </button>
+            </div>
+          )}
+          </div>
         </div>
       ) : null}
       <div>

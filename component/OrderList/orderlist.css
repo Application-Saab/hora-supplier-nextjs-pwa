@@ -288,6 +288,8 @@ font-size: clamp(15px, calc(18 * 100vw / 393), 21px);
 .send-whatApp-Container{
   display: flex; 
   justify-content: center;
+  background-color: #fff;
+  padding-bottom: 15px;
 }
 .orderlist-button-div{
   display: flex;
@@ -309,4 +311,11 @@ font-size: clamp(15px, calc(18 * 100vw / 393), 21px);
   justify-content: center;
   align-items: center;
   padding: 10px 0px 20px 0px;
+}
+.mt-2{
+margin-top: 2px !important;
+}
+.actual-image-container{
+  padding: 0px 8px;
+  background-color: #fff;
 }

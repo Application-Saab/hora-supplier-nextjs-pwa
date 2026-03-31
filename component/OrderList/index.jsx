@@ -1,11 +1,8 @@
 import Image from "next/image";
-// import clock from "../assets/bell.png";
-import people from "../assets/people.png";
-// import date_time_icon from "../assets/date-time-icon.png";
-import date_time_icon from '../assets/date-time-icon-copy.png'
-import clock from '../assets/clock.png'
+import date_time_icon from '../../assets/date-time-icon-copy.png'
+import clock from '../../assets/clock.png'
 
-const OrderList = ({orderId, statusClassName, status, orderType, orderDate, orderTime, noOfPeople, orderLocality, balanceAmount,totalAmount, viewDetailsHandler, customerDetailsHandler, customerDetailsBtnShow }) => {
+const OrderList = ({orderId, statusClassName, status, orderType, orderDate, orderTime, noOfPeople, balanceAmount, viewDetailsHandler, customerDetailsHandler, customerDetailsBtnShow }) => {
     return (
          <div className="orderlist-order-card">
                   <div className="orderlist-order-div header">
@@ -47,10 +44,10 @@ const OrderList = ({orderId, statusClassName, status, orderType, orderDate, orde
                     <div className="orderlist-right-details">
                       <div className="totalAmount">
                         <strong>
-                          Total Amount
+                          No. of People
                           <p className="amount" style={{ textAlign: "start", margin: 0 }}>
                             {" "}
-                            ₹{totalAmount || 0}
+                            ₹{noOfPeople || 0}
                           </p>
                         </strong>
                       </div>

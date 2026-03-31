@@ -81,15 +81,21 @@ const OrderDetail = () => {
           BASE_URL + GET_PHOTOGRAPHY_ORDER_DETAILS + "/" + orderId
         );
         const responseData = await response.json();
-  
+        if(response.status === 200){
         setOrderDetail(responseData?.data);
         setDecorationItems(responseData?.data?.items[0]?.decoration);
         setDecorationComments(responseData?.data?.decoration_comments);
         setDecorationAddon(responseData?.data?.add_on);
         setBalanceAmount(responseData?.data?.balance_amount);
         setLoading(false);
+        }
+        else{
+          alert("Failed to fetch photography order details. Please try again later.");
+          setLoading(false);
+        }
+        
       } catch (error) {
-        console.log("fetchDecorationOrderDetails error", error);
+        console.log("fetchPhotographyDetails error", error);
         setLoading(false);
       }
     };
@@ -102,8 +108,8 @@ const OrderDetail = () => {
       );
       const responseData = await response.json();
 
-
-      setOrderDetail(responseData?.data);
+if(response.status === 200){
+setOrderDetail(responseData?.data);
       // setOrderDetail(responseData?.data?._doc);
       // setDecorationItems(responseData?.data?.items[0]?.decoration);
       setDecorationItems(responseData?.data?.items[0]?.decoration);
@@ -111,6 +117,12 @@ const OrderDetail = () => {
       setDecorationAddon(responseData?.data?.add_on);
       setBalanceAmount(responseData?.data?.balance_amount);
             setLoading(false);
+}
+else{
+  alert("Failed to fetch decoration order details. Please try again later.");
+  setLoading(false);
+}
+      
     } catch (error) {
       console.log("fetchDecorationOrderDetails error", error);
       setLoading(false);
