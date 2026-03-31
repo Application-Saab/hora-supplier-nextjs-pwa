@@ -9,8 +9,8 @@ import {
   START_ORDER,
 } from "../../../apiconstant/apiconstant";
 import axios from "axios";
-import Decoration from "../../../component/Decoration";
-import Photography from "../../../component/Photography";
+import DecorationOrderDetailsTab from "../../../component/decorationOrderDetailsTab";
+import PhotographyOrderDetailsTab from "../../../component/photographyOrderDetailsTab";
 
 // const BASE_URL = "";
 // const ORDER_CANCEL = "";
@@ -419,7 +419,7 @@ ${decorations}
         </>
       ) : orderType === 1 ? (
         <div>
-          <Decoration
+          <DecorationOrderDetailsTab
             orderDetail={orderDetail}
             decorationComments={decorationComments}
             decorationAddon={decorationAddon}
@@ -517,7 +517,7 @@ ${decorations}
 
       ) : orderType == 8 ? (
         <div>
-        <Photography
+        <PhotographyOrderDetailsTab
         orderDetail={orderDetail}
         decorationComments={decorationComments}
         balanceAmount={balanceAmount}

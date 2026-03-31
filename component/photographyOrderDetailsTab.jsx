@@ -3,7 +3,7 @@ import Image from "next/image";
 import { getInclusions } from '../utils/getInclusions'
 
 
-const Photography = ({
+const PhotographyOrderDetailsTab = ({
     orderDetail,
     decorationComments,
     balanceAmount,
@@ -84,4 +84,4 @@ const Photography = ({
     )
 };
 
-export default Photography;
+export default PhotographyOrderDetailsTab;

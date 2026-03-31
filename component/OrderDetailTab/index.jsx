@@ -7,8 +7,8 @@ import {
   BASE_URL,
   ACCEPT_ORDER,
 } from "../../apiconstant/apiconstant";
-import Decoration from "../Decoration";
-import Photography from "../Photography";
+import DecorationOrderDetailsTab from "../decorationOrderDetailsTab";
+import PhotographyOrderDetailsTab from "../photographyOrderDetailsTab";
 
 const OrderDetailTab = ({
   orderDetail,
@@ -202,7 +202,7 @@ const OrderDetailTab = ({
           </div>
         </>
       ) : orderType == 1 ? (
-        <Decoration 
+        <DecorationOrderDetailsTab 
         orderDetail={orderDetail}
         decorationComments={decorationComments}
         decorationAddon={decorationAddon}
@@ -210,7 +210,7 @@ const OrderDetailTab = ({
         decorationArray={decorationArray}
         />
       ) : orderType == 8 ? (
-        <Photography
+        <PhotographyOrderDetailsTab
         orderDetail={orderDetail}
         decorationComments={decorationComments}
         balanceAmount={balanceAmount}

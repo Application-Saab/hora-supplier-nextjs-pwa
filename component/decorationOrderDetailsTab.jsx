@@ -4,7 +4,7 @@ import Image from "next/image";
 import { getInclusions } from '../utils/getInclusions'
 
 
-const Decoration = ({
+const DecorationOrderDetailsTab = ({
     orderDetail,
     decorationComments,
     decorationAddon,
@@ -160,4 +160,4 @@ const Decoration = ({
     )
 };
 
-export default Decoration;
+export default DecorationOrderDetailsTab;

@@ -9,8 +9,8 @@ import {
   ACCEPT_ORDER,
   START_ORDER,
 } from "../../../apiconstant/apiconstant";
-import Decoration from "../../../component/Decoration";
-import Photography from "../../../component/Photography";
+import DecorationOrderDetailsTab from "../../../component/decorationOrderDetailsTab";
+import PhotographyOrderDetailsTab from "../../../component/photographyOrderDetailsTab";
 
 // const BASE_URL = "";
 // const ORDER_CANCEL = "";
@@ -445,7 +445,7 @@ const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography
         </>
       ) : orderType === 1 ? (
         <div>
-        <Decoration 
+        <DecorationOrderDetailsTab 
         orderDetail={orderDetail}
         decorationComments={decorationComments}
         decorationAddon={decorationAddon}
@@ -474,7 +474,7 @@ const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography
                 </div>
         </div>
       ) : orderType == 8 ? ( 
-<Photography
+<PhotographyOrderDetailsTab
         orderDetail={orderDetail}
         decorationComments={decorationComments}
         balanceAmount={balanceAmount}

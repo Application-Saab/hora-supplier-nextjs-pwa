@@ -7,13 +7,11 @@ const OrderDetailHeader = ({ orderDetail }) => {
     return new Date(dateString).toLocaleDateString("en-GB", options);
   };
 
-  let otp;
 
   useEffect(() => {
-    otp = orderDetail.otp;
     // Save OTP to localStorage
-    localStorage.setItem("otp", otp);
-  }, [otp]);
+    localStorage.setItem("otp", orderDetail?.otp);
+  }, [orderDetail?.otp]);
 
   return (
     <div>
