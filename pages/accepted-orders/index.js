@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { BASE_URL, ORDERLIST_ENDPOINT } from "../../apiconstant/apiconstant";
 import { FaRegCalendarAlt, FaClock, FaUsers } from "react-icons/fa";
 import { IoCalendarClear } from "react-icons/io5";
@@ -13,6 +13,7 @@ import Layout from "../../component/Layout";
 import Popup from "../../apiconstant/popup";
 import informationImage from "../../assets/information.webp";
 import dangerImage from "../../assets/danger.webp";
+import socket, { connectSocket } from "../../socket"
 
 const Orderlist = () => {
   const router = useRouter();
@@ -62,7 +63,6 @@ const Orderlist = () => {
   setSelectedDate(dates[0]);
 }, []);
 
-  useEffect(() => {
     const fetchOrderList = async () => {
       try {
         setLoading(true);
@@ -105,8 +105,55 @@ const Orderlist = () => {
       }
     };
 
+useEffect(() => {
+  if (!supplierID) return;
+
+  fetchOrderList(); 
+}, [supplierID]);
+
+useEffect(() => {
+  const userId = supplierID;
+
+  const socketInstance = connectSocket(userId);
+
+  console.log("👉 socket instance:", socketInstance);
+
+  if (!socketInstance || !userId) {
+    console.log("❌ socket ya userId missing");
+    return;
+  }
+
+  // ✅ connect log
+  socketInstance.on("connect", () => {
+    console.log("✅ Connected:", socketInstance.id);
+  });
+
+  socketInstance.on("connect_error", (err) => {
+    console.log("❌ Error:", err.message);
+  });
+
+  // 🔥 DEBUG: sab events dekhne ke liye
+  socketInstance.onAny((event, ...args) => {
+    console.log("📡 EVENT:", event, args);
+  });
+
+  // ✅ join room
+  console.log("👉 joining with:", userId);
+  socketInstance.emit("join", userId);
+
+  // ✅ event listen
+  socketInstance.on("order:updated", () => {
+    console.log("🔥 Order updated aaya");
     fetchOrderList();
-  }, [supplierID]);
+  });
+
+  return () => {
+    console.log("🧹 cleanup");
+    socketInstance.off("order:updated");
+    socketInstance.off("connect");
+    socketInstance.off("connect_error");
+  };
+}, [supplierID]);
 
   const getOrderStatus = (orderStatusValue) => {
     switch (orderStatusValue) {
