@@ -106,20 +106,15 @@ useEffect(() => {
   const userId = localStorage.getItem("supplierID");
   const socket = connectSocket(userId);
 
-  console.log("👉 socket instance:", socket);
-
   if (!socket) {
-    console.log("❌ No socket");
     return;
   }
 
   socket.on("order:new", (data) => {
-    console.log("🔥 NEW ORDER:", data);
     setOrders((prev) => [data, ...prev]);
   });
 
   return () => {
-    console.log("🧹 cleanup");
     socket.off("order:new");
   };
 }, []);

@@ -116,39 +116,29 @@ useEffect(() => {
 
   const socketInstance = connectSocket(userId);
 
-  console.log("👉 socket instance:", socketInstance);
-
   if (!socketInstance || !userId) {
-    console.log("❌ socket ya userId missing");
     return;
   }
 
-  // ✅ connect log
   socketInstance.on("connect", () => {
-    console.log("✅ Connected:", socketInstance.id);
+    console.log("Connected:", socketInstance.id);
   });
 
   socketInstance.on("connect_error", (err) => {
-    console.log("❌ Error:", err.message);
+    console.log("Error:", err.message);
   });
 
-  // 🔥 DEBUG: sab events dekhne ke liye
   socketInstance.onAny((event, ...args) => {
-    console.log("📡 EVENT:", event, args);
+    console.log(" EVENT:", event, args);
   });
 
-  // ✅ join room
-  console.log("👉 joining with:", userId);
   socketInstance.emit("join", userId);
 
-  // ✅ event listen
   socketInstance.on("order:updated", () => {
-    console.log("🔥 Order updated aaya");
     fetchOrderList();
   });
 
   return () => {
-    console.log("🧹 cleanup");
     socketInstance.off("order:updated");
     socketInstance.off("connect");
     socketInstance.off("connect_error");
