@@ -246,12 +246,19 @@ const GoogleDriveForm = () => {
             toId: supplierID,
           }),
         });
-        const data = await response.json();
+        if(response.ok){
+          const data = await response.json();
         let orderList = data?.data?.order || [];
         orderList = orderList.filter(
           (o) => o.order_status === 3 || o.order_status === 6
         );
         setOrders(orderList);
+        }
+        else{
+          alert("Failed to load orders.");
+          console.log("Error response:", response);
+        }
+        
       } catch (err) {
         console.error(err);
         alert("Failed to load orders.");

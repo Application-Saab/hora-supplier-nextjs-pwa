@@ -1,18 +1,12 @@
 
 import React, { useEffect, useState } from "react";
 import { BASE_URL, ORDERLIST_ENDPOINT } from "../../apiconstant/apiconstant";
-import { FaRegCalendarAlt, FaClock, FaUsers } from "react-icons/fa";
-import { IoCalendarClear } from "react-icons/io5";
-import { FiClock } from "react-icons/fi";
-import clock from "../../assets/bell.png";
-import people from "../../assets/people.png";
-import date_time_icon from "../../assets/date-time-icon.png";
 import { useRouter } from "next/router";
-import Image from "next/image";
 import Layout from "../../component/Layout";
 import Popup from "../../apiconstant/popup";
 import informationImage from "../../assets/information.webp";
-import dangerImage from "../../assets/danger.webp";
+import dangerImage from "../../assets/danger.png";
+import OrderList from "../../component/OrderList/index.jsx";
 
 const Orderlist = () => {
   const router = useRouter();
@@ -46,21 +40,21 @@ const Orderlist = () => {
   }
 
   useEffect(() => {
-  const today = new Date();
-  const dates = Array.from({ length: 13 }, (_, index) => {
-    const date = new Date();
-    date.setDate(today.getDate() + index);
+    const today = new Date();
+    const dates = Array.from({ length: 13 }, (_, index) => {
+      const date = new Date();
+      date.setDate(today.getDate() + index);
 
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
 
-    return `${year}-${month}-${day}`;
-  });
+      return `${year}-${month}-${day}`;
+    });
 
-  setAvailableDates(dates);
-  setSelectedDate(dates[0]);
-}, []);
+    setAvailableDates(dates);
+    setSelectedDate(dates[0]);
+  }, []);
 
   useEffect(() => {
     const fetchOrderList = async () => {
@@ -84,20 +78,24 @@ const Orderlist = () => {
             toId: supplierID,
           }),
         });
-
-        const responseData = await response.json();
+if(response.ok){
+const responseData = await response.json();
 
         if (responseData && responseData.data && responseData.data.order) {
-         const sortedOrders = responseData.data.order.sort((a, b) => {
-  const dateA = a.order_date.split("T")[0];
-  const dateB = b.order_date.split("T")[0];
-  return dateB.localeCompare(dateA);
-});
+          const sortedOrders = responseData.data.order.sort((a, b) => {
+            const dateA = a.order_date.split("T")[0];
+            const dateB = b.order_date.split("T")[0];
+            return dateB.localeCompare(dateA);
+          });
 
           setOrders(sortedOrders);
         } else {
           console.log("No orders found");
         }
+}
+else{
+  alert("Failed to fetch orders. Please try again later.");
+} 
       } catch (error) {
         console.log("Error fetching orders:", error);
       } finally {
@@ -111,21 +109,21 @@ const Orderlist = () => {
   const getOrderStatus = (orderStatusValue) => {
     switch (orderStatusValue) {
       case 0:
-        return { status: "Booked", className: "status-booked" };
+        return { status: "Booked", className: "orderlist-status-booked orderlist-status-badge" };
       case 1:
-        return { status: "Accepted", className: "status-accepted" };
+        return { status: "Accepted", className: "orderlist-status-accepted orderlist-status-badge" };
       case 2:
-        return { status: "In-progress", className: "status-in-progress" };
+        return { status: "In-progress", className: "orderlist-status-in-progress orderlist-status-badge" };
       case 3:
-        return { status: "Completed", className: "status-completed" };
+        return { status: "Completed", className: "orderlist-status-completed orderlist-status-badge" };
       case 4:
-        return { status: "Cancelled", className: "status-cancelled" };
+        return { status: "Cancelled", className: "orderlist-status-cancelled orderlist-status-badge" };
       case 5:
-        return { status: "", className: "status-empty" };
+        return { status: "", className: "status-empty orderlist-status-badge" };
       case 6:
-        return { status: "Expired", className: "status-expired" };
+        return { status: "Expired", className: "orderlist-status-expired orderlist-status-badge" };
       default:
-        return { status: "Unknown", className: "status-unknown" };
+        return { status: "Unknown", className: "status-unknown orderlist-status-badge" };
     }
   };
 
@@ -152,20 +150,20 @@ const Orderlist = () => {
     }
   };
 
-const formatDate = (dateString) => {
-  if (!dateString) return "";
+  const formatDate = (dateString) => {
+    if (!dateString) return "";
 
-  const cleanDate = dateString.split("T")[0];
-  const [year, month, day] = cleanDate.split("-");
+    const cleanDate = dateString.split("T")[0];
+    const [year, month, day] = cleanDate.split("-");
 
-  const date = new Date(year, month - 1, day);
+    const date = new Date(year, month - 1, day);
 
-  return date.toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
-};
+    return date.toLocaleDateString("en-GB", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
+  };
 
   const openContinueShopping = () => {
     router.push("/");
@@ -256,7 +254,7 @@ const formatDate = (dateString) => {
         `https://horaservices.com:3000/api/admin/getUserDetails/${orderId}`
       );
 
-    
+
 
       if (!response.ok) {
         throw new Error("Failed to fetch user details");
@@ -339,160 +337,52 @@ const formatDate = (dateString) => {
                       ordersForDate.map((order) => {
                         const orderStatus = getOrderStatus(order?.order_status);
                         return (
-                          <div key={order.order_id} className="order-card">
-                            <div className="order-div">
-                              <div className="order-id">
-                                <div style={{ color: "#9252AA" }}>
-                                  Order Id: {getOrderId(order.order_id)}
-                                </div>
-                              </div>
-
-                              {/* Order Status Section */}
-                              <div className="order-status">
-                                <span className={orderStatus.className}>
-                                  {orderStatus.status}
-                                </span>
-                                <h6
-                                  className="mt-2"
-                                  style={{
-                                    color: "#9252AA",
-                                    marginTop: "10px",
-                                    marginLeft: "10px",
-                                  }}
-                                >
-                                  {getOrderType(order?.type)}
-                                </h6>
-                              </div>
-                            </div>
-
-                            {/* Order Details Section */}
-                            <div className="order-details">
-                              <div className="left-details">
-                                <div>
-                                  <Image
-                                    className="contact-us-img"
-                                    src={date_time_icon}
-                                    height={20}
-                                    width={20}
-                                  />{" "}
-                                  <span>{formatDate(order.order_date)}</span>
-                                </div>
-                                {order.order_time && (
-                                  <div>
-                                    <Image
-                                      className="contact-us-img"
-                                      src={clock}
-                                      height={20}
-                                      width={20}
-                                    />{" "}
-                                    <span>
-                                      {
-                                        order.order_time
-                                          .split(" - ")[0]
-                                          .split(" ")[0]
-                                      }{" "}
-                                      {
-                                        order.order_time
-                                          .split(" - ")[0]
-                                          .split(" ")[1]
-                                      }
-                                    </span>
-                                  </div>
-                                )}
-                                {supplierJobType !== "1" &&
-                                  order.no_of_people && (
-                                    <div>
-                                      <Image
-                                        className="contact-us-img"
-                                        src={people}
-                                        height={20}
-                                        width={20}
-                                      />{" "}
-                                      <span>{order?.no_of_people}</span>
-                                    </div>
-                                  )}
-                              </div>
-                              <div className="right-details">
-                                {order.order_locality && (
-                                  <div>
-                                    <strong
-                                      style={{
-                                        color: "#9252AA",
-                                        fontSize: "13px",
-                                      }}
-                                    >
-                                      {order.order_locality}
-                                    </strong>
-                                  </div>
-                                )}
-                                <div>
-                                  <strong
-                                    style={{
-                                      color: "#9252AA",
-                                      fontSize: "14px",
-                                    }}
-                                  >
-                                    {/* Balance Amount */}
-                                    Amount:
-                                    <p className="mb-0 price-para">
-                                      {"₹" + order.balance_amount}
-                                    </p>
-                                  </strong>
-                                </div>
-                              </div>
-                            </div>
-                            <hr className="m-0" />
-                            <div className="button-div accept-order">
-                              <button
-                                className="view-details"
-                                onClick={() => handleViewDetail(order)}
-                              >
-                                View Details
-                              </button>
-
-                              <>
-                                <button
-                                  className="view-details"
-                                  onClick={() => {
-                                    if (
-                                      isWithinFourHourWindow(
-                                        order.order_time,
-                                        order.order_date
-                                      )
-                                    ) {
-                                      openSupplierPopup(order);
-                                      setIsPopupVisible(true);
-                                    } else {
-                                      setPopupMessage({
-                                        img: dangerImage,
-                                        title:
-                                          "Customer details will be shown 5 hours before your scheduled time to avoid distractions. 🙂",
-                                        body: "",
-                                        button: "OK",
-                                      });
-                                      setIsPopupVisible(true);
-                                    }
-                                  }}
-                                  style={{ marginLeft: "10px" }}
-                                >
-                                  Customer Details
-                                </button>
-                                {isPopupVisible && (
-                                  <Popup
-                                    style={{
-                                      backgroundColor: "rgba(0, 0, 0, 0.1)",
-                                    }}
-                                    onClose={closePopup}
-                                    popupMessage={popupMessage}
-                                  />
-                                )}
-                              </>
-                            </div>
-                          </div>
+                          <OrderList
+                            key={order.order_id}
+                            orderId={order.order_id}
+                            statusClassName={orderStatus.className}
+                            status={orderStatus.status}
+                            orderType={getOrderType(order?.type)}
+                            orderDate={formatDate(order.order_date)}
+                            orderTime={order.order_time}
+                            balanceAmount={order.balance_amount}
+                            noOfPeople={order.no_of_people}
+                            viewDetailsHandler={() => handleViewDetail(order)}
+                            customerDetailsBtnShow={true}
+                            customerDetailsHandler={() => {
+                              if (
+                                isWithinFourHourWindow(
+                                  order.order_time,
+                                  order.order_date
+                                )
+                              ) {
+                                openSupplierPopup(order);
+                                setIsPopupVisible(true);
+                              } else {
+                                setPopupMessage({
+                                  img: dangerImage,
+                                  title:
+                                    "Customer details will be shown 5 hours before your scheduled time to avoid distractions. 🙂",
+                                  body: "",
+                                  button: "OK",
+                                });
+                                setIsPopupVisible(true);
+                              }
+                            }}
+                          />
                         );
                       })
                     )}
                   </div>
+                )}
+                {isPopupVisible && (
+                  <Popup
+                    style={{
+                      backgroundColor: "rgba(0, 0, 0, 0.1)",
+                    }}
+                    onClose={closePopup}
+                    popupMessage={popupMessage}
+                  />
                 )}
               </div>
             );

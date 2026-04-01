@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import OrderDetailHeader from "./OrderDetailHeader/index";
+import OrderDetailHeader from "../../component/OrderDetailHeader/index";
 import OrderDetailTab from "./OrderDetailTab/index";
 import {
   BASE_URL,
@@ -63,7 +63,8 @@ const OrderDetail = () => {
           const response = await fetch(
             BASE_URL + GET_PHOTOGRAPHY_ORDER_DETAILS + "/" + orderId
           );
-          const responseData = await response.json();
+          if(response.ok){
+            const responseData = await response.json();
     
           setOrderDetail(responseData?.data);
           setDecorationItems(responseData?.data?.items[0]?.decoration);
@@ -71,6 +72,10 @@ const OrderDetail = () => {
           setDecorationAddon(responseData?.data?.add_on);
           setBalanceAmount(responseData?.data?.balance_amount);
           setLoading(false);
+          }
+          else{
+            alert("Failed to fetch photography order details. Please try again.");  
+          } 
         } catch (error) {
           console.log("fetchDecorationOrderDetails error", error);
           setLoading(false);
@@ -101,7 +106,8 @@ const OrderDetail = () => {
       const response = await fetch(
         BASE_URL + GET_BOOKING_ORDER_DETAILS + "/" + orderId
       );
-      const responseData = await response.json();
+      if(response.ok){
+        const responseData = await response.json();
       console.log(responseData, "responsedata");
 
       setOrderDetail(responseData?.data);
@@ -112,6 +118,11 @@ const OrderDetail = () => {
       setDecorationAddon(responseData?.data?.add_on);
       setBalanceAmount(responseData?.data?.balance_amount);
             setLoading(false);
+      }
+      else{
+        alert("Failed to fetch decoration order details. Please try again later.");
+        setLoading(false);
+      }
     } catch (error) {
       console.log("fetchDecorationOrderDetails error", error);
       setLoading(false);

@@ -1,12 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
-// import daal_image from "../../assets/daal_image.png";
 import OrderDetailsMenu from "../OrderDetailsMenu";
 import OrderDetailsIngre from "../OrderDetailsIngre";
-// import { BASE_URL, ORDER_CANCEL } from "../../utils/apiconstants";
-// import { useNavigate } from "react-router-dom";
 import OrderDetailsAppliances from "../OrderDetailsAppliances";
-// import { useRouter } from "next/navigation";
-import Image from "next/image";
 import { Form } from "react-bootstrap";
 import { useRouter } from "next/router";
 import {
@@ -14,9 +9,8 @@ import {
   ACCEPT_ORDER,
   START_ORDER,
 } from "../../../apiconstant/apiconstant";
-
-import checkImage from "../../../assets/tick.jpeg";
-import axios from "axios";
+import DecorationOrderDetailsTab from "../../../component/decorationOrderDetailsTab";
+import PhotographyOrderDetailsTab from "../../../component/photographyOrderDetailsTab";
 
 // const BASE_URL = "";
 // const ORDER_CANCEL = "";
@@ -209,7 +203,7 @@ ${decorations}
     typeof window !== "undefined" &&
     typeof window.localStorage !== "undefined"
   ) {
-    orderOtp = localStorage.getItem("orderOtp");
+    orderOtp = localStorage.getItem("otp");
   }
 
   useEffect(() => {
@@ -218,35 +212,6 @@ ${decorations}
       setOtp(localStorage.getItem("otp"));
     }
   }, []);
-
-  // console.log(orderDet/ail, "orderDetailsss");
-
-  // const [name, setname] = useState();
-
-  const getItemInclusion = (inclusion) => {
-    if (!Array.isArray(inclusion) || inclusion.length === 0) {
-      return null;
-    }
-    const htmlString = inclusion[0];
-    const withoutTags = htmlString.replace(/<[^>]*>/g, ""); // Remove HTML tags
-    const withoutSpecialChars = withoutTags.replace(/&#[^;]*;/g, " "); // Replace &# sequences with space
-    const statements = withoutSpecialChars.split("<div>");
-    const inclusionItems = statements.flatMap((statement) =>
-      statement.split("-").filter((item) => item.trim() !== "")
-    );
-    const inclusionList = inclusionItems.map((item, index) => (
-      <li key={index} className="inclusionstyle">
-        {item.trim()}
-      </li>
-    ));
-    return (
-      <div>
-        <ul>{inclusionList}</ul>
-      </div>
-    );
-  };
-
-  // console.log(getItemInclusion(inclusion),"fdsfsdfds");
 
   const cancelOrder = async () => {
     try {
@@ -479,89 +444,15 @@ const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography
           </div>
         </>
       ) : orderType === 1 ? (
-        <div className="decoration-container">
-          {decorationItemArray?.map((product, index) => {
-            return (
-              <div key={product?.id} className="product-container">
-                <div className="product-image-container">
-                  <Image
-                    // src={`https://horaservices.com/api/uploads/${product?.featured_image}`}
-                    src={`https://horaservices.com/api/uploads/compressed_webp/${product.featured_image.split(".")[0]
-                      }.webp`}
-                    alt={product?.name}
-                    className="product-image"
-                    height={300}
-                    width={300}
-                    style={{ height: "auto", width: "auto" }}
-                  />
-                </div>
-                <div className="product-info">
-                  <p className="product-name">{product?.name}</p>
-                  {/* <p className="product-price">₹{product?.price}</p> */}
-
-                  <h6 className="product-inclusion">
-                    <div class="product-page-heading">Inclusion</div>
-                    {getItemInclusion(product?.inclusion)}
-                  </h6>
-
-                  <div className="product-add-ons prod_sec">
-                    <p className="product-page-heading">AddOns:</p>
-                    <ul>
-                      {decorationAddon.map((item, index) => (
-                        <li key={index}>
-                          <div>
-                            {(() => {
-                                const rawTitle =
-                                  item?.name || item?.title;
-
-                                const quantityMatch = rawTitle?.match(/Quantity\s*(\d+)/i);
-                                const extractedQuantity = quantityMatch
-                                  ? Number(quantityMatch[1])
-                                  : null;
-
-                                const cleanedTitle = rawTitle?.replace(
-                                  /\s*-\s*Quantity\s*\d+/i,
-                                  ""
-                                ).trim();
-
-                                const quantity =
-                                  extractedQuantity || Number(item?.quantity) || 1;
-                                
-                                return (
-                                  <>
-                                  <div>{cleanedTitle || "N/A"}</div>
-                                <div>{cleanedTitle && `Quantity : ${quantity}`}</div>
-                                  </>
-                                );
-                              })()}
-                          </div>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <div className="prod_sec balanc_amount">
-                    <div className="product-page-heading">
-                      {/* Balance Amount: */}
-                      Amount
-                    </div>
-                    <div>₹{balanceAmount}</div>
-                  </div>
-
-                  {decorationComments && (
-                    <div className="comment-container prod_sec">
-                      <p className="product-page-heading">
-                        Additional Comments:
-                      </p>
-                      <ol className="comments-text">
-                        {decorationComments.split("-").map((comment, index) => (
-                          <li key={index}>{comment.trim()}</li>
-                        ))}
-                      </ol>
-                    </div>
-                  )}
-                </div>
-
+        <div>
+        <DecorationOrderDetailsTab 
+        orderDetail={orderDetail}
+        decorationComments={decorationComments}
+        decorationAddon={decorationAddon}
+        balanceAmount={balanceAmount}
+        decorationArray={decorationItemArray}
+        />
+ <div className="send-whatApp-Container">
                 <button
                   style={{
                     backgroundColor: "#25D366", // WhatsApp green
@@ -580,207 +471,15 @@ const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography
                 >
                   Send to WhatsApp
                 </button>
-              </div>
-            );
-          })}
-        </div>
-      ) : orderType == 8 ? (
-        <div className="decoration-container">
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "flex-start",
-              paddingTop: "10px",
-              position: "relative",
-            }}
-            className="decDetails"
-          >
-            <div
-              style={{ width: "50%", textAlign: "center" }}
-              className="decDetailsLeft"
-            ></div>
-            <div
-              style={{
-                width: "50%",
-                paddingLeft: "20px",
-                paddingRight: "50px",
-              }}
-              className="decDetailsRight"
-            >
-              <div
-                style={{
-                  boxShadow: "0 1px 8px rgba(0,0,0,.18)",
-                  padding: "10px",
-                  marginBottom: "12px",
-                  backgroundColor: "#fff",
-                }}
-              >
-                <h1
-                  style={{
-                    fontSize: "16px",
-                    color: "#222",
-                    fontSize: "21px",
-                    fontWeight: "#222",
-                  }}
-                >
-                  {orderDetail?.items?.[0]?.photography?.name}
-                </h1>
-              </div>
-
-              <div
-                style={{
-                  boxShadow: "0 1px 8px rgba(0,0,0,.18)",
-                  padding: "10px",
-                  marginBottom: "12px",
-                  backgroundColor: "#fff",
-                }}
-              >
-                <label
-                  style={{
-                    display: "block",
-                    marginBottom: "8px",
-                    fontWeight: "bold",
-                  }}
-                >
-                  Inclusion:
-                </label>
-                <ul
-                  style={{
-                    listStyleType: "disc", // Show dot bullets
-                    paddingLeft: "20px", // Indent to show bullets
-                    margin: 0,
-                  }}
-                >
-                  {bulletItems.map((item, index) => (
-                    <li key={index}>{item}</li>
-                  ))}
-                </ul>
-              </div>
-
-              <div
-                style={{
-                  boxShadow: "0 1px 8px rgba(0,0,0,.18)",
-                  padding: "10px",
-                  marginBottom: "12px",
-                  backgroundColor: "#fff",
-                }}
-              >
-                {orderDetail?.add_on?.length > 0 && (
-                  <>
-                    <div
-                      style={{
-                        fontSize: "21px",
-                        borderBottom: "1px solid #e7eff9",
-                        marginBottom: "10px",
-                      }}
-                    >
-                      <label
-                        style={{
-                          display: "block",
-                          marginBottom: "8px",
-                          fontWeight: "bold",
-                        }}
-                      >
-                        {" "}
-                        Add-On
-                      </label>{" "}
-                    </div>
-                    <ul style={{ paddingLeft: 0, listStyle: "none" }}>
-                      {orderDetail.add_on.map((item, index) => (
-                        <li
-                          key={index}
-                          style={{
-                            display: "flex",
-                            alignItems: "flex-start",
-                            marginBottom: "15px",
-                          }}
-                          className="inclusionstyle"
-                        >
-                          <img
-                            src={
-                              item?.image
-                            }
-                            alt={item?.title || item?.name}
-                            style={{
-                              height: 40,
-                              width: 40,
-                              marginRight: 10,
-                              objectFit: "cover",
-                              borderRadius: 4,
-                            }}
-                          />
-                          <div>
-                            <div
-                              style={{ fontWeight: "bold", fontSize: "16px" }}
-                            >
-                               {item?.title || "NA"}
-                            </div>
-                            <div
-                              style={{
-                                fontSize: "14px",
-                                color: "#555",
-                                marginTop: "2px",
-                              }}
-                            >
-                              {item?.description || "No description"}
-                            </div>
-                            <div
-                              style={{
-                                fontSize: "13px",
-                                color: "#888",
-                                marginTop: "2px",
-                              }}
-                            >
-                              quantity :  {item?.quantity || 1}
-                            </div>
-                          </div>
-                        </li>
-                      ))}
-                    </ul>
-                  </>
-                )}
-              </div>
-
-              <div
-                className="prod_sec balanc_amount"
-                style={{
-                  boxShadow: "0 1px 8px rgba(0,0,0,.18)",
-                  padding: "10px",
-                  marginBottom: "12px",
-                  backgroundColor: "#fff",
-                }}
-              >
-                <div className="product-page-heading">
-                  {/* Balance Amount: */}
-                  Amount:
                 </div>
-                <div>₹{balanceAmount}</div>
-              </div>
-
-              {decorationComments && (
-                <div
-                  className="comment-container prod_sec"
-                  style={{
-                    boxShadow: "0 1px 8px rgba(0,0,0,.18)",
-                    padding: "10px",
-                    marginBottom: "12px",
-                    backgroundColor: "#fff",
-                  }}
-                >
-                  <p className="product-page-heading">Additional Comments:</p>
-                    <ol className="comments-text">
-                      {decorationComments
-                        .split(/[,\n;\-]+/)
-                        .map((comment, index) => (
-                          <li key={index}>{comment.trim()}</li>
-                        ))}
-                    </ol>
-                </div>
-              )}
-            </div>
-          </div>
         </div>
+      ) : orderType == 8 ? ( 
+<PhotographyOrderDetailsTab
+        orderDetail={orderDetail}
+        decorationComments={decorationComments}
+        balanceAmount={balanceAmount}
+        bulletItems={bulletItems}
+          />
       ) : null}
       <div>
         <div className="otp-container">

@@ -1,22 +1,16 @@
 import React, { useState, useEffect, useRef } from "react";
-// import daal_image from "../../assets/daal_image.png";
 import OrderDetailsMenu from "../OrderDetailsMenu";
 import OrderDetailsIngre from "../OrderDetailsIngre";
-// import { BASE_URL, ORDER_CANCEL } from "../../utils/apiconstants";
-// import { useNavigate } from "react-router-dom";
 import OrderDetailsAppliances from "../OrderDetailsAppliances";
-// import { useRouter } from "next/navigation";
-import Image from "next/image";
-import { Form } from "react-bootstrap";
 import { useRouter } from "next/router";
 import {
   BASE_URL,
-  ACCEPT_ORDER, 
+  ACCEPT_ORDER,
   START_ORDER,
 } from "../../../apiconstant/apiconstant";
-
-import checkImage from "../../../assets/tick.jpeg";
 import axios from "axios";
+import DecorationOrderDetailsTab from "../../../component/decorationOrderDetailsTab";
+import PhotographyOrderDetailsTab from "../../../component/photographyOrderDetailsTab";
 
 // const BASE_URL = "";
 // const ORDER_CANCEL = "";
@@ -128,36 +122,6 @@ ${decorations}
     }
   }, []);
 
-
-  // const [name, setname] = useState();
-  const [name, setName] = useState();
-  const [inclusion, setInclusion] = useState();
-
-
-  const getItemInclusion = (inclusion) => {
-    if (!Array.isArray(inclusion) || inclusion.length === 0) {
-      return null;
-    }
-    const htmlString = inclusion[0];
-    const withoutTags = htmlString.replace(/<[^>]*>/g, ""); // Remove HTML tags
-    const withoutSpecialChars = withoutTags.replace(/&#[^;]*;/g, " "); // Replace &# sequences with space
-    const statements = withoutSpecialChars.split("<div>");
-    const inclusionItems = statements.flatMap((statement) =>
-      statement.split("-").filter((item) => item.trim() !== "")
-    );
-    const inclusionList = inclusionItems.map((item, index) => (
-      <li key={index} className="inclusionstyle">
-        {item.trim()}
-      </li>
-    ));
-    return (
-      <div>
-        <ul>{inclusionList}</ul>
-      </div>
-    );
-  };
-
-
   const cancelOrder = async () => {
     try {
       const token = await localStorage.getItem("token");
@@ -230,24 +194,24 @@ ${decorations}
   };
 
   function parseInclusionToBullets(inclusionData) {
-  if (!inclusionData) return [];
+    if (!inclusionData) return [];
 
-  // If array, take first element
-  const inclusionString = Array.isArray(inclusionData)
-    ? inclusionData[0]
-    : inclusionData;
+    // If array, take first element
+    const inclusionString = Array.isArray(inclusionData)
+      ? inclusionData[0]
+      : inclusionData;
 
-  if (typeof inclusionString !== "string") return [];
+    if (typeof inclusionString !== "string") return [];
 
-  return inclusionString
-    .split("</div>")
-    .map(str => str.replace(/<div[^>]*>/g, "").trim())
-    .filter(str => str.length > 0)
-    .map(str => str.replace(/^-\s*/, ""));
-}
+    return inclusionString
+      .split("</div>")
+      .map(str => str.replace(/<div[^>]*>/g, "").trim())
+      .filter(str => str.length > 0)
+      .map(str => str.replace(/^-\s*/, ""));
+  }
 
-// In your component
-const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography?.inclusion); 
+  // In your component
+  const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography?.inclusion);
 
 
   const handleSubmit = () => {
@@ -319,32 +283,32 @@ const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography
     }
   };
 
-      const handleFileUpload = async (e) => {
-      const files = e.target.files;
-      if (!files?.length) return;
-      const formData = new FormData();
-      [...files].forEach((f) => formData.append("files", f));
+  const handleFileUpload = async (e) => {
+    const files = e.target.files;
+    if (!files?.length) return;
+    const formData = new FormData();
+    [...files].forEach((f) => formData.append("files", f));
 
-      const uploadRes = await fetch(
-        "https://horaservices.com:3000/api/multiple_image_upload",
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
-      const uploadData = await uploadRes.json();
-
-      await fetch("https://horaservices.com:3000/api/order/edit", {
+    const uploadRes = await fetch(
+      "https://horaservices.com:3000/api/multiple_image_upload",
+      {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          _id: orderDetail._id,
-          userOrderDishImageArray: uploadData.data,
-        }),
-      });
+        body: formData,
+      }
+    );
+    const uploadData = await uploadRes.json();
 
-      window.location.href = "/past-order";
-    };
+    await fetch("https://horaservices.com:3000/api/order/edit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        _id: orderDetail._id,
+        userOrderDishImageArray: uploadData.data,
+      }),
+    });
+
+    window.location.href = "/past-order";
+  };
 
   return (
     <>
@@ -454,470 +418,147 @@ const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography
           </div>
         </>
       ) : orderType === 1 ? (
-        <div className="decoration-container">
-          {decorationArray?.map((product, index) => {
-            return (
-              <div key={product?.id} className="product-container">
-                <div className="product-image-container">
-                  <Image
-                    // src={`https://horaservices.com/api/uploads/${product?.featured_image}`}
-                    src={`https://horaservices.com/api/uploads/compressed_webp/${product.featured_image.split(".")[0]
-                      }.webp`}
-                    alt={product?.name}
-                    className="product-image"
-                    height={300}
-                    width={300}
-                    style={{ height: "auto", width: "auto" }}
+        <div>
+          <DecorationOrderDetailsTab
+            orderDetail={orderDetail}
+            decorationComments={decorationComments}
+            decorationAddon={decorationAddon}
+            balanceAmount={balanceAmount}
+            decorationArray={decorationArray}
+          />
+          {/* ============ Dish Images Status & Grid ============ */}
+          <div className="actual-image-container">
+            <div className="fw-semiBold">
+              Current Status
+            </div>
+            {orderDetail.userOrderDishImageArray?.length > 0 ? (
+              <div
+                style={{
+                  color: "#28a745",
+                  fontWeight: "500",
+                  fontSize: "12px",
+                  marginBottom: "10px",
+                }}
+              >
+                ✓ Actually Photos Are Updated
+              </div>
+            ) : (
+              <div
+                style={{
+                  color: "#dc3545",
+                  fontWeight: "500",
+                  fontSize: "12px",
+                  marginBottom: "10px",
+                }}
+              >
+                ✗ Actually Photos Not Submitted
+              </div>
+            )}
+            {/* Images Grid */}
+            {orderDetail.userOrderDishImageArray?.length > 0 && (
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns:
+                    "repeat(auto-fill, minmax(100px, 1fr))",
+                  gap: "10px",
+                }}
+              >
+                {orderDetail.userOrderDishImageArray.map((img, index) => (
+                  <img
+                    key={index}
+                    // src={img}
+                    src={`https://horaservices.com/api/uploads/${img}`}
+                    alt={`Dish ${index + 1}`}
+                    style={{
+                      width: "100%",
+                      height: "80px",
+                      objectFit: "cover",
+                      borderRadius: "6px",
+                      border: "1px solid #ccc",
+                    }}
                   />
-                </div>
-                <div className="product-info">
-                  <p className="product-name">{product?.name}</p>
-                  {/* <p className="product-price">₹{product?.price}</p> */}
-
-                  <h6 className="product-inclusion">
-                    <div class="product-page-heading">Inclusion</div>
-                    {getItemInclusion(product?.inclusion)}
-                  </h6>
-
-                  <div className="product-add-ons prod_sec">
-                    <p className="product-page-heading">AddOns:</p>
-                    <ul>
-                      {decorationAddon.map((item, index) => (
-                        <li key={index}>
-                          <div>
-                            {(() => {
-                                const rawTitle =
-                                  item?.name || item?.title
-
-                                const quantityMatch = rawTitle?.match(/Quantity\s*(\d+)/i);
-                                const extractedQuantity = quantityMatch
-                                  ? Number(quantityMatch[1])
-                                  : null;
-
-                                const cleanedTitle = rawTitle?.replace(
-                                  /\s*-\s*Quantity\s*\d+/i,
-                                  ""
-                                ).trim();
-
-                                const quantity =
-                                  extractedQuantity || Number(item?.quantity) || 1;
-                                return (
-                                <>
-                                 <div>{cleanedTitle || "N/A"}</div>
-                                <div>{cleanedTitle && `Quantity : ${quantity}`}</div>
-                                </>
-                                );
-                              })()}
-                          </div>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <div className="prod_sec balanc_amount">
-                    <div className="product-page-heading">
-                      {/* Balance Amount: */}
-                      Amount
-                    </div>
-                    <div>₹{balanceAmount}</div>
-                  </div>
-
-                  {decorationComments && (
-                    <div className="comment-container prod_sec">
-                      <p className="product-page-heading">
-                        Additional Comments:
-                      </p>
-                      <ol className="comments-text">
-                        {decorationComments.split("-").map((comment, index) => (
-                          <li key={index}>{comment.trim()}</li>
-                        ))}
-                      </ol>
-                    </div>
-                  )}
-                </div>
-
-                {/* ============ Dish Images Status & Grid ============ */}
-                <div
-                  style={{
-                    boxShadow: "0 1px 8px rgba(0,0,0,.18)",
-                    padding: "10px 16px",
-                    marginBottom: "12px",
-                    backgroundColor: "#fff",
-                  }}
-                >
-                  {/* Header Row */}
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      marginBottom: "12px",
-                    }}
-                  >
-                    <span
-                      style={{
-                        fontWeight: "500",
-                        fontSize: "14px",
-                        color: "#333",
-                      }}
-                    >
-                      Current Status
-                    </span>
-
-                    {orderDetail.userOrderDishImageArray?.length > 0 ? (
-                      <span
-                        style={{
-                          color: "#28a745",
-                          fontWeight: "500",
-                          fontSize: "12px",
-                        }}
-                      >
-                        ✓ Actually Photos Are Updated
-                      </span>
-                    ) : (
-                      <span
-                        style={{
-                          color: "#dc3545",
-                          fontWeight: "500",
-                          fontSize: "12px",
-                        }}
-                      >
-                        ✗ Actually Photos Not Submitted
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Images Grid */}
-                  {orderDetail.userOrderDishImageArray?.length > 0 && (
-                    <div
-                      style={{
-                        display: "grid",
-                        gridTemplateColumns:
-                          "repeat(auto-fill, minmax(100px, 1fr))",
-                        gap: "10px",
-                      }}
-                    >
-                      {orderDetail.userOrderDishImageArray.map((img, index) => (
-                        <img
-                          key={index}
-                          // src={img}
-                          src={`https://horaservices.com/api/uploads/${img}`}
-                          alt={`Dish ${index + 1}`}
-                          style={{
-                            width: "100%",
-                            height: "80px",
-                            objectFit: "cover",
-                            borderRadius: "6px",
-                            border: "1px solid #ccc",
-                          }}
-                        />
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                <input
-                type="file"
-                id="fileUpload"
-                multiple
-                accept="image/*"
-                style={{ display: "none" }}
-                onChange={handleFileUpload}
-                />
-
-                {/* ============ Submit / Re-Submit Button ============ */}
-                {!orderDetail.userOrderDishImageArray?.length && (
-                  <button
-                    style={{
-                      backgroundColor: "#25D366", // WhatsApp green
-                      color: "white",
-                      padding: "10px 18px",
-                      border: "none",
-                      borderRadius: "8px",
-                      fontSize: "16px",
-                      fontWeight: "600",
-                      cursor: "pointer",
-                      display: "inline-block",
-                    }}
-                    onClick={() => document.getElementById("fileUpload").click()}
-                  >
-                    Submit Image 
-                  </button>
-                )}
+                ))}
               </div>
-            );
-          })}
-        </div>
-      ) : orderType == 8 ? (
-        <div className="decoration-container">
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "flex-start",
-              paddingTop: "10px",
-              position: "relative",
-            }}
-            className="decDetails"
-          >
-            <div
-              style={{ width: "50%", textAlign: "center" }}
-              className="decDetailsLeft"
-            ></div>
-            <div
-              style={{
-                width: "50%",
-                paddingLeft: "20px",
-                paddingRight: "50px",
-              }}
-              className="decDetailsRight"
-            >
-              <div
-                style={{
-                  boxShadow: "0 1px 8px rgba(0,0,0,.18)",
-                  padding: "10px",
-                  marginBottom: "12px",
-                  backgroundColor: "#fff",
-                }}
-              >
-                <h1
-                  style={{
-                    fontSize: "16px",
-                    color: "#222",
-                    fontSize: "21px",
-                    fontWeight: "#222",
-                  }}
-                >
-                  {orderDetail?.items?.[0]?.photography?.name}
-                </h1>
-              </div>
+            )}
 
-              <div
-                style={{
-                  boxShadow: "0 1px 8px rgba(0,0,0,.18)",
-                  padding: "10px",
-                  marginBottom: "12px",
-                  backgroundColor: "#fff",
-                }}
-              >
-                <label
-                  style={{
-                    display: "block",
-                    marginBottom: "8px",
-                    fontWeight: "bold",
-                  }}
-                >
-                  Inclusion:
-                </label>
-                <ul
-                  style={{
-                    listStyleType: "disc", // Show dot bullets
-                    paddingLeft: "20px", // Indent to show bullets
-                    margin: 0,
-                  }}
-                >
-                  {bulletItems.map((item, index) => (
-                    <li key={index}>{item}</li>
-                  ))}
-                </ul>
-              </div>
+            <input
+              type="file"
+              id="fileUpload"
+              multiple
+              accept="image/*"
+              style={{ display: "none" }}
+              onChange={handleFileUpload}
+            />
 
-              <div
-                style={{
-                  boxShadow: "0 1px 8px rgba(0,0,0,.18)",
-                  padding: "10px",
-                  marginBottom: "12px",
-                  backgroundColor: "#fff",
-                }}
-              >
-                {orderDetail?.add_on?.length > 0 && (
-                  <>
-                    <div
-                      style={{
-                        fontSize: "21px",
-                        borderBottom: "1px solid #e7eff9",
-                        marginBottom: "10px",
-                      }}
-                    >
-                      <label
-                        style={{
-                          display: "block",
-                          marginBottom: "8px",
-                          fontWeight: "bold",
-                        }}
-                      >
-                        {" "}
-                        Add-On
-                      </label>{" "}
-                    </div>
-                    <ul style={{ paddingLeft: 0, listStyle: "none" }}>
-                      {orderDetail.add_on.map((item, index) => (
-                        <li
-                          key={index}
-                          style={{
-                            display: "flex",
-                            alignItems: "flex-start",
-                            marginBottom: "15px",
-                          }}
-                          className="inclusionstyle"
-                        >
-                          <img
-                            src={item.image}
-                            alt={item?.title}
-                            style={{
-                              height: 40,
-                              width: 40,
-                              marginRight: 10,
-                              objectFit: "cover",
-                              borderRadius: 4,
-                            }}
-                          />
-                          <div>
-                            <div
-                              style={{ fontWeight: "bold", fontSize: "16px" }}
-                            >
-                              {item?.title || "NA"}
-                            </div>
-                            <div
-                              style={{
-                                fontSize: "14px",
-                                color: "#555",
-                                marginTop: "2px",
-                              }}
-                            >
-                              {item?.description || "No description"}
-                            </div>
-                            <div
-                              style={{
-                                fontSize: "13px",
-                                color: "#888",
-                                marginTop: "2px",
-                              }}
-                            >
-                             quantity :  {item?.quantity || 1}
-                            </div>
-                          </div>
-                        </li>
-                      ))}
-                    </ul>
-                  </>
-                )}
-              </div>
-
-              <div
-                className="prod_sec balanc_amount"
-                style={{
-                  boxShadow: "0 1px 8px rgba(0,0,0,.18)",
-                  padding: "10px",
-                  marginBottom: "12px",
-                  backgroundColor: "#fff",
-                }}
-              >
-                <div className="product-page-heading">
-                  {/* Balance Amount: */}
-                  Amount:
-                </div>
-                <div>₹{balanceAmount}</div>
-              </div>
-
-              {decorationComments && (
-                <div
-                  className="comment-container prod_sec"
-                  style={{
-                    boxShadow: "0 1px 8px rgba(0,0,0,.18)",
-                    padding: "10px",
-                    marginBottom: "12px",
-                    backgroundColor: "#fff",
-                  }}
-                >
-                  <p className="product-page-heading">Additional Comments:</p>
-                    <ol className="comments-text">
-                      {decorationComments
-                        .split(/[,\n;\-]+/)
-                        .map((comment, index) => (
-                          <li key={index}>{comment.trim()}</li>
-                        ))}
-                    </ol>
-                </div>
-              )}
-
-              <div
-                style={{
-                  boxShadow: "0 1px 8px rgba(0,0,0,.18)",
-                  padding: "10px 16px",
-                  marginBottom: "12px",
-                  backgroundColor: "#fff",
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <span
-                  style={{ fontWeight: "500", fontSize: "13px", color: "#333" }}
-                >
-                  Current Status
-                </span>
-
-                {orderDetail.orderDriveLink ? (
-                  <span
-                    style={{
-                      color: "#28a745",
-                      fontWeight: "500",
-                      fontSize: "13px",
-                    }}
-                  >
-                    ✓ Drive Link Submitted
-                  </span>
-                ) : (
-                  <span
-                    style={{
-                      color: "#dc3545",
-                      fontWeight: "500",
-                      fontSize: "12px",
-                    }}
-                  >
-                    ✗ Drive Link Not Submitted Yet
-                  </span>
-                )}
-              </div>
-
-              {!orderDetail.orderDriveLink && (
-                <textarea
-                  value={driveLink}
-                  style={styles.inputText}
-                  onChange={(e) => setDriveLink(e.target.value)}
-                  placeholder="Paste Google Drive folder link here..."
-                />
-              )}
-
-              {/* <textarea
-                value={driveLink}
-                style={styles.inputText}
-                onChange={(e) => setDriveLink(e.target.value)}
-                placeholder={
-                  orderDetail.orderDriveLink
-                    ? "Paste new Google Drive folder link to resubmit..."
-                    : "Paste Google Drive folder link here..."
-                }
-              /> */}
-              {!orderDetail.orderDriveLink && (
+            {/* ============ Submit / Re-Submit Button ============ */}
+            <div className="send-whatApp-Container">
+              {!orderDetail.userOrderDishImageArray?.length && (
                 <button
-                  style={styles.submitBtn}
-                  onClick={handleSubmitDriveLink}
-                  onMouseEnter={(e) => {
-                    e.target.style.background = "#8a3f85";
+                  style={{
+                    backgroundColor: "#25D366", // WhatsApp green
+                    color: "white",
+                    padding: "10px 18px",
+                    border: "none",
+                    borderRadius: "8px",
+                    fontSize: "16px",
+                    fontWeight: "600",
+                    cursor: "pointer",
+                    display: "inline-block",
                   }}
-                  onMouseLeave={(e) => {
-                    e.target.style.background = "#9c4d97";
-                  }}
+                  onClick={() => document.getElementById("fileUpload").click()}
                 >
-                  {orderDetail.orderDriveLink
-                    ? "Re-Submit Link"
-                    : "Submit Link"}
+                  Submit Image
                 </button>
               )}
+            </div>
+          </div>
+        </div>
 
-              {/* <button
+      ) : orderType == 8 ? (
+        <div>
+        <PhotographyOrderDetailsTab
+        orderDetail={orderDetail}
+        decorationComments={decorationComments}
+        balanceAmount={balanceAmount}
+        bulletItems={bulletItems}
+          />
+          <div className="actual-image-container">
+          <div className="fw-semiBold">
+            Current Status
+          </div>
+          {orderDetail.orderDriveLink ? (
+            <span
+              style={{
+                color: "#28a745",
+                fontWeight: "500",
+                fontSize: "13px",
+              }}
+            >
+              ✓ Drive Link Submitted
+            </span>
+          ) : (
+            <span
+              style={{
+                color: "#dc3545",
+                fontWeight: "500",
+                fontSize: "12px",
+              }}
+            >
+              ✗ Drive Link Not Submitted Yet
+            </span>
+          )}
+          {!orderDetail.orderDriveLink && (
+            <textarea
+              value={driveLink}
+              style={styles.inputText}
+              onChange={(e) => setDriveLink(e.target.value)}
+              placeholder="Paste Google Drive folder link here..."
+            />
+          )}
+          {!orderDetail.orderDriveLink && (
+            <div className="drivelinkBtnContainer">
+              <button
                 style={styles.submitBtn}
                 onClick={handleSubmitDriveLink}
                 onMouseEnter={(e) => {
@@ -927,9 +568,12 @@ const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography
                   e.target.style.background = "#9c4d97";
                 }}
               >
-                {orderDetail.orderDriveLink ? "Re-Submit Link" : "Submit Link"}
-              </button> */}
+                {orderDetail.orderDriveLink
+                  ? "Re-Submit Link"
+                  : "Submit Link"}
+              </button>
             </div>
+          )}
           </div>
         </div>
       ) : null}
@@ -1159,6 +803,5 @@ const styles = {
     fontWeight: "500",
     fontFamily:
       "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-    marginLeft: "83px",
   },
 };
