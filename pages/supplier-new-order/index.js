@@ -2,11 +2,8 @@ import React, { useEffect, useState } from "react";
 import { BASE_URL, ORDERLIST_ENDPOINT } from "../../apiconstant/apiconstant";
 import { useRouter } from "next/router";
 import Layout from "../../component/Layout";
-<<<<<<< HEAD
 import socket, { connectSocket } from "../../socket";
-=======
 import OrderList from "../../component/OrderList/index.jsx";
->>>>>>> 68d357541edfbf6361ea46122beba804f8b8c8ab
 
 const Orderlist = () => {
   const router = useRouter();
@@ -103,7 +100,6 @@ const Orderlist = () => {
     fetchOrderList();
   }, [supplierID, Number(status)]);
 
-<<<<<<< HEAD
 useEffect(() => {
   const userId = localStorage.getItem("supplierID");
   const socket = connectSocket(userId);
@@ -121,9 +117,6 @@ useEffect(() => {
   };
 }, []);
   
-=======
-
->>>>>>> 68d357541edfbf6361ea46122beba804f8b8c8ab
 
   const getOrderStatus = (orderStatusValue) => {
     switch (orderStatusValue) {
