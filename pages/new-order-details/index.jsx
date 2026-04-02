@@ -81,6 +81,7 @@ const OrderDetail = () => {
       const response = await fetch(
         BASE_URL + GET_PHOTOGRAPHY_ORDER_DETAILS + "/" + orderId
       );
+      if(response.ok){
       const responseData = await response.json();
       console.log(responseData, "responseDataDecorationOrderDetails");
 
@@ -90,6 +91,7 @@ const OrderDetail = () => {
       setDecorationAddon(responseData?.data?.add_on);
       setBalanceAmount(responseData?.data?.balance_amount);
       setLoading(false);
+      }
     } catch (error) {
       console.log("fetchDecorationOrderDetails error", error);
       setLoading(false);
@@ -102,6 +104,7 @@ const OrderDetail = () => {
       const response = await fetch(
         BASE_URL + GET_BOOKING_ORDER_DETAILS + "/" + orderId
       );
+      if(response.ok){
       const responseData = await response.json();
       console.log(responseData, "responseDataDecorationOrderDetails");
 
@@ -111,6 +114,12 @@ const OrderDetail = () => {
       setDecorationAddon(responseData?.data?.add_on);
       setBalanceAmount(responseData?.data?.balance_amount);
       setLoading(false);
+      }
+      else{
+        alert("Failed to fetch decoration order details. Please try again later.");
+        setLoading(false);
+      }
+      
     } catch (error) {
       console.log("fetchDecorationOrderDetails error", error);
       setLoading(false);
@@ -158,7 +167,7 @@ const OrderDetail = () => {
     <>
     <Layout backLink = "/supplier-new-order">
       <div className="orderheader-orderdetail">
-        <OrderDetailHeader orderDetail={orderDetail} />
+        <OrderDetailHeader orderDetail={orderDetail} /> 
         <div className="order-detail-page-decoration">
           <OrderDetailTab
             orderDetail={orderDetail}

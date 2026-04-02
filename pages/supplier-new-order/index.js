@@ -1,15 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { BASE_URL, ORDERLIST_ENDPOINT } from "../../apiconstant/apiconstant";
-import { FaRegCalendarAlt, FaClock, FaUsers } from "react-icons/fa";
-import { IoCalendarClear } from "react-icons/io5";
-import { FiClock } from "react-icons/fi";
-import clock from "../../assets/bell.png";
-import people from "../../assets/people.png";
-import date_time_icon from "../../assets/date-time-icon.png";
 import { useRouter } from "next/router";
-import Image from "next/image";
 import Layout from "../../component/Layout";
+<<<<<<< HEAD
 import socket, { connectSocket } from "../../socket";
+=======
+import OrderList from "../../component/OrderList/index.jsx";
+>>>>>>> 68d357541edfbf6361ea46122beba804f8b8c8ab
 
 const Orderlist = () => {
   const router = useRouter();
@@ -46,23 +43,23 @@ const Orderlist = () => {
   }
 
   useEffect(() => {
-     if (Number(status) === 0) {
-          setShowPopup(true);
-        } else {
-          setShowPopup(false);
-        }
+    if (Number(status) === 0) {
+      setShowPopup(true);
+    } else {
+      setShowPopup(false);
+    }
   }, []);
 
 
-  
+
 
 
   useEffect(() => {
     const fetchOrderList = async () => {
       if (Number(status) !== 1) {
-    setOrdersLoaded(true);
-    return;
-     }// sohan verma 06/06/2025
+        setOrdersLoaded(true);
+        return;
+      }// sohan verma 06/06/2025
       try {
         const response = await fetch(BASE_URL + ORDERLIST_ENDPOINT, {
           method: "POST",
@@ -80,8 +77,8 @@ const Orderlist = () => {
               supplierCity.slice(1).toLowerCase(),
           }),
         });
-
-        const responseData = await response.json();
+    if(response.ok){
+      const responseData = await response.json();
 
         if (responseData && responseData.data && responseData.data.order) {
           const sortedOrders = responseData.data.order.sort(
@@ -92,16 +89,21 @@ const Orderlist = () => {
         } else {
           console.log("No orders found");
         }
+    } else {
+      alert("Failed to fetch orders. Please try again later.");
+    }
+        
       } catch (error) {
         console.log("Error fetching orders:", error);
       } finally {
-        setOrdersLoaded(true);   
+        setOrdersLoaded(true);
       }
     };
 
     fetchOrderList();
   }, [supplierID, Number(status)]);
 
+<<<<<<< HEAD
 useEffect(() => {
   const userId = localStorage.getItem("supplierID");
   const socket = connectSocket(userId);
@@ -119,25 +121,28 @@ useEffect(() => {
   };
 }, []);
   
+=======
+
+>>>>>>> 68d357541edfbf6361ea46122beba804f8b8c8ab
 
   const getOrderStatus = (orderStatusValue) => {
     switch (orderStatusValue) {
       case 0:
-        return { status: "Booked", className: "status-booked" };
+        return { status: "Booked", className: "orderlist-status-booked orderlist-status-badge" };
       case 1:
-        return { status: "Accepted", className: "status-accepted" };
+        return { status: "Accepted", className: "orderlist-status-accepted orderlist-status-badge" };
       case 2:
-        return { status: "In-progress", className: "status-in-progress" };
+        return { status: "In-progress", className: "orderlist-status-in-progress orderlist-status-badge" };
       case 3:
-        return { status: "Completed", className: "status-completed" };
+        return { status: "Completed", className: "orderlist-status-completed orderlist-status-badge" };
       case 4:
-        return { status: "Cancelled", className: "status-cancelled" };
+        return { status: "Cancelled", className: "orderlist-status-cancelled orderlist-status-badge" };
       case 5:
-        return { status: "", className: "status-empty" };
+        return { status: "", className: "status-empty orderlist-status-badge" };
       case 6:
-        return { status: "Expired", className: "status-expired" };
+        return { status: "Expired", className: "orderlist-status-expired orderlist-status-badge" };
       default:
-        return { status: "Unknown", className: "status-unknown" };
+        return { status: "Unknown", className: "status-unknown orderlist-status-badge" };
     }
   };
 
@@ -186,7 +191,7 @@ useEffect(() => {
     const apiOrderId = _id;
     const orderType = type;
     const orderId = order_id;
-  
+
     router.push({
       pathname: `/new-order-details`,
       query: { apiOrderId, orderType, orderId },
@@ -199,7 +204,7 @@ useEffect(() => {
       <center>
         <div className="custom-spinner">
           <div>
-             <div className="spinner-border" role="status">
+            <div className="spinner-border" role="status">
               <span className="visually-hidden">Loading...</span>
             </div>
             <div style={{ color: "#9252AA", textAlign: "center" }}>
@@ -213,49 +218,49 @@ useEffect(() => {
 
   // Show popup if userStatus === 0
   if (showPopup) {
-  return (
-    <div style={{
-      position: "fixed",
-      top: 0,
-      left: 0,
-      width: "100vw",
-      height: "100vh",
-      background: "rgba(0,0,0,0.4)",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      zIndex: 9999
-    }}>
+    return (
       <div style={{
-        background: "#fff",
-        padding: "40px 30px",
-        borderRadius: "12px",
-        boxShadow: "0 2px 16px rgba(0,0,0,0.2)",
-        textAlign: "center",
-        minWidth: "300px"
+        position: "fixed",
+        top: 0,
+        left: 0,
+        width: "100vw",
+        height: "100vh",
+        background: "rgba(0,0,0,0.4)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        zIndex: 9999
       }}>
-        <h2 style={{ color: "#D32F2F", marginBottom: "16px" }}>Access Blocked</h2>
-        <p style={{ fontSize: "18px", color: "#333" }}>
-          You have been blocked from accessing the system.<br />
-          Please contact <strong>+91-8982321487</strong> for assistance.
-        </p>
-        <button
-          onClick={() => router.push('/home')}
-          style={{
-            padding: "10px 20px",
-            backgroundColor: "#D32F2F",
-            color: "#fff",
-            border: "none",
-            borderRadius: "6px",
-            cursor: "pointer",
-            fontSize: "16px"
-          }}
-        >
-          Close
-        </button>
+        <div style={{
+          background: "#fff",
+          padding: "40px 30px",
+          borderRadius: "12px",
+          boxShadow: "0 2px 16px rgba(0,0,0,0.2)",
+          textAlign: "center",
+          minWidth: "300px"
+        }}>
+          <h2 style={{ color: "#D32F2F", marginBottom: "16px" }}>Access Blocked</h2>
+          <p style={{ fontSize: "18px", color: "#333" }}>
+            You have been blocked from accessing the system.<br />
+            Please contact <strong>+91-8982321487</strong> for assistance.
+          </p>
+          <button
+            onClick={() => router.push('/home')}
+            style={{
+              padding: "10px 20px",
+              backgroundColor: "#D32F2F",
+              color: "#fff",
+              border: "none",
+              borderRadius: "6px",
+              cursor: "pointer",
+              fontSize: "16px"
+            }}
+          >
+            Close
+          </button>
+        </div>
       </div>
-    </div>
-  );
+    );
 
   }
 
@@ -264,99 +269,25 @@ useEffect(() => {
   return (
     <Layout>
       <main className="order-list">
-        <div className="order-container">
+        <div className="orderlist-container">
           {bookedOrders.length === 0 ? (
             <p className="no-orders-message">No orders available</p>
           ) : (
             bookedOrders.map((order) => {
               const orderStatus = getOrderStatus(order?.order_status);
               return (
-                <div key={order.order_id} className="order-card">
-                  <div className="order-div">
-                    <div className="order-id">
-                      <div style={{ color: "#9252AA" }}>
-                        Order Id: #{10800 + order.order_id}
-                      </div>
-                    </div>
-                    <div className="order-status">
-                      <span className={orderStatus.className}>
-                        {orderStatus.status}
-                      </span>
-                      <h6 className="mt-2" style={{ color: "#9252AA" }}>
-                        {getOrderType(order?.type)}
-                      </h6>
-                    </div>
-                  </div>
-                  <div className="order-details">
-                    <div className="left-details">
-                      <div>
-                        <Image
-                          className="contact-us-img"
-                          src={date_time_icon}
-                          height={20}
-                          width={20}
-                        />{" "}
-                        <span>{formatDate(order.order_date)}</span>
-                      </div>
-                      {order.order_time && (
-                        <div>
-                          <Image
-                            className="contact-us-img"
-                            src={clock}
-                            height={20}
-                            width={20}
-                          />{" "}
-                          <span>
-                            {order.order_time.split(" - ")[0].split(" ")[0]}{" "}
-                            {order.order_time.split(" - ")[0].split(" ")[1]}
-                          </span>
-                          {/* <span>{order.order_time.split(" - ")[0]}</span> */}
-                        </div>
-                      )}
-                      {order.no_of_people > 0 && (
-                        <div>
-                          <Image
-                            className="contact-us-img"
-                            src={people}
-                            height={20}
-                            width={20}
-                          />{" "}
-                          <span>{order.no_of_people}</span>
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="right-details">
-                      {order.order_locality && (
-                        <div>
-                          <strong
-                            style={{ color: "#9252AA", fontSize: "15px" }}
-                          >
-                            {order.order_locality}
-                          </strong>
-                        </div>
-                      )}
-                      <div>
-                        <strong style={{ color: "#9252AA", fontSize: "14px" }}>
-                          {/* Balance Amount */}
-                          Amount
-                          <p className="mb-0 price-para">
-                            {"₹" + order.balance_amount}
-                          </p>
-                        </strong>
-                      </div>
-                    </div>
-                  </div>
-                  <hr className="m-0" />
-                  <div className="d-flex button-div">
-                    <button
-                      className="view-details"
-                      onClick={() => handleViewDetail(order)}
-                    >
-                      View Details
-                    </button>
-                  </div>
-                </div>
+                <OrderList
+                  key={order.order_id}
+                  orderId={order.order_id}
+                  statusClassName={orderStatus.className}
+                  status={orderStatus.status}
+                  orderType={getOrderType(order?.type)}
+                  orderDate={formatDate(order.order_date)}
+                  orderTime={order.order_time}
+                  noOfPeople={order.no_of_people}
+                  balanceAmount={order.balance_amount}
+                  viewDetailsHandler={() => handleViewDetail(order)}
+                />
               );
             })
           )}
