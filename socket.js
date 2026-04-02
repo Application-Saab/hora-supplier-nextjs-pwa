@@ -45,7 +45,7 @@ socket.io.on("reconnect_attempt", () => {
 
 // Initial connect on app load
 if (typeof window !== "undefined") {
-  const userId = localStorage.getItem("userID");
+  const userId = localStorage.getItem("supplierID");
   if (userId && !socket) {
     connectSocket(userId);
   }

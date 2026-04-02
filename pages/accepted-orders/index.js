@@ -110,39 +110,21 @@ useEffect(() => {
 }, [supplierID]);
 
 useEffect(() => {
-  const userId = supplierID;
+  const userId = localStorage.getItem("supplierID");
+  if (!userId) return; 
 
-  const socketInstance = connectSocket(userId);
+  const socket = connectSocket(userId);
 
-  if (!socketInstance || !userId) {
-    return;
-  }
+  if (!socket) return;
 
-  socketInstance.on("connect", () => {
-    console.log("Connected:", socketInstance.id);
-  });
-
-  socketInstance.on("connect_error", (err) => {
-    console.log("Error:", err.message);
-  });
-
-  socketInstance.onAny((event, ...args) => {
-    console.log(" EVENT:", event, args);
-  });
-
-  socketInstance.emit("join", userId);
-
-  socketInstance.on("order:updated", () => {
-    fetchOrderList();
+  socket.on("order:updated", (data) => {
+    setOrders((prev) => [data, ...prev]);
   });
 
   return () => {
-    socketInstance.off("order:updated");
-    socketInstance.off("connect");
-    socketInstance.off("connect_error");
+    socket.off("order:updated");
   };
-}, [supplierID]);
-
+}, []); // ok, but only if userId always exists
   const getOrderStatus = (orderStatusValue) => {
     switch (orderStatusValue) {
       case 0:
