@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { BASE_URL, ORDERLIST_ENDPOINT } from "../../apiconstant/apiconstant";
 import { useRouter } from "next/router";
 import Layout from "../../component/Layout";
+import socket, { connectSocket } from "../../socket";
 import OrderList from "../../component/OrderList/index.jsx";
 
 const Orderlist = () => {
@@ -99,7 +100,23 @@ const Orderlist = () => {
     fetchOrderList();
   }, [supplierID, Number(status)]);
 
+useEffect(() => {
+  const userId = localStorage.getItem("supplierID");
+  const socket = connectSocket(userId);
 
+  if (!socket) {
+    return;
+  }
+
+  socket.on("order:new", (data) => {
+    setOrders((prev) => [data, ...prev]);
+  });
+
+  return () => {
+    socket.off("order:new");
+  };
+}, []);
+  
 
   const getOrderStatus = (orderStatusValue) => {
     switch (orderStatusValue) {

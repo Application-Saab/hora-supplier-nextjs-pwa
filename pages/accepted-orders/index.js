@@ -1,10 +1,11 @@
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { BASE_URL, ORDERLIST_ENDPOINT } from "../../apiconstant/apiconstant";
 import { useRouter } from "next/router";
 import Layout from "../../component/Layout";
 import Popup from "../../apiconstant/popup";
 import informationImage from "../../assets/information.webp";
+import socket, { connectSocket } from "../../socket"
 import dangerImage from "../../assets/danger.png";
 import OrderList from "../../component/OrderList/index.jsx";
 
@@ -56,7 +57,6 @@ const Orderlist = () => {
     setSelectedDate(dates[0]);
   }, []);
 
-  useEffect(() => {
     const fetchOrderList = async () => {
       try {
         setLoading(true);
@@ -103,9 +103,28 @@ else{
       }
     };
 
-    fetchOrderList();
-  }, [supplierID]);
+useEffect(() => {
+  if (!supplierID) return;
 
+  fetchOrderList(); 
+}, [supplierID]);
+
+useEffect(() => {
+  const userId = localStorage.getItem("supplierID");
+  if (!userId) return; 
+
+  const socket = connectSocket(userId);
+
+  if (!socket) return;
+
+  socket.on("order:updated", (data) => {
+    setOrders((prev) => [data, ...prev]);
+  });
+
+  return () => {
+    socket.off("order:updated");
+  };
+}, []); // ok, but only if userId always exists
   const getOrderStatus = (orderStatusValue) => {
     switch (orderStatusValue) {
       case 0:
