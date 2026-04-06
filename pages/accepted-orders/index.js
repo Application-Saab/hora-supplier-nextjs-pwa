@@ -270,7 +270,7 @@ useEffect(() => {
     try {
       // Fetch executor details from the API
       const response = await fetch(
-        `https://horaservices.com:3000/api/admin/getUserDetails/${orderId}`
+        `https://horaservices.com/api/admin/getUserDetails/${orderId}`
       );
 
 

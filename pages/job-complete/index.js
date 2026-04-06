@@ -38,7 +38,7 @@ const PictureUpload = () => {
     try {
       setUploading(true);
       const response = await fetch(
-        "https://horaservices.com:3000/api/multiple_image_upload",
+        "https://horaservices.com/api/multiple_image_upload",
         {
           method: "POST",
           body: formThing,
@@ -74,7 +74,7 @@ const PictureUpload = () => {
     try {
       setUploading(true);
       const response = await fetch(
-        "https://horaservices.com:3000/api/order/edit",
+        "https://horaservices.com/api/order/edit",
         {
           method: "POST",
           headers: {
@@ -125,7 +125,7 @@ const PictureUpload = () => {
   //   }
 
   //   try {
-  //     const response = await fetch("https://horaservices.com:3000/api/image_upload1", {
+  //     const response = await fetch("https://horaservices.com/api/image_upload1", {
   //       method: "POST",
   //       body: formData,
   //     });
