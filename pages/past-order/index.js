@@ -347,7 +347,7 @@ const handleViewDetails = (order) => {
         [...files].forEach((f) => formData.append("files", f));
 
         const uploadRes = await fetch(
-          "https://horaservices.com:3000/api/multiple_image_upload",
+          "https://horaservices.com/api/multiple_image_upload",
           {
             method: "POST",
             body: formData,
@@ -355,7 +355,7 @@ const handleViewDetails = (order) => {
         );
         const uploadData = await uploadRes.json();
 
-        await fetch("https://horaservices.com:3000/api/order/edit", {
+        await fetch("https://horaservices.com/api/order/edit", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
