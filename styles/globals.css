@@ -4033,6 +4033,9 @@ main.order-list .order-container {
     font-weight: 500;
     text-transform: capitalize;
 }
+.acceptOrder:disabled {
+opacity: 0.7;
+}
 
 /*  */
 .otp-container {
