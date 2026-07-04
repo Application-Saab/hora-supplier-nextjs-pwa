@@ -116,10 +116,7 @@ const OrderDetailTab = ({
 
 
       const finalApiKeysToShow = [
-        ...new Set([
-          ...dynamicApiKeys,
-          "rawPhotos",
-        ]),
+        ...new Set(dynamicApiKeys.filter(Boolean)),
       ];
 
       let initialInputState = finalApiKeysToShow.map((backendApiKey) => {
@@ -140,41 +137,51 @@ const OrderDetailTab = ({
 
       });
 
-      const hasRawPhotos = initialInputState.some(
-        (item) => item.linkType === "rawPhotos"
-      );
-
-      if (!hasRawPhotos) {
-        initialInputState.push({
-          linkType: "rawPhotos",
-          link:
-            existingLinks.find(
-              (item) => item.linkType === "rawPhotos"
-            )?.link ||
-            orderDetail?.orderDriveLink ||
-            "",
-        });
-      }
-
       setDriveLinksInput(initialInputState);
     }
   }, [orderDetail]);
 
 
-  const handleSaveAllLinks = async (currentOrder) => {
+  const totalInclusionsCount = driveLinksInput.length;
+
+  const submittedLinksCount = driveLinksInput.filter(
+    (item) => item.isExisting === true
+  ).length;
+
+  const areAllLinksSubmitted = totalInclusionsCount > 0 && submittedLinksCount === totalInclusionsCount;
+
+
+  const [submittingIndex, setSubmittingIndex] = useState(null);
+
+  const handleSaveSingleLink = async (index, currentOrder) => {
     try {
       setLoading(true);
+      setSubmittingIndex(index);
 
-      const data = await saveOrderDriveLinks(currentOrder, driveLinksInput);
+      const payloadForBackend = driveLinksInput.map((item, i) => {
+        if (i === index) {
+          return item; 
+        }
+        return {
+          ...item,
+          link: item.isExisting ? item.link : ""
+        };
+      });
 
-      alert(data.message || "All drive links processed successfully!");
+      const data = await saveOrderDriveLinks(currentOrder, payloadForBackend);
+
+      alert(data.message || "Link processed successfully!");
+
+      setDriveLinksInput((prev) =>
+        prev.map((item, i) => (i === index ? { ...item, isExisting: true } : item))
+      );
 
     } catch (error) {
-      console.error("Error in component while saving links:", error);
-
+      console.error("Error while saving link:", error);
       alert(error.response?.data?.message || error.message || "Something went wrong");
     } finally {
       setLoading(false);
+      setSubmittingIndex(null);
     }
   };
 
@@ -609,89 +616,79 @@ ${decorations}
         </div>
 
       ) : orderType == 8 ? (
-        <div>
-        <PhotographyOrderDetailsTab
-        orderDetail={orderDetail}
-        decorationComments={decorationComments}
-        balanceAmount={balanceAmount}
-        bulletItems={bulletItems}
-          />
-          <div className="actual-image-container">
-          <div className="fw-semiBold">
-            Current Status 
-          </div>
-          {orderDetail.orderDriveLink ? (
-            <span
-              style={{
-                color: "#28a745",
-                fontWeight: "500",
-                fontSize: "13px",
-              }}
-            >
-              ✓ Drive Link Submitted
-            </span>
-          ) : (
-            <span
-              style={{
-                color: "#dc3545",
-                fontWeight: "500",
-                fontSize: "12px",
-              }}
-            >
-              ✗ Drive Link Not Submitted Yet
-            </span>
-          )}
-                    <div className="submit-link-container">
-                      <div className="link-header">Submit All Link</div>
-                    {driveLinksInput.map((item, index) => (
-                      <div key={index} className="drive-link-group">
-                        <label className="drive-link-label">
-                          {apiKeyToInclusionMap[item.linkType] || item.linkType}
-                        </label>
+                <div>
+                  <PhotographyOrderDetailsTab
+                    orderDetail={orderDetail}
+                    decorationComments={decorationComments}
+                    balanceAmount={balanceAmount}
+                    bulletItems={bulletItems}
+                  />
+                  {driveLinksInput.length > 0 && (
+                    <div className="actual-image-container">
+                      <div className="fw-semiBold">Current Status</div>
+                      {areAllLinksSubmitted ? (
+                        <span
+                          style={{
+                            color: "#28a745",
+                            fontWeight: "500",
+                            fontSize: "13px",
+                          }}
+                        >
+                          ✓ All Drive Link Submitted ( {submittedLinksCount} / {totalInclusionsCount} )
+                        </span>
+                      ) : (
+                        <span
+                          style={{
+                            color: "#dc3545",
+                            fontWeight: "500",
+                            fontSize: "12px",
+                          }}
+                        >
+                          ✗ All Drive Link Not Submitted Yet ( {submittedLinksCount} / {totalInclusionsCount} )
+                        </span>
+                      )}
 
-                        <input
-                          type="text"
-                          disabled={item.isExisting}
-                          placeholder={`Paste Google Drive link for ${apiKeyToInclusionMap[item.linkType] || item.linkType
-                            }`}
-                          value={item.link}
-                          onChange={(e) =>
-                            handleDynamicLinkChange(index, e.target.value)
-                          }
-                          className="drive-link-input"
-                        />
-                      </div>
-                    ))}
-            <div className="drivelinkBtnContainer">
+                      <div className="submit-link-container">
+                        <div className="link-header">Submit Links</div>
 
-                        {driveLinksInput.length > 0 &&
-                          (() => {
-                            const hasNewLink = driveLinksInput.some(
-                              (item) =>
-                                item.link &&
-                                item.link.trim() !== "" &&
-                                !item.isExisting
-                            );
+                        {driveLinksInput.map((item, index) => {
+                          const isInputEmpty = !item.link || item.link.trim() === "";
+                          const isBtnDisabled = loading || isInputEmpty || item.isExisting;
 
-                            return (
-                              <button
-                                onClick={() => handleSaveAllLinks(orderDetail)}
-                                disabled={loading || !hasNewLink}
-                                className={`save-btn-link ${loading || !hasNewLink
-                                    ? "save-btn-disabled"
-                                  : "save-btn-link"
+                          return (
+                            <div key={index} className="drive-link-group" style={{ marginBottom: '8px' }}>
+                              <label className="drive-link-label">
+                                {apiKeyToInclusionMap[item.linkType] || item.linkType}
+                              </label>
+
+                              <input
+                                type="text"
+                                disabled={item.isExisting}
+                                placeholder={`Paste Google Drive link for ${apiKeyToInclusionMap[item.linkType] || item.linkType
                                   }`}
-                              >
-                                {loading
-                                  ? "Submiting..."
-                                  : "Submit Link"}
-                              </button>
-                            );
-                          })()}
-            </div>
-          </div>
-          </div>
-        </div>
+                                value={item.link}
+                                onChange={(e) => handleDynamicLinkChange(index, e.target.value)}
+                                className="drive-link-input"
+                              />
+
+                              {!item.isExisting && (
+                                <div className="drivelinkBtnContainer" style={{ marginTop: '8px' }}>
+                                  <button
+                                    onClick={() => handleSaveSingleLink(index, orderDetail)}
+                                    disabled={isBtnDisabled}
+                                    className={`save-btn-link ${isBtnDisabled ? "save-btn-disabled" : ""}`}
+                                  >
+                                    {loading && submittingIndex === index ? "Submitting..." : "Save Link"}
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
       ) : null}
       <div>
         {/* <h1>sohan</h1>
