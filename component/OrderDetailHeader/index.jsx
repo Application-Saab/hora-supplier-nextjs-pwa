@@ -3,7 +3,8 @@ import React, { useEffect } from "react";
 const OrderDetailHeader = ({ orderDetail }) => {
 
   const formatDate = (dateString) => {
-    const options = { day: "numeric", month: "short", year: "numeric" };
+    if (!dateString) return "N/A";
+    const options = { day: "numeric", month: "short", year: "numeric", timeZone: "Asia/Kolkata" };
     return new Date(dateString).toLocaleDateString("en-GB", options);
   };
 
