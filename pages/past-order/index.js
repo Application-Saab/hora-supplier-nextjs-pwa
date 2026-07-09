@@ -463,7 +463,11 @@ const handleViewDetails = (order) => {
               </button>
             ) : (
               <button
-                style={{ ...styles.buttonBase, ...styles.uploadDriveBtn }}
+                  style={{
+                    ...styles.buttonBase, ...styles.uploadDriveBtn, display: "inline-flex",  
+                    alignItems: "center",     
+                    justifyContent: "center", 
+                    gap: "6px" }}
                 onClick={() => handleViewDetails(order)}
                 onMouseEnter={(e) => {
                   e.target.style.background = "linear-gradient(135deg, #8a3f85 0%, #a14d9a 100%)";
@@ -476,7 +480,16 @@ const handleViewDetails = (order) => {
                   e.target.style.boxShadow = "0 1px 3px rgba(0,0,0,0.1)";
                 }}
               >
-                  Upload Links ({submittedLinksCount}/{totalInclusionsCount})
+                  Upload Links <span style={{fontSize:"1.1rem"}}>
+                    (
+                    <span style={{ color: "#FFE600" }}>
+                      {submittedLinksCount}
+                    </span>
+                    <span style={{ color: "#fff" }}>
+                      /{totalInclusionsCount}
+                    </span>
+                    )
+                  </span>
               </button>
             )
           ) : (
