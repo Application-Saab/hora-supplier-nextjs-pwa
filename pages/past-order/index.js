@@ -108,6 +108,14 @@ const GoogleDriveForm = () => {
       borderColor: "transparent",
       fontWeight: "500",
     },
+    allSubmitted: {
+      background: "#4CAF50", 
+      color: "#ffffff"       
+    },
+    notAllSubmitted: {
+      background: "linear-gradient(135deg, #d32f2f 0%, #f44336 100%)", 
+      color: "#ffffff"       
+    },
     showFinalSetupBtn: {
       background: "linear-gradient(135deg, #9c4d97 0%, #b55ba3 100%)",
       color: "#fff",
@@ -456,15 +464,28 @@ const handleViewDetails = (order) => {
           {supplierJobType === 8 ? (
             areAllLinksSubmitted ? (
               <button
-                style={{ ...styles.buttonBase, ...styles.submittedBtn }}
+                style={{
+                  ...styles.buttonBase, ...styles.allSubmitted, display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "6px" }}
                 disabled
               >
-                ✓ Submitted ({submittedLinksCount}/{totalInclusionsCount})
+                ✓ Submitted <span style={{ fontSize: "1.1rem" }}>
+                  (
+                  <span style={{ color: "#fff" }}>
+                    {submittedLinksCount}
+                  </span>
+                  <span style={{ color: "#fff" }}>
+                    /{totalInclusionsCount}
+                  </span>
+                  )
+                </span>
               </button>
             ) : (
               <button
                   style={{
-                    ...styles.buttonBase, ...styles.uploadDriveBtn, display: "inline-flex",  
+                    ...styles.buttonBase, ...styles.notAllSubmitted, display: "inline-flex",  
                     alignItems: "center",     
                     justifyContent: "center", 
                     gap: "6px" }}
@@ -482,7 +503,7 @@ const handleViewDetails = (order) => {
               >
                   Upload Links <span style={{fontSize:"1.1rem"}}>
                     (
-                    <span style={{ color: "#FFE600" }}>
+                    <span style={{ color: "#fff" }}>
                       {submittedLinksCount}
                     </span>
                     <span style={{ color: "#fff" }}>
