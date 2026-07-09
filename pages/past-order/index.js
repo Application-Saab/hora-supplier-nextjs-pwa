@@ -342,7 +342,51 @@ const handleViewDetails = (order) => {
     }
   };
 
+  const inclusionToApiKeyMap = {
+    "Raw Photos": "rawPhotos",
+    "Edited Photos": "editedPhotos",
+    "Teaser": "teaser",
+    "Edited Video": "editedVideos",
+    "Raw Video": "rawVideos",
+    "Drone Shoot": "droneShoot",
+    "Edited Reel": "editedReel"
+  };
+
   const OrderItem = ({ order }) => {
+
+    let totalInclusionsCount = 0;
+    let submittedLinksCount = 0;
+    let areAllLinksSubmitted = false;
+
+    if (supplierJobType === 8) {
+      const inclusions = order?.call_checklist?.inclusions || {};
+      const existingLinks = order?.allDriveLinks || [];
+
+      const trueInclusionsList = Object.keys(inclusions).filter(
+        (key) => inclusions[key] === true
+      );
+
+      const dynamicApiKeys = trueInclusionsList.map((key) => inclusionToApiKeyMap[key]);
+      const finalApiKeysToShow = [...new Set(dynamicApiKeys.filter(Boolean))];
+
+      totalInclusionsCount = finalApiKeysToShow.length;
+
+      finalApiKeysToShow.forEach((backendApiKey) => {
+        const matchedSavedLink = existingLinks.find(
+          (item) => item.linkType === backendApiKey
+        );
+
+        const rawPhotosLink = backendApiKey === "rawPhotos" ? order?.orderDriveLink : "";
+
+        if (!!matchedSavedLink?.link || !!rawPhotosLink) {
+          submittedLinksCount++;
+        }
+      });
+
+      areAllLinksSubmitted = totalInclusionsCount > 0 && submittedLinksCount === totalInclusionsCount;
+    }
+
+
     const handleFileUpload = async () => {
       const input = document.createElement("input");
       input.type = "file";
@@ -410,13 +454,12 @@ const handleViewDetails = (order) => {
 
           {/* Show buttons based on supplierJobType */}
           {supplierJobType === 8 ? (
-            // Photography orders
-            order.orderDriveLink ? (
+            areAllLinksSubmitted ? (
               <button
                 style={{ ...styles.buttonBase, ...styles.submittedBtn }}
                 disabled
               >
-                ✓ Submitted
+                ✓ Submitted ({submittedLinksCount}/{totalInclusionsCount})
               </button>
             ) : (
               <button
@@ -433,7 +476,7 @@ const handleViewDetails = (order) => {
                   e.target.style.boxShadow = "0 1px 3px rgba(0,0,0,0.1)";
                 }}
               >
-                 Upload Drive Link
+                  Upload Links ({submittedLinksCount}/{totalInclusionsCount})
               </button>
             )
           ) : (
