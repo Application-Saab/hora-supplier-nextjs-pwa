@@ -108,6 +108,14 @@ const GoogleDriveForm = () => {
       borderColor: "transparent",
       fontWeight: "500",
     },
+    allSubmitted: {
+      background: "#4CAF50", 
+      color: "#ffffff"       
+    },
+    notAllSubmitted: {
+      background: "linear-gradient(135deg, #d32f2f 0%, #f44336 100%)", 
+      color: "#ffffff"       
+    },
     showFinalSetupBtn: {
       background: "linear-gradient(135deg, #9c4d97 0%, #b55ba3 100%)",
       color: "#fff",
@@ -456,14 +464,31 @@ const handleViewDetails = (order) => {
           {supplierJobType === 8 ? (
             areAllLinksSubmitted ? (
               <button
-                style={{ ...styles.buttonBase, ...styles.submittedBtn }}
+                style={{
+                  ...styles.buttonBase, ...styles.allSubmitted, display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "6px" }}
                 disabled
               >
-                ✓ Submitted ({submittedLinksCount}/{totalInclusionsCount})
+                ✓ Submitted <span style={{ fontSize: "1.1rem" }}>
+                  (
+                  <span style={{ color: "#fff" }}>
+                    {submittedLinksCount}
+                  </span>
+                  <span style={{ color: "#fff" }}>
+                    /{totalInclusionsCount}
+                  </span>
+                  )
+                </span>
               </button>
             ) : (
               <button
-                style={{ ...styles.buttonBase, ...styles.uploadDriveBtn }}
+                  style={{
+                    ...styles.buttonBase, ...styles.notAllSubmitted, display: "inline-flex",  
+                    alignItems: "center",     
+                    justifyContent: "center", 
+                    gap: "6px" }}
                 onClick={() => handleViewDetails(order)}
                 onMouseEnter={(e) => {
                   e.target.style.background = "linear-gradient(135deg, #8a3f85 0%, #a14d9a 100%)";
@@ -476,7 +501,16 @@ const handleViewDetails = (order) => {
                   e.target.style.boxShadow = "0 1px 3px rgba(0,0,0,0.1)";
                 }}
               >
-                  Upload Links ({submittedLinksCount}/{totalInclusionsCount})
+                  Upload Links <span style={{fontSize:"1.1rem"}}>
+                    (
+                    <span style={{ color: "#fff" }}>
+                      {submittedLinksCount}
+                    </span>
+                    <span style={{ color: "#fff" }}>
+                      /{totalInclusionsCount}
+                    </span>
+                    )
+                  </span>
               </button>
             )
           ) : (
