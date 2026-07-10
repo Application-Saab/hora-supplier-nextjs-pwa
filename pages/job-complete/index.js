@@ -27,7 +27,13 @@ const PictureUpload = () => {
   const [uploadedNames, setUploadedNames] = useState([]);
 
   const whenPicturePicked = async (e) => {
-    const files = e.target.files;
+    const files = Array.from(event.target.files); 
+    if (files.length > 0) {
+      setImages((prev) => {
+        const currentImages = Array.isArray(prev) ? prev : [];
+        return [...currentImages, ...files];
+      });
+    }
     if (!files || files.length === 0) return;
 
     const formThing = new FormData();
@@ -52,7 +58,6 @@ const PictureUpload = () => {
         // Save uploaded file names from response.data
         setUploadedNames(result?.data || []);
 
-        alert("Images uploaded successfully!");
       } else {
         console.error("❌ Upload failed");
         alert("Upload failed. Try again!");
@@ -64,6 +69,13 @@ const PictureUpload = () => {
     }
   };
 
+
+  const removeImage = (key) => {
+    setImages((prev) => ({
+      ...prev,
+      [key]: null 
+    }));
+  };
   // Step 2: Send uploaded names with order edit API
   const uploadAllImages = async () => {
     if (uploadedNames.length === 0) {
@@ -89,7 +101,7 @@ const PictureUpload = () => {
 
       if (response.ok) {
         const result = await response.json();
-        alert("Order updated with images!");
+        alert("Images uploaded successfully!");
         setUploadSuccess(true);
       } else {
         console.error("❌ Failed to update order");
@@ -193,103 +205,181 @@ const PictureUpload = () => {
             Job Completed
           </button>
         ) : (
-          <>
-            <h2 style={{ fontWeight: "bold" }}>Take & Upload Pictures</h2>
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                gap: "20px",
-              }}
-            >
-              {[{ label: "Picture", type: "slab" }].map((item) => (
-                <div
-                  key={item.type}
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    textAlign: "center",
-                  }}
-                >
-                  <label style={{ fontWeight: "bold" }}>{item.label}</label>
-                  {/* <div style={{
-                  border: "1px dashed gray",
-                  width: "150px",
-                  height: "150px",
+            <>
+              <h2 style={{ fontWeight: "700", fontSize: "1.5rem", marginBottom: "20px", color: "#333" }}>
+                Take & Upload Pictures
+              </h2>
+
+              <div style={{ display: "flex", flexDirection: "column", gap: "24px", maxWidth: "500px", margin: "0 auto" }}>
+
+                <div style={{
                   display: "flex",
+                  flexDirection: "column",
                   alignItems: "center",
                   justifyContent: "center",
+                  border: "2px dashed #cbd5e1",
+                  borderRadius: "12px",
+                  padding: "30px 20px",
+                  backgroundColor: "#f8fafc",
+                  textAlign: "center",
                   position: "relative",
                   cursor: "pointer",
+                  transition: "all 0.2s ease"
                 }}>
                   <input
                     type="file"
-                    id={item.type}
+                    multiple
                     accept="image/*"
-                    onChange={(event) => handleImageChange(event, item.type)}
+                    onChange={whenPicturePicked}
                     style={{
                       position: "absolute",
+                      top: 0,
+                      left: 0,
                       width: "100%",
                       height: "100%",
                       opacity: 0,
-                      cursor: "pointer"
+                      cursor: "pointer",
+                      zIndex: 2
                     }}
                   />
-                  {images[item.type] ? (
-                    <Image
-                      src={URL.createObjectURL(images[item.type])}
-                      alt={`${item.label}`}
-                      style={{ maxWidth: "100%", maxHeight: "100%" }}
-                      width={100}
-                  height={100}
-                    />
-                  ) : (
-                    <Image
-                      src={CameraFrame}
-                      alt="Camera Frame"
-                      style={{ maxWidth: "30%", maxHeight: "30%" }}
-                      width={100}
-                  height={100}
-                    />
-                  )}
-                </div> */}
+
+                  {/* Upload Icon & Text Indicator */}
+                  <div style={{ fontSize: "40px", marginBottom: "10px" }}>📸</div>
+                  <span style={{ fontWeight: "600", color: "#475569", fontSize: "1rem" }}>
+                    Tap to Take or Select Pictures
+                  </span>
+                  <span style={{ fontSize: "0.85rem", color: "#94a3b8", marginTop: "4px" }}>
+                    Supports multiple images
+                  </span>
                 </div>
-              ))}
-            </div>
-            {/* <button onClick={uploadAllImages} className="startbutton" style={{ marginLeft: "40px", marginTop: "20px" }}>
-            Upload All Images
-          </button> */}
 
-            <div>
-              {/* Image Picker (auto uploads when selected) */}
-              <input
-                type="file"
-                multiple
-                accept="image/*"
-                onChange={whenPicturePicked}
-              />
+                {images && (Array.isArray(images) ? images.length > 0 : Object.keys(images).length > 0) && (
+                  <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                    <span style={{ fontWeight: "600", color: "#475569", fontSize: "0.9rem" }}>
+                      Selected Pictures:
+                    </span>
 
-              {/* Optional Button (if you still want manual upload later) */}
-              <button
-                disabled={uploading}
-                onClick={uploadAllImages}
-                style={{ marginLeft: "40px", marginTop: "20px" }}
-              >
-                {uploading ? "Uploading..." : "Upload All Images"}
-              </button>
-            </div>
+                    <div style={{
+                      display: "grid",
+                      gridTemplateColumns: "repeat(auto-fill, minmax(80px, 1fr))",
+                      gap: "10px",
+                      backgroundColor: "#f1f5f9",
+                      padding: "12px",
+                      borderRadius: "8px"
+                    }}>
+                      {Object.keys(images).map((key, index) => {
+                        const file = images[key];
 
-            {uploadSuccess && (
-              <button
-                onClick={handleJobComplete}
-                className="startbutton"
-                style={{ marginLeft: "40px" }}
-              >
-                Job Completed
-              </button>
-            )}
-          </>
+                        if (!file) return null;
+
+                        let imgSrc = "";
+                        try {
+                          if (typeof file === "string") {
+                            imgSrc = file;
+                          } else {
+                            imgSrc = URL.createObjectURL(file);
+                          }
+                        } catch (e) {
+                          console.error(e);
+                        }
+
+                        if (!imgSrc) return null;
+
+                        return (
+                          <div
+                            key={index}
+                            style={{
+                              position: "relative",
+                              width: "100%",
+                              paddingTop: "100%",
+                              borderRadius: "6px",
+                              overflow: "visible", 
+                              border: "1px solid #cbd5e1"
+                            }}
+                          >
+                            <img
+                              src={imgSrc}
+                              alt={`preview-${index}`}
+                              style={{
+                                position: "absolute",
+                                top: 0,
+                                left: 0,
+                                width: "100%",
+                                height: "100%",
+                                objectFit: "cover",
+                                borderRadius: "6px"
+                              }}
+                            />
+
+                            <button
+                              onClick={() => removeImage(key)}
+                              style={{
+                                position: "absolute",
+                                top: "-6px",
+                                right: "-6px",
+                                zIndex: 10,
+                                width: "22px",
+                                height: "22px",
+                                borderRadius: "50%",
+                                backgroundColor: "#a3a2a2",
+                                color: "#fff",
+                                fontSize: "15px",
+                                display: "flex",
+                                border:"none",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                cursor: "pointer",
+                                boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
+                                padding: 0,
+                                lineHeight: 1
+                              }}
+                              title="Remove image"
+                            >
+                              ×
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* BUTTONS ACTION AREA */}
+                <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginTop: "10px" }}>
+
+                  {/* Upload Button */}
+                  <button
+                    disabled={uploading}
+                    onClick={uploadAllImages}
+                    style={{
+                      width: "100%",
+                      padding: "14px",
+                      borderRadius: "8px",
+                      border: "none",
+                      backgroundColor: uploading ? "#cbd5e1" : "#97538c",
+                      color: "#fff",
+                      fontWeight: "600",
+                      fontSize: "1rem",
+                      cursor: uploading ? "not-allowed" : "pointer",
+                      boxShadow: "0 4px 6px -1px rgba(0, 112, 243, 0.2)",
+                      transition: "background-color 0.2s"
+                    }}
+                  >
+                    {uploading ? "Uploading..." : "Upload All Images"}
+                  </button>
+
+                  {uploadSuccess && (
+                    <button
+                      onClick={handleJobComplete}
+                      className="startbutton"
+                      style={{ marginLeft: "40px" }}
+                    >
+                      Job Completed
+                    </button>
+                  )}
+                </div>
+              </div>
+            </>
         )}
       </div>
     </Layout>
