@@ -276,11 +276,3 @@
     transform: rotate(0deg);
   }
 }
-
-body {
-  padding-top: env(safe-area-inset-top);
-}
-
-.navbar {
-  padding-top: env(safe-area-inset-top);
-}

@@ -24,6 +24,12 @@ const Layout = ({ children, navTitle, backLink, showBackButton = true }) => {
 
   return (
     <div>
+      <div style={{
+        height: "24px",
+        backgroundColor: "rgb(38, 35, 35)",
+        width: "100%"
+      }}
+      ></div>
       <Navbar backLink={backLink} navTitle={navTitle} showBackButton={showBackButton} />
       <div>
         <main>
