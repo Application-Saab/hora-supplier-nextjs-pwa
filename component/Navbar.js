@@ -18,7 +18,7 @@ const Navbar = ({ backLink = "/home", navTitle, showBackButton = true }) => {
   };
 
   return (
-    <nav className="navbar" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+    <nav className="navbar" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: "env(safe-area-inset-top, 24px)" }}>
       {/* Left Side: Back Button */}
       {showBackButton && (
         <div style={{ display: 'flex', alignItems: 'center' }}>

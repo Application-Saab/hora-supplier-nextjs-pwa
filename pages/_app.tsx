@@ -9,6 +9,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useRouter } from 'next/router';
 import '../component/OrderList/orderlist.css';
+import Head from "next/head";
 
 // Only import firebase modules on the client side
 if (typeof window !== 'undefined') {
@@ -120,6 +121,9 @@ export default function App({ Component, pageProps }: AppProps) {
   useCapacitorPushNotifications(playSound);
   return (
     <>
+      <Head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+      </Head>
       <Component {...pageProps} />
       <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} newestOnTop closeOnClick pauseOnFocusLoss draggable pauseOnHover />
       <audio ref={audioRef} src="/notification.mp3" preload="auto" />
