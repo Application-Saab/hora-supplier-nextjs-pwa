@@ -38,7 +38,11 @@ const OrderList = ({orderId, statusClassName, status, orderType, orderDate, orde
                           height={18}
                           width={18}
                         />{" "}
-                        <span className="date-time-text">{orderTime}</span>
+                      {orderTime && (() => {
+                         const firstTime = orderTime.split(" - ")[0];
+                         const [hour, period] = firstTime.split(" ");
+                         return `${hour} ${period}`;
+                      })()}
                       </div>
                     </div>
                     <div className="orderlist-right-details">
