@@ -65,7 +65,7 @@ const PhotographyOrderDetailsTab = ({
                                 />
                             </div>
 
-                            <div>{comment}</div>
+                            <div className='info-text'>{comment}</div>
                         </div>
                     ))}
                 </div>
