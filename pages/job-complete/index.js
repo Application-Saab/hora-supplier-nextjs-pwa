@@ -26,7 +26,7 @@ const PictureUpload = () => {
   const [uploading, setUploading] = useState(false);
   const [uploadedNames, setUploadedNames] = useState([]);
 
-  const whenPicturePicked = async (e) => {
+  const whenPicturePicked = async (event) => {
     const files = Array.from(event.target.files);
     if (files.length > 0) {
       setImages((prev) => {
@@ -228,10 +228,9 @@ const PictureUpload = () => {
                 }}>
                   <input
                     type="file"
-                    id={item.type}
+                    id={"image-upload"}
                     multiple
                     accept="image/*"
-                    onChange={(event) => handleImageChange(event, item.type)}
                     onChange={whenPicturePicked}
                     style={{
                       position: "absolute",
