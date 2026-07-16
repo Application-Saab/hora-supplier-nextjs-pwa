@@ -35,7 +35,6 @@ const OrderDetailTab = ({
   }
   const [tab, setTab] = useState("Menu");
   const [limitData, setLimitData] = useState(false);
-  const [limitDetails, setLimitDetails] = useState({ count: 0, limit: 0 });
   const [loadingLimit, setLoadingLimit] = useState(true);
   const [orderStatus, setOrderStatus] = useState(orderDetail?.order_status);
 
@@ -124,10 +123,6 @@ const OrderDetailTab = ({
 
           if (response?.data?.success) {
             setLimitData(response?.data?.isFull);
-            setLimitDetails({
-              count: response?.data?.count || 0,
-              limit: response?.data?.limit || 0
-            });
           }
         } catch (error) {
           console.error("Error fetching supplier daily limit:", error);
@@ -264,13 +259,6 @@ const OrderDetailTab = ({
         bulletItems={bulletItems}
         />
       ) : null}
-          <div className="bg-white p-10">
-          {limitData && (
-            <div className="limit-warning-label">
-              ⚠️ You have already reached your daily limit of <strong>{limitDetails.count}/{limitDetails.limit}</strong> orders for today.
-            </div>
-          )}
-          </div>
 
       <div className="accept-btn-container" onClick={acceptOrder}>
         <button

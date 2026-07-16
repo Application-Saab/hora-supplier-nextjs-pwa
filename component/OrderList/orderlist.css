@@ -308,9 +308,9 @@ font-size: clamp(15px, calc(18 * 100vw / 393), 21px);
 }
 .drivelinkBtnContainer{
   display: flex;
-  justify-content: end;
+  justify-content: center;
   align-items: center;
-  padding-top: 5px;
+  padding: 10px 0px 20px 0px;
 }
 .mt-2{
 margin-top: 2px !important;
@@ -361,7 +361,7 @@ background-color: #9c4d97;
   opacity: 0.7;
 }
 .save-btn-link {
-      padding: 6px 14px;
+      padding: 8px 20px;
         background-color: #9c4d97;
         color: #fff;
         border: none;
@@ -371,6 +371,7 @@ background-color: #9c4d97;
         font-weight: 500;
     }
 .save-btn-link:disabled {
+  background-color: #9c4d97;
   color: #fff;
   cursor: not-allowed;
   opacity: 0.7;
