@@ -3,7 +3,7 @@ import { BASE_URL, ORDERLIST_ENDPOINT } from "../../apiconstant/apiconstant";
 import { useRouter } from "next/router";
 import Layout from "../../component/Layout";
 import socket, { connectSocket } from "../../socket";
-import OrderList from "../../component/OrderList/index.jsx"; 
+import OrderList from "../../component/OrderList/index.jsx";
 
 const Orderlist = () => {
   const router = useRouter();
@@ -163,8 +163,7 @@ useEffect(() => {
   };
 
   const formatDate = (dateString) => {
-    if (!dateString) return "N/A";
-    const options = { day: "numeric", month: "short", year: "numeric",timeZone: "Asia/Kolkata" };
+    const options = { day: "numeric", month: "short", year: "numeric" };
     return new Date(dateString).toLocaleDateString("en-GB", options);
   };
 
