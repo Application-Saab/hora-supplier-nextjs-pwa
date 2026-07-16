@@ -20,8 +20,8 @@ const DecorationOrderDetailsTab = ({
                         <div className="myOrder-decDetailsLeft">
                             <>
                                 <Image
-                                    src={`https://horaservices.com/api/uploads/compressed_webp/${product?.featured_images?.length > 0 && product?.featured_images[0]?.fileName?.split(".")[0]
-                                    }.webp`}
+                                    src={`https://horaservices.com/api/uploads/compressed_webp/${product.featured_image.split(".")[0]
+                                        }.webp`}
                                     alt={product?.name}
                                     height={300}
                                     width={300}
