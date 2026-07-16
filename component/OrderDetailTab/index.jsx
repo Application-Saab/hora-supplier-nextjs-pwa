@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import OrderDetailsMenu from "../OrderDetailsMenu";
 import OrderDetailsIngre from "../OrderDetailsIngre";
 import OrderDetailsAppliances from "../OrderDetailsAppliances";
@@ -9,6 +9,7 @@ import {
 } from "../../apiconstant/apiconstant";
 import DecorationOrderDetailsTab from "../decorationOrderDetailsTab";
 import PhotographyOrderDetailsTab from "../photographyOrderDetailsTab";
+import axios from "axios";
 
 const OrderDetailTab = ({
   orderDetail,
@@ -33,6 +34,9 @@ const OrderDetailTab = ({
     var supplierID = localStorage.getItem("supplierID");
   }
   const [tab, setTab] = useState("Menu");
+  const [limitData, setLimitData] = useState(false);
+  const [loadingLimit, setLoadingLimit] = useState(true);
+  const [limitDetails, setLimitDetails] = useState({ count: 0, limit: 0 });
   const [orderStatus, setOrderStatus] = useState(orderDetail?.order_status);
 
 
@@ -103,8 +107,52 @@ const OrderDetailTab = ({
     }
   };
 
+  useEffect(() => {
+    const targetDate = orderDetail?.order_date;
+
+    if (supplierID && targetDate) {
+      const fetchSupplierLimit = async () => {
+        try {
+          setLoadingLimit(true);
+          const response = await axios.get(`${BASE_URL}/api/users/supplier-order-count-by-date`, {
+            params: {
+              supplierId: supplierID,
+              fulfillmentDate: targetDate
+            }
+          });
+
+          if (response?.data?.success) {
+            setLimitData(response?.data?.isFull);
+            setLimitDetails({
+              count: response?.data?.count || 0,
+              limit: response?.data?.limit || 0
+            });
+          }
+        } catch (error) {
+          console.error("Error fetching supplier daily limit:", error);
+        }
+        finally {
+          setLoadingLimit(false);
+        }
+      };
+
+      fetchSupplierLimit();
+    }
+    else {
+      setLoadingLimit(false);
+    }
+  }, [supplierID, orderDetail]);
+
   return ( 
+       <>
+      {loadingLimit ?
+        <div>
+          loading data...
+        </div>
+        :
     <>
+
+    
       {parseInt(orderType) == 2 ? (
         <div>
           <div className="tabs">
@@ -218,9 +266,23 @@ const OrderDetailTab = ({
         />
       ) : null}
 
-      <div className="accept-btn-container" onClick={acceptOrder}>
-        <button className="acceptOrder acceptbutton">Accept Order</button>
+
+          <div className="bg-white p-10">
+            {limitData && (
+              <div className="limit-warning-label">
+                ⚠️ You have already reached your daily limit of <strong>{limitDetails.count}/{limitDetails.limit}</strong> orders for today.
+              </div>
+            )}
+          </div>
+
+      <div className="accept-btn-container" >
+        <button
+          onClick={acceptOrder}
+          disabled={limitData}
+          className="acceptOrder acceptbutton">Accept Order</button>
       </div>
+    </> 
+    }
     </>
   );
 };

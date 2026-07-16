@@ -54,6 +54,164 @@ const OrderDetailTab = ({
 
   const [driveLink, setDriveLink] = useState("");
 
+
+  const [driveLinksInput, setDriveLinksInput] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+
+  const saveOrderDriveLinks = async (currentOrder, driveLinksInput) => {
+    const linksToSend = driveLinksInput.filter(
+      (item) => item.link && item.link.trim() !== ""
+    );
+
+    if (linksToSend.length === 0) {
+      throw new Error("Please provide at least one valid Google Drive link.");
+    }
+
+    const rawPhotosRow = linksToSend.find((item) => item.linkType === "rawPhotos");
+    const rawFolderUrl = rawPhotosRow ? rawPhotosRow.link : "";
+
+    const response = await axios.post(`${BASE_URL}/api/photo/drive/add-order-drive-link`, {
+      order_id: currentOrder.order_id,
+      allDriveLinks: linksToSend,
+      folderUrl: rawFolderUrl
+    });
+
+    window.location.href = "/past-order";
+    return response.data;
+  };
+
+  const inclusionToApiKeyMap = {
+    "Raw Photos": "rawPhotos",
+    "Edited Photos": "editedPhotos",
+    "Teaser": "teaser",
+    "Edited Video": "editedVideos",
+    "Raw Video": "rawVideos",
+    "Drone Shoot": "droneShoot",
+    "Edited Reel": "editedReel"
+  };
+
+  const apiKeyToInclusionMap = {
+    rawPhotos: "Raw Photos",
+    editedPhotos: "Edited Photos",
+    teaser: "Teaser",
+    editedVideos: "Edited Video",
+    rawVideos: "Raw Video",
+    droneShoot: "Drone Shoot",
+    editedReel: "Edited Reel"
+  };
+
+
+  useEffect(() => {
+    if (orderDetail) {
+      const inclusions = orderDetail?.call_checklist?.inclusions || {};
+      const existingLinks = orderDetail?.allDriveLinks || [];
+
+      const trueInclusionsList = Object.keys(inclusions).filter(
+        (key) => inclusions[key] === true
+      );
+
+      const dynamicApiKeys = trueInclusionsList.map(
+        (key) => inclusionToApiKeyMap[key]
+      );
+
+
+      const finalApiKeysToShow = [
+        ...new Set(dynamicApiKeys.filter(Boolean)),
+      ];
+
+      let initialInputState = finalApiKeysToShow.map((backendApiKey) => {
+        const matchedSavedLink = existingLinks.find(
+          (item) => item.linkType === backendApiKey
+        );
+
+        const rawPhotosLink =
+          backendApiKey === "rawPhotos"
+            ? orderDetail?.orderDriveLink
+            : "";
+
+        return {
+          linkType: backendApiKey,
+          link: matchedSavedLink?.link || rawPhotosLink || "",
+          isExisting: !!matchedSavedLink?.link || !!rawPhotosLink,
+        };
+
+      });
+
+      setDriveLinksInput(initialInputState);
+    }
+  }, [orderDetail]);
+
+
+  // const handleSaveAllLinks = async (currentOrder) => {
+  //   try {
+  //     setLoading(true);
+
+  //     const data = await saveOrderDriveLinks(currentOrder, driveLinksInput);
+
+  //     alert(data.message || "All drive links processed successfully!");
+
+  //   } catch (error) {
+  //     console.error("Error in component while saving links:", error);
+
+  //     alert(error.response?.data?.message || error.message || "Something went wrong");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+
+  const totalInclusionsCount = driveLinksInput.length;
+
+  const submittedLinksCount = driveLinksInput.filter(
+    (item) => item.isExisting === true
+  ).length;
+
+  const areAllLinksSubmitted = totalInclusionsCount > 0 && submittedLinksCount === totalInclusionsCount;
+
+
+  const [submittingIndex, setSubmittingIndex] = useState(null);
+
+  const handleSaveSingleLink = async (index, currentOrder) => {
+    try {
+      setLoading(true);
+      setSubmittingIndex(index);
+      const payloadForBackend = driveLinksInput.map((item, i) => {
+        if (i === index) {
+          return item;
+        }
+        return {
+          ...item,
+          link: item.isExisting ? item.link : ""
+        };
+      });
+
+      const data = await saveOrderDriveLinks(currentOrder, payloadForBackend);
+      alert(data.message || "Link processed successfully!");
+
+      setDriveLinksInput((prev) =>
+        prev.map((item, i) => (i === index ? { ...item, isExisting: true } : item))
+      );
+
+    }
+     catch (error) {
+      console.error("Error while saving link:", error);
+    }
+    finally {
+      setLoading(false);
+      setSubmittingIndex(null);
+    }
+  }
+
+
+
+  const handleDynamicLinkChange = (index, value) => {
+    const updatedLinks = [...driveLinksInput];
+    updatedLinks[index].link = value;
+    setDriveLinksInput(updatedLinks);
+  };
+
+
   const formatOrderMessage = (orderDetail, decorationItems) => {
     const orderId = orderDetail?.order_id || "";
     const orderDate = orderDetail?.order_date
@@ -246,42 +404,7 @@ ${decorations}
     }
   };
 
-  const handleSubmitDriveLink = async () => {
-    if (!driveLink.startsWith("https://drive.google.com/")) {
-      alert("Invalid Google Drive link");
-      return;
-    }
-    try {
-      await axios.post(BASE_URL + SUBMIT_LINK_ENDPOINT, {
-        order_id: orderDetail.order_id,
-        folderUrl: driveLink,
-      });
 
-      await fetch(`${BASE_URL}/api/photo/drive/update-google-sheet`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          orderIdDb: orderDetail.order_id,
-          orderIdCustomer: orderDetail.order_id + 10800,
-          phone: orderDetail.phone_no,
-          fulfillmentDate: orderDetail.order_date
-            ? new Date(orderDetail.order_date).toLocaleDateString("en-GB")
-            : "N/A",
-          services: "Photography",
-          driveLink: driveLink,
-          horaWebLink: "N/A",
-        }),
-      });
-
-      alert("Drive link submitted!");
-      // setPopupOpen(false);
-      setDriveLink("");
-      window.location.href = "/past-order";
-    } catch (err) {
-      console.error(err.response?.data?.error, "testing");
-      alert(err.response?.data?.error);
-    }
-  };
 
   const handleFileUpload = async (e) => {
     const files = e.target.files;
@@ -516,66 +639,79 @@ ${decorations}
         </div>
 
       ) : orderType == 8 ? (
-        <div>
-        <PhotographyOrderDetailsTab
-        orderDetail={orderDetail}
-        decorationComments={decorationComments}
-        balanceAmount={balanceAmount}
-        bulletItems={bulletItems}
-          />
-          <div className="actual-image-container">
-          <div className="fw-semiBold">
-            Current Status
-          </div>
-          {orderDetail.orderDriveLink ? (
-            <span
-              style={{
-                color: "#28a745",
-                fontWeight: "500",
-                fontSize: "13px",
-              }}
-            >
-              ✓ Drive Link Submitted
-            </span>
-          ) : (
-            <span
-              style={{
-                color: "#dc3545",
-                fontWeight: "500",
-                fontSize: "12px",
-              }}
-            >
-              ✗ Drive Link Not Submitted Yet
-            </span>
-          )}
-          {!orderDetail.orderDriveLink && (
-            <textarea
-              value={driveLink}
-              style={styles.inputText}
-              onChange={(e) => setDriveLink(e.target.value)}
-              placeholder="Paste Google Drive folder link here..."
-            />
-          )}
-          {!orderDetail.orderDriveLink && (
-            <div className="drivelinkBtnContainer">
-              <button
-                style={styles.submitBtn}
-                onClick={handleSubmitDriveLink}
-                onMouseEnter={(e) => {
-                  e.target.style.background = "#8a3f85";
-                }}
-                onMouseLeave={(e) => {
-                  e.target.style.background = "#9c4d97";
-                }}
-              >
-                {orderDetail.orderDriveLink
-                  ? "Re-Submit Link"
-                  : "Submit Link"}
-              </button>
-            </div>
-          )}
-          </div>
-        </div>
+                <div>
+                  <PhotographyOrderDetailsTab
+                    orderDetail={orderDetail}
+                    decorationComments={decorationComments}
+                    balanceAmount={balanceAmount}
+                    bulletItems={bulletItems}
+                  />
+                  {driveLinksInput.length > 0 && (
+                    <div className="actual-image-container">
+                      <div className="fw-semiBold">Current Status</div>
+                      {areAllLinksSubmitted ? (
+                        <span
+                          style={{
+                            color: "#28a745",
+                            fontWeight: "500",
+                            fontSize: "13px",
+                          }}
+                        >
+                          ✓ All Drive Link Submitted ( {submittedLinksCount} / {totalInclusionsCount} )
+                        </span>
+                      ) : (
+                        <span
+                          style={{
+                            color: "#dc3545",
+                            fontWeight: "500",
+                            fontSize: "12px",
+                          }}
+                        >
+                          ✗ All Drive Link Not Submitted Yet ( {submittedLinksCount} / {totalInclusionsCount} )
+                        </span>
+                      )}
+
+                      <div className="submit-link-container">
+                        <div className="link-header">Submit Links</div>
+
+                        {driveLinksInput.map((item, index) => {
+                          const isInputEmpty = !item.link || item.link.trim() === "";
+                          const isBtnDisabled = loading || isInputEmpty || item.isExisting;
+
+                          return (
+                            <div key={index} className="drive-link-group" style={{ marginBottom: '8px' }}>
+                              <label className="drive-link-label">
+                                {apiKeyToInclusionMap[item.linkType] || item.linkType}
+                              </label>
+
+                              <input
+                                type="text"
+                                disabled={item.isExisting}
+                                placeholder={`Paste Google Drive link for ${apiKeyToInclusionMap[item.linkType] || item.linkType
+                                  }`}
+                                value={item.link}
+                                onChange={(e) => handleDynamicLinkChange(index, e.target.value)}
+                                className="drive-link-input"
+                              />
+
+                              {!item.isExisting && (
+                                <div className="drivelinkBtnContainer" style={{ marginTop: '8px' }}>
+                                  <button
+                                    onClick={() => handleSaveSingleLink(index, orderDetail)}
+                                    disabled={isBtnDisabled}
+                                    className={`save-btn-link ${isBtnDisabled ? "save-btn-disabled" : ""}`}
+                                  >
+                                    {loading && submittingIndex === index ? "Submitting..." : "Save Link"}
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
       ) : null}
       <div>
         {/* <h1>sohan</h1>
@@ -780,18 +916,6 @@ const styles = {
     background: "#fff",
     color: "#666",
     border: "1px solid #d0d0d0",
-    borderRadius: "6px",
-    cursor: "pointer",
-    fontSize: "14px",
-    fontWeight: "500",
-    fontFamily:
-      "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-  },
-  submitBtn: {
-    padding: "8px 20px",
-    background: "#9c4d97",
-    color: "#fff",
-    border: "none",
     borderRadius: "6px",
     cursor: "pointer",
     fontSize: "14px",
