@@ -170,9 +170,18 @@ useEffect(() => {
   };
 
   const formatDate = (dateString) => {
-    if (!dateString) return "N/A";
-    const options = { day: "numeric", month: "short", year: "numeric", timeZone: "Asia/Kolkata" };
-    return new Date(dateString).toLocaleDateString("en-GB", options);
+    if (!dateString) return "";
+
+    const cleanDate = dateString.split("T")[0];
+    const [year, month, day] = cleanDate.split("-");
+
+    const date = new Date(year, month - 1, day);
+
+    return date.toLocaleDateString("en-GB", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
   };
 
   const openContinueShopping = () => {
