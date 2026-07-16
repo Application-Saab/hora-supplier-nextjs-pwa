@@ -680,11 +680,6 @@ const styles = {
     color: "#9c4d97",
     borderColor: "#9c4d97",
   },
-  uploadDriveBtn: {
-    background: "#9c4d97",
-    color: "#fff",
-    border: "none",
-  },
   submittedBtn: {
     background: "#fff",
     color: "#666",
