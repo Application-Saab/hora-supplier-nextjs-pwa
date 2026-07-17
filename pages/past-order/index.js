@@ -108,6 +108,16 @@ const GoogleDriveForm = () => {
       borderColor: "transparent",
       fontWeight: "500",
     },
+
+    allSubmitted: {
+      background: "#4CAF50",
+      color: "#ffffff"
+    },
+    notAllSubmitted: {
+      background: "linear-gradient(135deg, #d32f2f 0%, #f44336 100%)",
+      color: "#ffffff"
+    },
+
     showFinalSetupBtn: {
       background: "linear-gradient(135deg, #9c4d97 0%, #b55ba3 100%)",
       color: "#fff",
@@ -342,7 +352,52 @@ const handleViewDetails = (order) => {
     }
   };
 
+
+  const inclusionToApiKeyMap = {
+    "Raw Photos": "rawPhotos",
+    "Edited Photos": "editedPhotos",
+    "Teaser": "teaser",
+    "Edited Video": "editedVideos",
+    "Raw Video": "rawVideos",
+    "Drone Shoot": "droneShoot",
+    "Edited Reel": "editedReel"
+  };
+
   const OrderItem = ({ order }) => {
+
+
+    let totalInclusionsCount = 0;
+    let submittedLinksCount = 0;
+    let areAllLinksSubmitted = false;
+
+    if (supplierJobType === 8) {
+      const inclusions = order?.call_checklist?.inclusions || {};
+      const existingLinks = order?.allDriveLinks || [];
+
+      const trueInclusionsList = Object.keys(inclusions).filter(
+        (key) => inclusions[key] === true
+      );
+
+      const dynamicApiKeys = trueInclusionsList.map((key) => inclusionToApiKeyMap[key]);
+      const finalApiKeysToShow = [...new Set(dynamicApiKeys.filter(Boolean))];
+
+      totalInclusionsCount = finalApiKeysToShow.length;
+
+      finalApiKeysToShow.forEach((backendApiKey) => {
+        const matchedSavedLink = existingLinks.find(
+          (item) => item.linkType === backendApiKey
+        );
+
+        const rawPhotosLink = backendApiKey === "rawPhotos" ? order?.orderDriveLink : "";
+
+        if (!!matchedSavedLink?.link || !!rawPhotosLink) {
+          submittedLinksCount++;
+        }
+      });
+
+      areAllLinksSubmitted = totalInclusionsCount > 0 && submittedLinksCount === totalInclusionsCount;
+    }
+
     const handleFileUpload = async () => {
       const input = document.createElement("input");
       input.type = "file";
@@ -411,16 +466,36 @@ const handleViewDetails = (order) => {
           {/* Show buttons based on supplierJobType */}
           {supplierJobType === 8 ? (
             // Photography orders
-            order.orderDriveLink ? (
+            areAllLinksSubmitted ? (
               <button
-                style={{ ...styles.buttonBase, ...styles.submittedBtn }}
+                style={{
+                  ...styles.buttonBase, ...styles.allSubmitted, display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "6px"
+                }}
                 disabled
               >
-                ✓ Submitted
+                ✓ Submitted <span style={{ fontSize: "1.1rem" }}>
+                  (
+                  <span style={{ color: "#fff" }}>
+                    {submittedLinksCount}
+                  </span>
+                  <span style={{ color: "#fff" }}>
+                    /{totalInclusionsCount}
+                  </span>
+                  )
+                </span>
+
               </button>
             ) : (
               <button
-                style={{ ...styles.buttonBase, ...styles.uploadDriveBtn }}
+                  style={{
+                    ...styles.buttonBase, ...styles.notAllSubmitted, display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "6px"
+                  }}
                 onClick={() => handleViewDetails(order)}
                 onMouseEnter={(e) => {
                   e.target.style.background = "linear-gradient(135deg, #8a3f85 0%, #a14d9a 100%)";
@@ -433,7 +508,16 @@ const handleViewDetails = (order) => {
                   e.target.style.boxShadow = "0 1px 3px rgba(0,0,0,0.1)";
                 }}
               >
-                 Upload Drive Link
+                  Upload Links <span style={{ fontSize: "1.1rem" }}>
+                    (
+                    <span style={{ color: "#fff" }}>
+                      {submittedLinksCount}
+                    </span>
+                    <span style={{ color: "#fff" }}>
+                      /{totalInclusionsCount}
+                    </span>
+                    )
+                  </span>
               </button>
             )
           ) : (

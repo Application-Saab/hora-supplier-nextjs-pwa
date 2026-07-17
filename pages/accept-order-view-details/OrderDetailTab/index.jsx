@@ -491,7 +491,8 @@ const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography
             {otp1.map((_, index) => (
               <Form.Control
                 key={index}
-                type="text"
+                type="tel"
+                inputMode="numeric"
                 maxLength="1"
                 value={otp1[index]}
                 onChange={(e) => handleChange(e.target.value, index)}
