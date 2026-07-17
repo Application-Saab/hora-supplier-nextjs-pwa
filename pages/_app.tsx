@@ -62,7 +62,7 @@ function useCapacitorPushNotifications(playSound: () => void) {
       });
       
       PushNotifications.createChannel({
-        id: 'fcm_custom_sound_channel', // A unique ID for this channel
+        id: 'fcm_custom_sound_channel_v2', 
         name: 'Custom Sound Notifications',
         importance: 4, // High importance is needed for sound
         sound: 'notification.mp3', // The filename from 'android/app/src/main/res/raw'
