@@ -2,7 +2,7 @@ import '../styles/globals.css'
 import type { AppProps } from 'next/app'
 import '../styles/login.css';
 import './orders-details/OrderDashboard.css';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 import axios from 'axios';
 import { BASE_URL } from '../apiconstant/apiconstant';
 import { ToastContainer, toast } from 'react-toastify';
@@ -39,14 +39,27 @@ async function sendFcmTokenToBackend(tokenValue: string) {
   }
 }
 
+
+
 function useNotificationAudio() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const playSound = () => {
-    if (audioRef.current) {
+
+  const playSound = useCallback(async () => {
+    try {
+      if (!audioRef.current) {
+        console.log('Audio element not available');
+        return;
+      }
+
       audioRef.current.currentTime = 0;
-      audioRef.current.play();
+      await audioRef.current.play();
+
+      console.log('Notification sound played');
+    } catch (error) {
+      console.error('Could not play notification sound:', error);
     }
-  };
+  }, []);
+
   return { audioRef, playSound };
 }
 
@@ -54,6 +67,7 @@ function useCapacitorPushNotifications(playSound: () => void) {
   const router = useRouter();
   useEffect(() => {
     if (typeof window === 'undefined' || !(window as any).Capacitor) return;
+
     import('@capacitor/push-notifications').then(({ PushNotifications }) => {
       PushNotifications.requestPermissions().then((result: any) => {
         if (result.receive === 'granted') {
@@ -61,13 +75,16 @@ function useCapacitorPushNotifications(playSound: () => void) {
         }
       });
       
+
+
       PushNotifications.createChannel({
-        id: 'fcm_custom_sound_channel_v2', 
-        name: 'Custom Sound Notifications',
-        importance: 4, // High importance is needed for sound
-        sound: 'notification.mp3', // The filename from 'android/app/src/main/res/raw'
-        visibility: 1,
-        vibration: true,
+      id: 'fcm_custom_sound_channel_v2',
+      name: 'Custom Sound Notifications',
+      description: 'Notifications with custom sound',
+      importance: 4,
+      sound: 'notification',
+      visibility: 1,
+      vibration: true,
       }).then(() => {
         console.log('Push notification channel created');
       }).catch(err => {
@@ -120,9 +137,9 @@ export default function App({ Component, pageProps }: AppProps) {
   useCapacitorPushNotifications(playSound);
   return (
     <>
+      <audio ref={audioRef} src="/notification.mp3" preload="auto" />
       <Component {...pageProps} />
       <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} newestOnTop closeOnClick pauseOnFocusLoss draggable pauseOnHover />
-      <audio ref={audioRef} src="/notification.mp3" preload="auto" />
     </>
   );
 }
