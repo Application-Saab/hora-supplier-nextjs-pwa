@@ -45,10 +45,31 @@ const DecorationOrderDetailsTab = ({
                             <h1>
                                 {product?.name}
                             </h1>
-
+                            {product?.inclusion && product?.inclusion.length > 0 && (
                             <div style={{ marginBottom: "12px" }}>
                                 {getInclusions(product?.inclusion, true)}
                             </div>
+                    )}
+
+                            {orderDetail.customInclusion?.length > 0 && (
+                                <div style={{ marginBottom: "12px" }}>
+                                    <div>
+                                        {orderDetail.customInclusion.map((item, index) => (
+                                            <div key={index} className="info-row">
+                                                <div className="info-icon">
+                                                    <Image
+                                                        src={checkIcon}
+                                                        alt="Info"
+                                                        className="info-icon-img"
+                                                    />
+                                                </div>
+
+                                                <div>{item}</div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
 
                             {decorationAddon?.length > 0 &&
                                 <div className="product-add-ons prod_sec" style={{ marginBottom: "12px" }}>
