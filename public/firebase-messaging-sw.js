@@ -22,6 +22,7 @@ messaging.onBackgroundMessage(function(payload) {
     icon: '/icon-192x192.png', // You can customize this
     data: {
       url: payload.data?.url || '/supplier-new-order', // Hardcoded URL to open on click
+      sound: payload.data?.sound || 'notification',
     }
   };
 

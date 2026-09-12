@@ -69,7 +69,6 @@ const Orderlist = () => {
           body: JSON.stringify({
             page: 1,
             per_page: 1000,
-            status: 1,
             order_status: 1,
             type: Number(supplierJobType),
             order_locality:
@@ -193,11 +192,16 @@ useEffect(() => {
   const filteredOrdersByDate = (date) => {
     return orders.filter((order) => {
       const isAcccepted = order.order_status === 1;
+
+      const isActiveOrEmergency =
+        order.status === 1 ||
+        (order.status === 0 && order.isEmergencyOrder === true);
+
       let dateMatches = "";
       if (order.order_date) {
         dateMatches = order.order_date.split("T")[0] === date;
       }
-      return isAcccepted && dateMatches;
+      return isAcccepted && isActiveOrEmergency && dateMatches;
     });
   };
 

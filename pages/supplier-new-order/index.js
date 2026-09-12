@@ -67,7 +67,6 @@ const Orderlist = () => {
           body: JSON.stringify({
             page: 1,
             per_page: 100,
-            status: 1,
             type: Number(supplierJobType),
             order_locality:
               supplierCity.charAt(0).toUpperCase() +
@@ -260,14 +259,16 @@ useEffect(() => {
 
   const bookedOrders = orders.filter((order) => order.order_status === 0);
 
+  const finalOrders = bookedOrders.filter((order) => order.status === 1 || (order.status === 0 && order.isEmergencyOrder === true));
+
   return (
     <Layout>
       <main className="order-list">
         <div className="orderlist-container">
-          {bookedOrders.length === 0 ? (
+          {finalOrders.length === 0 ? (
             <p className="no-orders-message">No orders available</p>
           ) : (
-            bookedOrders.map((order) => {
+            finalOrders.map((order) => {
               const orderStatus = getOrderStatus(order?.order_status);
               return (
                 <OrderList

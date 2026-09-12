@@ -44,17 +44,23 @@ async function sendFcmTokenToBackend(tokenValue: string) {
 function useNotificationAudio() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  const playSound = useCallback(async () => {
+  const playSound = useCallback(async (sound = 'notification') => {
     try {
       if (!audioRef.current) {
         console.log('Audio element not available');
         return;
       }
 
+      audioRef.current.src =
+        sound === 'emergency_notification'
+          ? '/emergency_notification.mp3'
+          : '/notification.mp3';
+
       audioRef.current.currentTime = 0;
+
       await audioRef.current.play();
 
-      console.log('Notification sound played');
+      console.log(`Notification sound played: ${sound}`);
     } catch (error) {
       console.error('Could not play notification sound:', error);
     }
@@ -63,7 +69,7 @@ function useNotificationAudio() {
   return { audioRef, playSound };
 }
 
-function useCapacitorPushNotifications(playSound: () => void) {
+function useCapacitorPushNotifications(playSound: (sound?: string) => void) {
   const router = useRouter();
   useEffect(() => {
     if (typeof window === 'undefined' || !(window as any).Capacitor) return;
@@ -91,6 +97,22 @@ function useCapacitorPushNotifications(playSound: () => void) {
         console.error('Push notification channel creation failed:', err);
       });
 
+      PushNotifications.createChannel({
+        id: 'fcm_emergency_sound_channel',
+        name: 'Emergency Order Notifications',
+        description: 'Emergency sound for payment pending orders',
+        importance: 4,
+        sound: 'emergency_notification',
+        visibility: 1,
+        vibration: true,
+      })
+        .then(() => {
+          console.log('Emergency notification channel created');
+        })
+        .catch(err => {
+          console.error('Emergency notification channel creation failed:', err);
+        });
+
 
       PushNotifications.addListener('registration', (token: { value: string }) => {
         console.log('Push registration success, token: ' + token.value);
@@ -102,17 +124,32 @@ function useCapacitorPushNotifications(playSound: () => void) {
       });
 
       PushNotifications.addListener('pushNotificationReceived', (notification: any) => {
-        console.log('Push received: ', notification);
-        // Optionally, show a toast or update UI
-        // Prevent multiple triggers within 5 seconds
-        if (!(window as any)._lastNotificationTime || Date.now() - (window as any)._lastNotificationTime > 5000) {
-          (window as any)._lastNotificationTime = Date.now();
-          const title = notification.title || 'Notification';
-          const body = notification.body || '';
-          toast.info(<div><b>{title}</b><div>{body}</div></div>);
-          playSound();
+          console.log('Push received: ', notification);
+          if (
+            !(window as any)._lastNotificationTime ||
+            Date.now() - (window as any)._lastNotificationTime > 5000
+          ) {
+            (window as any)._lastNotificationTime = Date.now();
+
+            const title = notification.title || 'Notification';
+            const body = notification.body || '';
+
+            const sound =
+              notification?.data?.sound || 'notification';
+
+            console.log('Notification sound:', sound);
+
+            toast.info(
+              <div>
+                <b>{title}</b>
+                <div>{body}</div>
+              </div>
+            );
+
+            playSound(sound);
+          }
         }
-      });
+      );
 
       PushNotifications.addListener('pushNotificationActionPerformed', (notification: any) => {
         const url =
@@ -137,7 +174,7 @@ export default function App({ Component, pageProps }: AppProps) {
   useCapacitorPushNotifications(playSound);
   return (
     <>
-      <audio ref={audioRef} src="/notification.mp3" preload="auto" />
+      <audio ref={audioRef} preload="auto" />
       <Component {...pageProps} />
       <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} newestOnTop closeOnClick pauseOnFocusLoss draggable pauseOnHover />
     </>
