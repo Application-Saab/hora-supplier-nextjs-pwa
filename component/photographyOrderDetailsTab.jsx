@@ -48,6 +48,33 @@ const PhotographyOrderDetailsTab = ({
                 <div style={{ fontSize: 13 }}>NA</div>
             )}
             <div className="fw-semiBold myOrderDetails-heading">
+                Themes
+            </div>
+
+            {orderDetail?.themes?.length > 0 ? (
+                orderDetail.themes.map((item, index) => (
+                    <div key={index} className="info-row">
+                        <Image
+                            src={checkIcon}
+                            alt=""
+                            width={13}
+                            height={13}
+                            style={{ height: 13, width: 13, marginRight: '5px', marginTop: "5px" }}
+                        />
+                        <div>
+                            <div style={{ fontWeight: "bold" }}>
+                                {item?.title || "NA"}
+                            </div>
+                            <div style={{ fontSize: "14px", color: "#555" }}>
+                                {item?.description || "No description"}
+                            </div>
+                        </div>
+                    </div>
+                ))
+            ) : (
+                <div style={{ fontSize: 13 }}>NA</div>
+            )}
+            <div className="fw-semiBold myOrderDetails-heading">
                 Additional Comments
             </div>
 
