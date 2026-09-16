@@ -360,6 +360,7 @@ useEffect(() => {
                             orderDate={formatDate(order.order_date)}
                             orderTime={order.order_time}
                             balanceAmount={order.balance_amount}
+                            isPaymentDone={order?.isPaymentDone}
                             noOfPeople={order.no_of_people}
                             viewDetailsHandler={() => handleViewDetail(order)}
                             customerDetailsBtnShow={true}

@@ -18,6 +18,7 @@ const OrderDetailTab = ({
   decorationComments,
   decorationAddon,
   balanceAmount,
+  refetchOrderDetails = () => { },
 }) => {
   const decorationArray = Array.isArray(decorationItems)
     ? decorationItems
@@ -37,8 +38,10 @@ const OrderDetailTab = ({
   const [limitData, setLimitData] = useState(false);
   const [loadingLimit, setLoadingLimit] = useState(true);
   const [limitDetails, setLimitDetails] = useState({ count: 0, limit: 0 });
-  const [orderStatus, setOrderStatus] = useState(orderDetail?.order_status);
 
+  const emergencyResponse = orderDetail?.processedBy?.find(
+    (item) => item?.id?.toString() === supplierID?.toString()
+  );
 
   // const [name, setname] = useState();
 
@@ -87,23 +90,33 @@ const OrderDetailTab = ({
     }
   };
 
-  const contactUsRedirection = async () => {
+  const handleEmergencyAction = async (action) => {
     try {
-      window.open(
-        `whatsapp://send?phone=+918982321487&text=I've canceled my order, kindly assist with the refund process. Thanks!`
-      );
-    } catch (error) {
-      console.log("contactUsRedirection error", error);
-    }
-  };
+      const response = await fetch(`${BASE_URL}/api/order/process-emergency-order`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          orderId: orderDetail?._id,
+          supplierId: supplierID,
+          action,
+        }),
+      });
 
-  const cancelcontactUsRedirection = async () => {
-    try {
-      window.open(
-        "whatsapp://send?phone=+918982321487&text=I%20have%20canceled%20my%20order%20kindly%20assist%20with%20the%20refund%20process%20Thanks!"
-      );
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Something went wrong");
+      }
+
+      console.log(data.message);
+
+      await refetchOrderDetails();
+
+      // yaha agar popup close / order remove karna ho toh kar sakte ho
     } catch (error) {
-      console.log("cancelcontactUsRedirection error", error);
+      console.error("Emergency order action error:", error);
     }
   };
 
@@ -264,23 +277,76 @@ const OrderDetailTab = ({
         balanceAmount={balanceAmount}
         bulletItems={bulletItems}
         />
-      ) : null}
+          ) : null}        
 
-
-          <div className="bg-white p-10">
-            {limitData && (
-              <div className="limit-warning-label">
-                ⚠️ You have already reached your daily limit of <strong>{limitDetails.count}/{limitDetails.limit}</strong> orders for today.
+          {orderDetail?.isEmergencyOrder === true &&
+            orderDetail?.isPaymentDone === false ? (
+            emergencyResponse ? (
+              <div
+                className={`emergency-order-message ${emergencyResponse.action === "yes"
+                    ? "emergency-accepted"
+                    : "emergency-rejected"
+                  }`}
+              >
+                <p>
+                  You have already{" "}
+                  <strong>
+                    {emergencyResponse.action === "yes"
+                      ? "accepted"
+                      : "rejected"}
+                  </strong>{" "}
+                  this emergency order.
+                </p>
               </div>
-            )}
-          </div>
+            ) : (
+              <div className="emergency-order-message">
+                <p>
+                  This is an emergency order. Please confirm whether you want to
+                  proceed with this order or reject it.
+                </p>
 
-      <div className="accept-btn-container" >
-        <button
-          onClick={acceptOrder}
-          disabled={limitData}
-          className="acceptOrder acceptbutton">Accept Order</button>
-      </div>
+                <div className="emergency-order-actions">
+                  <button
+                    className="emergency-reject-btn"
+                    onClick={() => handleEmergencyAction("no")}
+                  >
+                    Reject
+                  </button>
+
+                  <button
+                    className="emergency-proceed-btn"
+                    onClick={() => handleEmergencyAction("yes")}
+                  >
+                    Yes, Proceed
+                  </button>
+                </div>
+              </div>
+            )
+          ) : (
+            <>
+              <div className="bg-white p-10">
+                {limitData && (
+                  <div className="limit-warning-label">
+                    ⚠️ You have already reached your daily limit of{" "}
+                    <strong>
+                      {limitDetails.count}/{limitDetails.limit}
+                    </strong>{" "}
+                    orders for today.
+                  </div>
+                )}
+              </div>
+
+              <div className="accept-btn-container">
+                <button
+                  onClick={acceptOrder}
+                  disabled={limitData}
+                  className="acceptOrder acceptbutton"
+                >
+                  Accept Order
+                </button>
+              </div>
+            </>
+          )}
     </> 
     }
     </>
