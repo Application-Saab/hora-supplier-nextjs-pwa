@@ -3,10 +3,10 @@ import OrderDetailHeader from "../../component/OrderDetailHeader/index";
 import OrderDetailTab from "./OrderDetailTab/index";
 import {
   BASE_URL,
-  GET_DECORATION_DETAILS,
   ORDER_DETAILS_ENDPOINT,
   GET_BOOKING_ORDER_DETAILS,
-  GET_PHOTOGRAPHY_ORDER_DETAILS
+  GET_PHOTOGRAPHY_ORDER_DETAILS,
+  GET_GALLERY_DATA,
 } from "../../apiconstant/apiconstant";
 import { useRouter } from "next/router";
 import Layout from "../../component/Layout";
@@ -29,6 +29,7 @@ const OrderDetail = () => {
   const [decorationComments, setDecorationComments] = useState("");
   const [decorationAddon, setDecorationAddon] = useState("");
   const [balanceAmount, setBalanceAmount] = useState("");
+  const [galleryDetails, setGalleryDetails] = useState(null);
 
   orderType = parseInt(orderType);
 
@@ -52,10 +53,11 @@ const OrderDetail = () => {
   }, [orderType, orderId, apiOrderId]);
 
   useEffect(() => {
-        if(orderType == 8 ){
-          fetchPhotographyDetails();
-        }
-      }, [orderType])
+    if (orderType === 8) {
+      fetchPhotographyDetails();
+      fetchGalleryDetails();
+    }
+  }, [orderType, orderId]);
 
   const fetchPhotographyDetails = async () => {
         try {
@@ -147,6 +149,27 @@ const OrderDetail = () => {
     }
   };
 
+  const fetchGalleryDetails = async () => {
+    try {
+      const response = await fetch(
+        `${BASE_URL}${GET_GALLERY_DATA}/${orderId}`
+      );
+
+      const responseData = await response.json();
+
+      if (response.ok) {
+        console.log("Folder Details:", responseData);
+        setGalleryDetails(responseData?.data);
+      } else {
+        console.log("Failed to fetch folder details:", responseData);
+        setGalleryDetails(null);
+      }
+    } catch (error) {
+      console.log("fetchFolderDetails error", error);
+      setGalleryDetails(null);
+    }
+  };
+
   if (loading) {
     return (
       <center>
@@ -178,6 +201,7 @@ const OrderDetail = () => {
             decorationComments={decorationComments}
             decorationAddon={decorationAddon}
             balanceAmount={balanceAmount}
+            galleryDetails={galleryDetails}
           />
         </div>
       </div>

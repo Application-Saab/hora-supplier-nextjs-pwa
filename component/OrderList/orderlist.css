@@ -396,3 +396,24 @@ margin-top: 2px !important;
       font-size: 18px;
       text-align: center;
     }
+
+    .capsule-tab-active{
+      background-color: #97538C;
+      border-radius: 6px;
+      color: white;
+      padding: 8px 10px;
+      border: none;
+    }
+    .capsule-tab {
+    border:1px solid #97538C;
+    background: transparent;
+    color: #97538C;
+    padding: 8px 10px;
+    border-radius: 6px;
+    }
+    .capsule-tabs-container{
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    justify-content: center;
+    }

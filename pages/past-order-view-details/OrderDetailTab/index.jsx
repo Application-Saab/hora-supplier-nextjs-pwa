@@ -1,16 +1,13 @@
-import React, { useState, useEffect, useRef } from "react";
+
+import React, { useState, useEffect } from "react";
 import OrderDetailsMenu from "../OrderDetailsMenu";
 import OrderDetailsIngre from "../OrderDetailsIngre";
 import OrderDetailsAppliances from "../OrderDetailsAppliances";
-import { useRouter } from "next/router";
-import {
-  BASE_URL,
-  ACCEPT_ORDER,
-  START_ORDER,
-} from "../../../apiconstant/apiconstant";
+import { BASE_URL } from "../../../apiconstant/apiconstant";
 import axios from "axios";
 import DecorationOrderDetailsTab from "../../../component/decorationOrderDetailsTab";
 import PhotographyOrderDetailsTab from "../../../component/photographyOrderDetailsTab";
+import CapsuleUpload from "./Capsuleupload";
 
 // const BASE_URL = "";
 // const ORDER_CANCEL = "";
@@ -22,13 +19,6 @@ import PhotographyOrderDetailsTab from "../../../component/photographyOrderDetai
 // order type 6 Food Delivery
 // order type 7 Live Catering
 
-const cleanHTML = (htmlString) => {
-  // Remove all <div> and </div> tags, keep inner content
-  return htmlString.replace(/<\/?div>/g, "").trim();
-};
-
-const SUBMIT_LINK_ENDPOINT = "/api/photo/drive/add-order-drive-link";
-
 const OrderDetailTab = ({
   orderDetail,
   orderType,
@@ -36,27 +26,13 @@ const OrderDetailTab = ({
   decorationComments,
   decorationAddon,
   balanceAmount,
+  galleryDetails = {},
 }) => {
-  const router = useRouter();
   const decorationArray = Array.isArray(decorationItems) ? decorationItems : [decorationItems];
-  const { apiOrderId } = router.query;
   const [tab, setTab] = useState("Menu");
-  const [orderStatus, setOrderStatus] = useState(orderDetail?.order_status);
-
-  const [supplierID, setSupplierID] = useState(null);
-  const [otp, setOtp] = useState(null);
-
-  const [otp1, setOtp1] = useState(["", "", "", ""]);
-  const [isOtpMatched, setIsOtpMatched] = useState(false);
-  const inputRefs = useRef([]);
-  const [errorMessage, setErrorMessage] = useState("");
-
-
-  const [driveLink, setDriveLink] = useState("");
-
-
   const [driveLinksInput, setDriveLinksInput] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [uploadTab, setUploadTab] = useState("EventCapsuleUpload");
 
 
   const saveOrderDriveLinks = async (currentOrder, driveLinksInput) => {
@@ -142,25 +118,6 @@ const OrderDetailTab = ({
     }
   }, [orderDetail]);
 
-
-  // const handleSaveAllLinks = async (currentOrder) => {
-  //   try {
-  //     setLoading(true);
-
-  //     const data = await saveOrderDriveLinks(currentOrder, driveLinksInput);
-
-  //     alert(data.message || "All drive links processed successfully!");
-
-  //   } catch (error) {
-  //     console.error("Error in component while saving links:", error);
-
-  //     alert(error.response?.data?.message || error.message || "Something went wrong");
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
-
   const totalInclusionsCount = driveLinksInput.length;
 
   const submittedLinksCount = driveLinksInput.filter(
@@ -168,8 +125,6 @@ const OrderDetailTab = ({
   ).length;
 
   const areAllLinksSubmitted = totalInclusionsCount > 0 && submittedLinksCount === totalInclusionsCount;
-
-
   const [submittingIndex, setSubmittingIndex] = useState(null);
 
   const handleSaveSingleLink = async (index, currentOrder) => {
@@ -194,7 +149,7 @@ const OrderDetailTab = ({
       );
 
     }
-     catch (error) {
+    catch (error) {
       console.error("Error while saving link:", error);
     }
     finally {
@@ -202,153 +157,10 @@ const OrderDetailTab = ({
       setSubmittingIndex(null);
     }
   }
-
-
-
   const handleDynamicLinkChange = (index, value) => {
     const updatedLinks = [...driveLinksInput];
     updatedLinks[index].link = value;
     setDriveLinksInput(updatedLinks);
-  };
-
-
-  const formatOrderMessage = (orderDetail, decorationItems) => {
-    const orderId = orderDetail?.order_id || "";
-    const orderDate = orderDetail?.order_date
-      ? new Date(orderDetail.order_date).toLocaleDateString()
-      : "";
-    const orderTime = orderDetail?.order_time || "";
-    const city = orderDetail?.addressId?.city || "";
-    const address1 = orderDetail?.addressId?.address1 || "";
-    const address2 = orderDetail?.addressId?.address2 || "";
-    const locality = orderDetail?.order_locality || "";
-    const pincode = orderDetail?.order_pincode || "";
-    const totalAmount = orderDetail?.total_amount || "";
-
-    // Decoration items with inclusions
-    const decorations = decorationArray?.length
-      ? decorationArray
-        .map((item, i) => {
-          const inclusions = item.inclusion?.length
-            ? item.inclusion
-              .map((inc) =>
-                inc
-                  .replace(/<div>/g, "• ")
-                  .replace(/<\/div>/g, "\n")
-                  .trim()
-              )
-              .join("")
-            : "No inclusions";
-
-          return `${i + 1}. ${item.name}\n${inclusions}`;
-        })
-        .join("\n\n")
-      : "No decoration items";
-
-    return `
-📝 *Order Details*
-------------------------
-Order Id: ${orderId}
-Order Date: ${orderDate}
-City: ${city}
-Time: ${orderTime}
-Address1: ${address1}
-Address2: ${address2}
-Locality: ${locality}
-Pincode: ${pincode}
-Total Amount: ₹${totalAmount}
-
-🎉 *Decoration Items*
-------------------------
-${decorations}
-  `.trim();
-  };
-
-  let orderOtp;
-
-  if (
-    typeof window !== "undefined" &&
-    typeof window.localStorage !== "undefined"
-  ) {
-    orderOtp = localStorage.getItem("orderOtp");
-  }
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      setSupplierID(localStorage.getItem("supplierID"));
-      setOtp(localStorage.getItem("otp"));
-    }
-  }, []);
-
-  const cancelOrder = async () => {
-    try {
-      const token = await localStorage.getItem("token");
-
-      const response = await fetch(BASE_URL + ACCEPT_ORDER, {
-        method: "POST",
-        headers: {
-          Accept: "application/json, text/plain, /",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          Authorisation: token,
-          otp: otp,
-          _id: apiOrderId,
-          userId: supplierID,
-        }),
-      });
-
-      alert("Order accepted successfully");
-      // router.push("/orderlist");
-    } catch (error) {
-      console.log("cancelOrder error", error);
-    }
-  };
-
-  const contactUsRedirection = async () => {
-    try {
-      window.open(
-        `whatsapp://send?phone=+918982321487&text=I've canceled my order, kindly assist with the refund process. Thanks!`
-      );
-    } catch (error) {
-      console.log("contactUsRedirection error", error);
-    }
-  };
-
-  const cancelcontactUsRedirection = async () => {
-    try {
-      window.open(
-        "whatsapp://send?phone=+918982321487&text=I%20have%20canceled%20my%20order%20kindly%20assist%20with%20the%20refund%20process%20Thanks!"
-      );
-    } catch (error) {
-      console.log("cancelcontactUsRedirection error", error);
-    }
-  };
-
-  const handleDivClick = () => {
-    setShowOtpInputs(true);
-  };
-
-  const handleChange = (value, index) => {
-    const newOtp = [...otp1];
-    newOtp[index] = value;
-    setOtp1(newOtp);
-
-    if (value && index < otp1.length - 1) {
-      inputRefs.current[index + 1].focus();
-    }
-
-    if (newOtp.join("") === orderOtp) {
-      setIsOtpMatched(true);
-      setErrorMessage("");
-    } else {
-      setIsOtpMatched(false);
-      if (newOtp.join("").length === otp1.length) {
-        setErrorMessage("Wrong OTP, please try again.");
-      } else {
-        setErrorMessage("");
-      }
-    }
   };
 
   function parseInclusionToBullets(inclusionData) {
@@ -370,41 +182,6 @@ ${decorations}
 
   // In your component
   const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography?.inclusion);
-
-
-  const handleSubmit = () => {
-    const currDate = new Date().toLocaleDateString();
-    const currTime = new Date().toLocaleTimeString();
-
-    const currDateTime = currDate + currTime;
-    try {
-      const token = localStorage.getItem("token");
-
-      const response = fetch(BASE_URL + START_ORDER, {
-        method: "POST",
-        headers: {
-          Accept: "application/json, text/plain, /",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          // Authorisation: token,
-          otp: otp,
-          _id: apiOrderId,
-          userId: supplierID,
-          job_start_time: currDateTime,
-        }),
-      });
-
-      router.push({
-        pathname: `/job-complete`,
-        query: { apiOrderId },
-      });
-    } catch (error) {
-      console.log("acceptOrder error", error);
-    }
-  };
-
-
 
   const handleFileUpload = async (e) => {
     const files = e.target.files;
@@ -639,79 +416,102 @@ ${decorations}
         </div>
 
       ) : orderType == 8 ? (
-                <div>
-                  <PhotographyOrderDetailsTab
-                    orderDetail={orderDetail}
-                    decorationComments={decorationComments}
-                    balanceAmount={balanceAmount}
-                    bulletItems={bulletItems}
-                  />
-                  {driveLinksInput.length > 0 && (
-                    <div className="actual-image-container">
-                      <div className="fw-semiBold">Current Status</div>
-                      {areAllLinksSubmitted ? (
-                        <span
-                          style={{
-                            color: "#28a745",
-                            fontWeight: "500",
-                            fontSize: "13px",
-                          }}
-                        >
-                          ✓ All Drive Link Submitted ( {submittedLinksCount} / {totalInclusionsCount} )
-                        </span>
-                      ) : (
-                        <span
-                          style={{
-                            color: "#dc3545",
-                            fontWeight: "500",
-                            fontSize: "12px",
-                          }}
-                        >
-                          ✗ All Drive Link Not Submitted Yet ( {submittedLinksCount} / {totalInclusionsCount} )
-                        </span>
-                      )}
+        <div>
+          <PhotographyOrderDetailsTab
+            orderDetail={orderDetail}
+            decorationComments={decorationComments}
+            balanceAmount={balanceAmount}
+            bulletItems={bulletItems}
+          />
 
-                      <div className="submit-link-container">
-                        <div className="link-header">Submit Links</div>
+          <div className="capsule-tabs-container" style={{ marginTop: "20px" }}>
+            <button
+              className={`${uploadTab === "EventCapsuleUpload" ? "capsule-tab-active" : "capsule-tab"}`}
+              onClick={() => setUploadTab("EventCapsuleUpload")}
+            >
+              Upload Photos / Videos
+            </button>
 
-                        {driveLinksInput.map((item, index) => {
-                          const isInputEmpty = !item.link || item.link.trim() === "";
-                          const isBtnDisabled = loading || isInputEmpty || item.isExisting;
-
-                          return (
-                            <div key={index} className="drive-link-group" style={{ marginBottom: '8px' }}>
-                              <label className="drive-link-label">
-                                {apiKeyToInclusionMap[item.linkType] || item.linkType}
-                              </label>
-
-                              <input
-                                type="text"
-                                disabled={item.isExisting}
-                                placeholder={`Paste Google Drive link for ${apiKeyToInclusionMap[item.linkType] || item.linkType
-                                  }`}
-                                value={item.link}
-                                onChange={(e) => handleDynamicLinkChange(index, e.target.value)}
-                                className="drive-link-input"
-                              />
-
-                              {!item.isExisting && (
-                                <div className="drivelinkBtnContainer" style={{ marginTop: '8px' }}>
-                                  <button
-                                    onClick={() => handleSaveSingleLink(index, orderDetail)}
-                                    disabled={isBtnDisabled}
-                                    className={`save-btn-link ${isBtnDisabled ? "save-btn-disabled" : ""}`}
-                                  >
-                                    {loading && submittingIndex === index ? "Submitting..." : "Save Link"}
-                                  </button>
-                                </div>
-                              )}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
+            <button
+              className={`${uploadTab === "DriveLinks" ? "capsule-tab-active" : "capsule-tab"}`}
+              onClick={() => setUploadTab("DriveLinks")}
+            >
+              Upload Drive Links
+            </button>
+          </div>
+          {uploadTab === "EventCapsuleUpload" && (
+            <CapsuleUpload galleryDetails={galleryDetails} />
+          )}
+          {uploadTab === "DriveLinks" && (
+            <>
+              {driveLinksInput.length > 0 && (
+                <div className="actual-image-container">
+                  <div className="fw-semiBold">Current Status</div>
+                  {areAllLinksSubmitted ? (
+                    <span
+                      style={{
+                        color: "#28a745",
+                        fontWeight: "500",
+                        fontSize: "13px",
+                      }}
+                    >
+                      ✓ All Drive Link Submitted ( {submittedLinksCount} / {totalInclusionsCount} )
+                    </span>
+                  ) : (
+                    <span
+                      style={{
+                        color: "#dc3545",
+                        fontWeight: "500",
+                        fontSize: "12px",
+                      }}
+                    >
+                      ✗ All Drive Link Not Submitted Yet ( {submittedLinksCount} / {totalInclusionsCount} )
+                    </span>
                   )}
+
+                  <div className="submit-link-container">
+                    <div className="link-header">Submit Links</div>
+
+                    {driveLinksInput.map((item, index) => {
+                      const isInputEmpty = !item.link || item.link.trim() === "";
+                      const isBtnDisabled = loading || isInputEmpty || item.isExisting;
+
+                      return (
+                        <div key={index} className="drive-link-group" style={{ marginBottom: '8px' }}>
+                          <label className="drive-link-label">
+                            {apiKeyToInclusionMap[item.linkType] || item.linkType}
+                          </label>
+
+                          <input
+                            type="text"
+                            disabled={item.isExisting}
+                            placeholder={`Paste Google Drive link for ${apiKeyToInclusionMap[item.linkType] || item.linkType
+                              }`}
+                            value={item.link}
+                            onChange={(e) => handleDynamicLinkChange(index, e.target.value)}
+                            className="drive-link-input"
+                          />
+
+                          {!item.isExisting && (
+                            <div className="drivelinkBtnContainer" style={{ marginTop: '8px' }}>
+                              <button
+                                onClick={() => handleSaveSingleLink(index, orderDetail)}
+                                disabled={isBtnDisabled}
+                                className={`save-btn-link ${isBtnDisabled ? "save-btn-disabled" : ""}`}
+                              >
+                                {loading && submittingIndex === index ? "Submitting..." : "Save Link"}
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
+              )}
+            </>
+          )}
+        </div>
       ) : null}
       <div>
         {/* <h1>sohan</h1>
@@ -756,171 +556,3 @@ ${decorations}
 };
 
 export default OrderDetailTab;
-
-const styles = {
-  container: {
-    maxWidth: "600px",
-    margin: "2px auto",
-    padding: "20px",
-    background: "#f8f9fa",
-    minHeight: "100vh",
-  },
-  heading: {
-    marginBottom: "20px",
-    textAlign: "center",
-    fontSize: "24px",
-    fontWeight: "600",
-    color: "#97538C",
-    fontWeight: "bold",
-  },
-  orderItem: {
-    padding: "15px",
-    marginBottom: "12px",
-    borderRadius: "8px",
-    border: "1px solid #e0e0e0",
-    background: "#fff",
-    boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
-  },
-  topRow: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: "8px",
-  },
-  orderIdText: {
-    fontSize: "16px",
-    fontWeight: "500",
-    color: "#333",
-    fontFamily:
-      "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-  },
-  reviewText: {
-    fontSize: "13px",
-    color: "#666",
-    fontFamily:
-      "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-  },
-  button: {
-    padding: "6px 14px",
-    border: "1px solid",
-    borderRadius: "4px",
-    fontSize: "13px",
-    fontWeight: "500",
-    cursor: "pointer",
-    fontFamily:
-      "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-    transition: "all 0.2s ease",
-  },
-  viewDetailsBtn: {
-    background: "#fff",
-    color: "#9c4d97",
-    borderColor: "#9c4d97",
-  },
-  submittedBtn: {
-    background: "#fff",
-    color: "#666",
-    borderColor: "#d0d0d0",
-    cursor: "default",
-  },
-  statusText: {
-    fontSize: "13px",
-    color: "#28a745",
-    fontWeight: "500",
-    fontFamily:
-      "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-  },
-  bottomRow: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  overlay: {
-    position: "fixed",
-    top: 0,
-    left: 0,
-    width: "100vw",
-    height: "100vh",
-    background: "rgba(0,0,0,0.5)",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    zIndex: 1000,
-  },
-  modal: {
-    background: "#fff",
-    borderRadius: "12px",
-    padding: "0",
-    width: "500px",
-    maxWidth: "90%",
-    maxHeight: "85vh",
-    overflow: "hidden",
-    boxShadow: "0 10px 40px rgba(0,0,0,0.2)",
-  },
-  modalHeader: {
-    padding: "20px 24px",
-    borderBottom: "1px solid #e0e0e0",
-    background: "#9c4d97",
-    color: "#fff",
-  },
-  modalTitle: {
-    fontSize: "18px",
-    fontWeight: "600",
-    margin: 0,
-    fontFamily:
-      "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-  },
-  modalBody: {
-    padding: "24px",
-    maxHeight: "calc(85vh - 200px)",
-    overflowY: "auto",
-  },
-  detailRow: {
-    display: "flex",
-    marginBottom: "16px",
-    fontSize: "14px",
-    fontFamily:
-      "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-  },
-  detailLabel: {
-    fontWeight: "600",
-    color: "#555",
-    minWidth: "140px",
-    marginRight: "12px",
-  },
-  detailValue: {
-    color: "#333",
-    flex: 1,
-  },
-  inputText: {
-    width: "100%",
-    padding: "10px 12px",
-    border: "1px solid #d0d0d0",
-    borderRadius: "6px",
-    marginTop: "16px",
-    fontSize: "14px",
-    fontFamily:
-      "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-    resize: "vertical",
-    minHeight: "80px",
-  },
-  modalFooter: {
-    padding: "16px 24px",
-    borderTop: "1px solid #e0e0e0",
-    display: "flex",
-    justifyContent: "flex-end",
-    gap: "12px",
-    background: "#f8f9fa",
-  },
-  cancelBtn: {
-    padding: "8px 20px",
-    background: "#fff",
-    color: "#666",
-    border: "1px solid #d0d0d0",
-    borderRadius: "6px",
-    cursor: "pointer",
-    fontSize: "14px",
-    fontWeight: "500",
-    fontFamily:
-      "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-  },
-};

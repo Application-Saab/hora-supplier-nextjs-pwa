@@ -1,4 +1,4 @@
-export const BASE_URL="https://horaservices.com";
+export const BASE_URL ="http://localhost:9000";
 export const OTP_GENERATE_END_POINT= "/api/user/otp_generate";
 export const API_SUCCESS_CODE=200;
 export const OTP_VERIFY_ENDPOINT = "/api/user/otp_verify";
@@ -23,3 +23,5 @@ export const COMPLETE_ORDER = "/api/order/completeOrder";
 export const GET_PHOTOGRAPHY_BY_NAME = "/api/photography/searchByTag/66c96b4e22ed47b72117e09a"
 export const GET_PHOTOGRAPHY_ORDER_DETAILS = "/api/order/order_details_photography"
 export const ORDER_INGREDIENTS = "/api/order/getIngredientByOrder"
+
+export const GET_GALLERY_DATA = "/api/internal/gallery-details";

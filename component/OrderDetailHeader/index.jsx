@@ -2,6 +2,8 @@ import React, { useEffect } from "react";
 
 const OrderDetailHeader = ({ orderDetail }) => {
 
+  console.log(orderDetail)
+
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
     const options = { day: "numeric", month: "short", year: "numeric", timeZone: "Asia/Kolkata" };
@@ -39,6 +41,15 @@ const OrderDetailHeader = ({ orderDetail }) => {
 
             </p>
           </div>
+
+          <div style={styles.leftColumn}>
+            {orderDetail?.order_id && (
+              <p className="mt-2">
+                <span className="fw-semiBold myOrderDetails-heading">Order Id:</span> {orderDetail.order_id + 10800}
+              </p>
+            )}
+          </div>
+
           <div style={styles.leftColumn}>
             {orderDetail?.order_locality && (
               <p className="mt-2">
