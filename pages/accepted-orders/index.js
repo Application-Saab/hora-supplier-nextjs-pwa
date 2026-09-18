@@ -69,6 +69,7 @@ const Orderlist = () => {
           body: JSON.stringify({
             page: 1,
             per_page: 1000,
+            status: 1,
             order_status: 1,
             type: Number(supplierJobType),
             order_locality:
@@ -193,15 +194,12 @@ useEffect(() => {
     return orders.filter((order) => {
       const isAcccepted = order.order_status === 1;
 
-      const isActiveOrEmergency =
-        order.status === 1 ||
-        (order.status === 0 && order.isEmergencyOrder === true);
 
       let dateMatches = "";
       if (order.order_date) {
         dateMatches = order.order_date.split("T")[0] === date;
       }
-      return isAcccepted && isActiveOrEmergency && dateMatches;
+      return isAcccepted && dateMatches;
     });
   };
 
@@ -360,7 +358,6 @@ useEffect(() => {
                             orderDate={formatDate(order.order_date)}
                             orderTime={order.order_time}
                             balanceAmount={order.balance_amount}
-                            isPaymentDone={order?.isPaymentDone}
                             noOfPeople={order.no_of_people}
                             viewDetailsHandler={() => handleViewDetail(order)}
                             customerDetailsBtnShow={true}

@@ -2,10 +2,10 @@ import Image from "next/image";
 import date_time_icon from '../../assets/date-time-icon-copy.png'
 import clock from '../../assets/clock.png'
 
-const OrderList = ({ orderId, isPaymentDone, statusClassName, status, orderType, orderDate, orderTime, noOfPeople, balanceAmount, viewDetailsHandler, customerDetailsHandler, customerDetailsBtnShow }) => {
+const OrderList = ({ orderId, isEmergencyOrder = false, statusClassName, status, orderType, orderDate, orderTime, noOfPeople, balanceAmount, viewDetailsHandler, customerDetailsHandler, customerDetailsBtnShow }) => {
     return (
          <div className="orderlist-order-card">
-        <div className={`${(isPaymentDone === true && orderDate.status == 0) ? "orderlist-order-div" : "emergencyOrderlist-order-div"} header comman-orderList-container`}>
+        <div className={`${(isEmergencyOrder === true && orderDate.status == 0) ? "orderlist-order-div" : "emergencyOrderlist-order-div"} header comman-orderList-container`}>
                      <div className="order-left-container">
                       <div style={{ color: "#fafafa", fontWeight: "600" }}>
                         Order Id: #{10800 + orderId}
@@ -69,7 +69,7 @@ const OrderList = ({ orderId, isPaymentDone, statusClassName, status, orderType,
                  
                     <div className="orderlist-button-div">
                       <button
-            className={`${isPaymentDone ? "view-text-bg" : "view-text-bg-emergency"} orderlist-view-details`}
+            className={`${(isEmergencyOrder === true && orderDate.status == 0) ? "view-text-bg" : "view-text-bg-emergency"} orderlist-view-details`}
                         onClick={viewDetailsHandler}
                       >
                         View Details

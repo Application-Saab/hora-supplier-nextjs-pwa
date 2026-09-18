@@ -261,8 +261,6 @@ useEffect(() => {
 
   const bookedOrders = orders.filter((order) => order?.order_status === 0 || order?.order_status === 7);
 
-  // const finalOrders = bookedOrders.filter((order) => order.status === 1 || (order.status === 0 && order.isEmergencyOrder === true));
-
 const finalOrders = bookedOrders.filter((order) => {
 
   if (order.toId) {
@@ -303,7 +301,7 @@ const finalOrders = bookedOrders.filter((order) => {
                   noOfPeople={order.no_of_people}
                   balanceAmount={order.balance_amount}
                   viewDetailsHandler={() => handleViewDetail(order)}
-                  isPaymentDone={order?.isPaymentDone}
+                  isEmergencyOrder={order?.isEmergencyOrder}
                 />
               );
             })
