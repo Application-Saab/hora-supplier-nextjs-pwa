@@ -3,10 +3,9 @@ import date_time_icon from '../../assets/date-time-icon-copy.png'
 import clock from '../../assets/clock.png'
 
 const OrderList = ({ orderId, isPaymentDone, statusClassName, status, orderType, orderDate, orderTime, noOfPeople, balanceAmount, viewDetailsHandler, customerDetailsHandler, customerDetailsBtnShow }) => {
-  console.log("hello", isPaymentDone)
     return (
          <div className="orderlist-order-card">
-        <div className={`${(isPaymentDone === true) ? "orderlist-order-div" : "emergencyOrderlist-order-div"} header comman-orderList-container`}>
+        <div className={`${(isPaymentDone === true && orderDate.status == 0) ? "orderlist-order-div" : "emergencyOrderlist-order-div"} header comman-orderList-container`}>
                      <div className="order-left-container">
                       <div style={{ color: "#fafafa", fontWeight: "600" }}>
                         Order Id: #{10800 + orderId}

@@ -264,6 +264,11 @@ useEffect(() => {
   // const finalOrders = bookedOrders.filter((order) => order.status === 1 || (order.status === 0 && order.isEmergencyOrder === true));
 
 const finalOrders = bookedOrders.filter((order) => {
+
+  if (order.toId) {
+    return false;
+  }
+
   // Emergency order
   if (order.status === 1 && order.isEmergencyOrder === true) {
     return order.processedBy?.some(
