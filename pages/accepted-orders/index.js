@@ -361,6 +361,7 @@ useEffect(() => {
                             noOfPeople={order.no_of_people}
                             viewDetailsHandler={() => handleViewDetail(order)}
                             customerDetailsBtnShow={true}
+                            order_status={order?.order_status}
                             customerDetailsHandler={() => {
                               if (
                                 isWithinFourHourWindow(
