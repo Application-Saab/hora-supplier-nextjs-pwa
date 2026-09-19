@@ -302,6 +302,7 @@ const finalOrders = bookedOrders.filter((order) => {
                   balanceAmount={order.balance_amount}
                   viewDetailsHandler={() => handleViewDetail(order)}
                   isEmergencyOrder={order?.isEmergencyOrder}
+                  order_status={order?.order_status}
                 />
               );
             })

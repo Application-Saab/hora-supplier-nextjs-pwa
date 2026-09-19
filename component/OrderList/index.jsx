@@ -2,10 +2,10 @@ import Image from "next/image";
 import date_time_icon from '../../assets/date-time-icon-copy.png'
 import clock from '../../assets/clock.png'
 
-const OrderList = ({ orderId, isEmergencyOrder = false, statusClassName, status, orderType, orderDate, orderTime, noOfPeople, balanceAmount, viewDetailsHandler, customerDetailsHandler, customerDetailsBtnShow }) => {
+const OrderList = ({ orderId, order_status = 0, isEmergencyOrder = false, statusClassName, status, orderType, orderDate, orderTime, noOfPeople, balanceAmount, viewDetailsHandler, customerDetailsHandler, customerDetailsBtnShow }) => {
     return (
          <div className="orderlist-order-card">
-        <div className={`${(isEmergencyOrder === true && orderDate.status == 0) ? "orderlist-order-div" : "emergencyOrderlist-order-div"} header comman-orderList-container`}>
+        <div className={`${(isEmergencyOrder == true && order_status == 7) ? "emergencyOrderlist-order-div" : "orderlist-order-div"} header comman-orderList-container`}>
                      <div className="order-left-container">
                       <div style={{ color: "#fafafa", fontWeight: "600" }}>
                         Order Id: #{10800 + orderId}
@@ -69,7 +69,7 @@ const OrderList = ({ orderId, isEmergencyOrder = false, statusClassName, status,
                  
                     <div className="orderlist-button-div">
                       <button
-            className={`${(isEmergencyOrder === true && orderDate.status == 0) ? "view-text-bg" : "view-text-bg-emergency"} orderlist-view-details`}
+            className={`${(isEmergencyOrder == true && order_status == 7) ? "view-text-bg-emergency" : "view-text-bg"} orderlist-view-details`}
                         onClick={viewDetailsHandler}
                       >
                         View Details
