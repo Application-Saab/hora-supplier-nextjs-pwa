@@ -145,6 +145,27 @@ const OrderDetail = () => {
     }
   };
 
+
+  const refetchOrderDetails = () => {
+    if (
+      orderType == 2 ||
+      orderType == 6 ||
+      orderType == 7
+    ) {
+      fetchOrderDetailsMenu();
+    } else if (orderType == 1) {
+      fetchDecorationOrderDetails();
+    } else if (
+      orderType == 3 ||
+      orderType == 4 ||
+      orderType == 5
+    ) {
+      fetchOrderDetails();
+    } else if (orderType == 8) {
+      fetchPhotographyDetails();
+    }
+  };
+
   if (loading) {
     return (
       <center>
@@ -176,6 +197,7 @@ const OrderDetail = () => {
             decorationComments={decorationComments}
             decorationAddon={decorationAddon}
             balanceAmount={balanceAmount}
+              refetchOrderDetails={refetchOrderDetails}
           />
         </div>
       </div>

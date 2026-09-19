@@ -67,7 +67,6 @@ const Orderlist = () => {
           body: JSON.stringify({
             page: 1,
             per_page: 100,
-            status: 1,
             type: Number(supplierJobType),
             order_locality:
               supplierCity.charAt(0).toUpperCase() +
@@ -134,6 +133,8 @@ useEffect(() => {
         return { status: "", className: "status-empty orderlist-status-badge" };
       case 6:
         return { status: "Expired", className: "orderlist-status-expired orderlist-status-badge" };
+      case 7:
+        return { status: "Emergency", className: "orderlist-status-expired orderlist-status-badge" }
       default:
         return { status: "Unknown", className: "status-unknown orderlist-status-badge" };
     }
@@ -258,16 +259,35 @@ useEffect(() => {
 
   }
 
-  const bookedOrders = orders.filter((order) => order.order_status === 0);
+  const bookedOrders = orders.filter((order) => order?.order_status === 0 || order?.order_status === 7);
+
+const finalOrders = bookedOrders.filter((order) => {
+
+  if (order.toId) {
+    return false;
+  }
+
+  // Emergency order
+  if (order.status === 1 && order.isEmergencyOrder === true) {
+    return order.processedBy?.some(
+      (processed) =>
+        processed.id === supplierID && processed.action === "yes"
+    );
+  }
+
+  // Existing condition for normal orders
+  return order.status === 1 || (order.status === 0 && order.isEmergencyOrder === true);
+});
+
 
   return (
     <Layout>
       <main className="order-list">
         <div className="orderlist-container">
-          {bookedOrders.length === 0 ? (
+          {finalOrders.length === 0 ? (
             <p className="no-orders-message">No orders available</p>
           ) : (
-            bookedOrders.map((order) => {
+            finalOrders.map((order) => {
               const orderStatus = getOrderStatus(order?.order_status);
               return (
                 <OrderList
@@ -281,6 +301,7 @@ useEffect(() => {
                   noOfPeople={order.no_of_people}
                   balanceAmount={order.balance_amount}
                   viewDetailsHandler={() => handleViewDetail(order)}
+                  isEmergencyOrder={order?.isEmergencyOrder}
                 />
               );
             })

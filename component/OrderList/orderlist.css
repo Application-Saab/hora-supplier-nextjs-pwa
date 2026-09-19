@@ -7,9 +7,15 @@
   position: relative;
 }
 .orderlist-order-div {
+  background: #97538C;
+}
+.emergencyOrderlist-order-div {
+  background: #c53225;
+}
+
+.comman-orderList-container {
   display: flex;
   justify-content: space-between;
-  background: #97538C;
   border-top-left-radius: 16.48px;
   border-top-right-radius: 16.48px;
   align-items: flex-start;
@@ -130,12 +136,17 @@
 .orderlist-view-details {
     border-radius: 7px;
     cursor: pointer;
-    background-color: #97538c;
     color: #fff;
     font-weight: 500;
     font-size: 13.82px;
     padding: 7px 19px !important;
     border: none;
+}
+.view-text-bg {
+    background-color: #97538c;
+}
+.view-text-bg-emergency{
+  background-color: #c53225;
 }
 .orderlist-container {
   display: flex;
@@ -395,4 +406,82 @@ margin-top: 2px !important;
       font-weight: 600;
       font-size: 18px;
       text-align: center;
+    }.emergency-order-message {
+      margin-top: 20px;
+      padding: 14px 16px;
+      background: #fff7f7;
+      border: 1px solid #f3b8b8;
+      border-left: 4px solid #a8071a;
+      border-radius: 8px;
+    }
+    
+    .emergency-order-message p {
+      margin: 0 0 14px;
+      color: #7f1d1d;
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1.5;
+    }
+    
+    .emergency-order-message p strong {
+      font-weight: 700;
+    }
+    
+    .emergency-order-actions {
+      display: flex;
+      gap: 10px;
+    }
+    
+    /* Common button */
+    .emergency-order-actions button {
+      padding: 8px 18px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    /* Reject */
+    .emergency-reject-btn {
+      background: #fff;
+      color: #a8071a;
+      border: 1px solid #a8071a;
+    }
+    
+    .emergency-reject-btn:hover {
+      background: #fff1f1;
+    }
+    
+    /* Yes, Proceed */
+    .emergency-proceed-btn {
+      background: #a8071a;
+      color: #fff;
+      border: 1px solid #a8071a;
+    }
+    
+    .emergency-proceed-btn:hover {
+      background: #8f0617;
+    }
+    
+    /* Already Accepted */
+    .emergency-accepted {
+      background: #f0fdf4;
+      border-color: #b7e4c7;
+      border-left-color: #03bc44;
+    }
+    
+    .emergency-accepted p {
+      color: #166534;
+    }
+    
+    /* Already Rejected */
+    .emergency-rejected {
+      background: #fff5f5;
+      border-color: #f1b5b5;
+      border-left-color: #a8071a;
+    }
+    
+    .emergency-rejected p {
+      color: #7f1d1d;
     }

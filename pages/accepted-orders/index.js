@@ -193,6 +193,8 @@ useEffect(() => {
   const filteredOrdersByDate = (date) => {
     return orders.filter((order) => {
       const isAcccepted = order.order_status === 1;
+
+
       let dateMatches = "";
       if (order.order_date) {
         dateMatches = order.order_date.split("T")[0] === date;
