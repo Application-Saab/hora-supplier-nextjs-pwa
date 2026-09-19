@@ -69,7 +69,7 @@ const OrderList = ({ orderId, order_status = 0, isEmergencyOrder = false, status
                  
                     <div className="orderlist-button-div">
                       <button
-            className={`${(isEmergencyOrder === true && orderDate.status == 0) ? "view-text-bg" : "view-text-bg-emergency"} orderlist-view-details`}
+            className={`${(isEmergencyOrder == true && order_status == 7) ? "view-text-bg-emergency" : "view-text-bg"} orderlist-view-details`}
                         onClick={viewDetailsHandler}
                       >
                         View Details
