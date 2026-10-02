@@ -84,7 +84,7 @@ const OrderDetailTab = ({
       });
 
       alert("Order accepted successfully");
-      router.push("/accepted-orders");
+      router.push("/hora-partner/accepted-orders");
     } catch (error) {
       console.log("acceptOrder error", error);
     }

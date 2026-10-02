@@ -21,7 +21,7 @@ messaging.onBackgroundMessage(function(payload) {
     body: payload.notification.body,
     icon: '/icon-192x192.png', // You can customize this
     data: {
-      url: payload.data?.url || '/supplier-new-order', // Hardcoded URL to open on click
+      url: payload.data?.url || '/hora-partner/supplier-new-order', // Hardcoded URL to open on click
       sound: payload.data?.sound || 'notification',
     }
   };
@@ -33,7 +33,7 @@ messaging.onBackgroundMessage(function(payload) {
 self.addEventListener('notificationclick', function(event) {
   event.notification.close();
 
-  const urlToOpen = event.notification.data.url || '/supplier-new-order';
+  const urlToOpen = event.notification.data.url || '/hora-partner/supplier-new-order';
 
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then(windowClients => {

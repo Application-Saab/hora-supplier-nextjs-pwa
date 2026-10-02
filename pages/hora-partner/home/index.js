@@ -1,0 +1,192 @@
+import React, { useState , useEffect } from "react";
+import logo from "../../../assets/new_logo_light.png.png";
+import bellLogo from "../../../assets/bell.png";
+import { BASE_URL , GET_USER_DETAIL_ENDPOINT } from "../../../apiconstant/apiconstant"
+import myAccountLogo from "../../../assets/myaccount_icon.png";
+import ratingLogo from "../../../assets/rating_icon.png";
+import acceptedOrderLogo from "../../../assets/tracking_icon.png";
+import walletLogo from "../../../assets/wallet_icon.png";
+import trackingLogo from "../../../assets/tracking_icon.png";
+import axios from 'axios';
+;import Image from "next/image";
+import Navbar from "../../../component/Navbar";
+import Link from "next/link";
+import Layout from "../../../component/Layout";
+import reportLogo from "../../../assets/report.png";
+import { useRouter } from "next/router";
+
+
+const Home = () => {
+const router = useRouter();
+  let supplierJobType;
+   let supplierID;
+
+  if (typeof window !== "undefined") {
+   supplierJobType = localStorage.getItem("supplierJobType");
+    supplierID = localStorage.getItem('supplierID');
+
+}
+
+  const menuItems = [
+    { id: 1, name: "New Orders", icon: bellLogo, path: "/hora-partner/supplier-new-order" },
+    // { id: 2, name: "My Wallet", icon: walletLogo, path: "/home" },
+    { id: 3, name: "My Account", icon: myAccountLogo, path: "/hora-partner/MyAccount" },
+    {
+      id: 4,
+      name: "Accepted Orders",
+      icon: trackingLogo,
+      path: "/hora-partner/accepted-orders",
+    },
+    // { id: 5, name: "My Ratings", icon: ratingLogo, path: "/hora-partner/my-ratings" },
+    // { id: 6, name: "Order Reports", icon: reportLogo, path: "/hora-partner/orders-details" },
+    // { id: 6, name: "Decoration Image Upload", icon: reportLogo, path: "decoration-image-upload" },  
+    { id: 6, name: "Past Order", icon: reportLogo, path: "/hora-partner/past-order" },
+      
+  ];
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    let token;
+    let mobileNumber;
+
+    if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
+      token = localStorage.getItem('token');
+      mobileNumber = localStorage.getItem('mobileNumber');
+    }	
+    const fetchData = async () => {
+      const url = `${BASE_URL}${GET_USER_DETAIL_ENDPOINT}/${supplierID}`;
+      const requestData = {
+        phone: mobileNumber
+      };
+
+      const headers = {
+        "Content-Type": "application/json",
+        'Authorization': token
+      };
+
+      try {
+        const response = await axios.get(url, {
+          params: requestData, // Use params for GET request
+          headers: headers
+        });
+
+        if (response.status === 200) {
+          if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
+            localStorage.setItem("supplierCity", response.data.data.city);
+            localStorage.setItem("supplierJobProfile", response.data.data.job_profile);
+            localStorage.setItem("supplierExperince", response.data.data.experience);
+            localStorage.setItem("supplierName", response.data.data.name);
+            localStorage.setItem("supplierJobType", response.data.data.order_type);
+            localStorage.setItem("supplierAge", response.data.data.age);
+            localStorage.setItem("status", response?.data?.data?.status);
+          }	
+
+
+        }
+      } catch (error) {
+        console.error('Error fetching user details:', error);
+      }
+    };
+
+    fetchData();
+  }, []); 
+
+
+
+  return (
+    <>
+    <Layout showBackButton={false}>
+      <div className="container">
+        <div style={{ marginTop: "10px" }}>
+          <div className="main-menu-container">
+            <div className="menu-grid">
+              {menuItems.map((item) => (
+                <div key={item.id} className="menu-item">
+                  <Link href={item.path}>
+                    <Image
+                      src={item.icon.src}
+                      alt={item.name}
+                      width={100}
+                      height={100}
+                    />
+                    <p style={{ font: "Roboto" }}>{item.name}</p>
+                  </Link>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+
+         <>
+    {supplierJobType === "8" ? (
+      <div style={{
+        backgroundColor: 'white',
+        borderRadius: '10px',
+        padding: '15px',
+        color: 'black',
+        fontFamily: 'Arial, sans-serif',
+        lineHeight: '1.5',
+        fontSize: '14px',
+        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+        border: '1px solid #97538c',
+        width: '94%',
+        margin: '10px auto 0',
+      }}>
+        
+      <p><strong style={{fontSize:'18px'}}>Note:</strong></p>
+      <p>1. Please read the <b>inclusions and comments</b> very carefully.</p>
+<p>2. <b>Please be on time.</b> Customers don&#39;t like late arrivals 🥺</p>
+<p>3. Must carry a camera and flashlight (DSLRs and mirrorless cameras like Canon 80D, Sony A7M3, Canon R6).</p>
+<p>4. <b>Delivery timeline:</b></p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;- <b>Color corrected drive link</b> within <b>15 hrs</b></p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;- <b>Edited photos</b> in <b>24 hrs</b></p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;- <b>Edited video</b> in <b>3 days</b></p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;- <b>Album delivery</b> in <b>6 days</b></p>
+<p>5. Only you must attend the shoot – no replacements allowed.</p>
+<p>6. Dont eat or drink in the customer party (This may impact your next orders).</p>
+<p>7. Always wear professional dress.</p>
+<p>8. You should not use phone and take calls during the event.</p>
+<p>9. Photographers have to bring a 10-feet extension wire (Only for umbrella light orders).</p>
+ <p><b>It&apos;s an important day for customers, we need to make it perfect ☺</b></p>
+
+      </div>
+    ) : (
+     <div  style={{
+        backgroundColor: 'white',
+        borderRadius: '10px',
+        padding: '15px',
+        color: 'black',
+        fontFamily: 'Arial, sans-serif',
+        lineHeight: '1.5',
+        fontSize: '14px',
+        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+        border: '1px solid #97538c',
+        width: '94%',
+        margin: '10px auto 0',
+      }}>
+      <p><strong style={{fontSize:'18px'}}>Note:</strong></p>
+      <p>1. Please read the <b>inclusions and comments</b> very carefully.</p>
+      <p>2. Do not miss any material mentioned in inclusions and comments.</p>
+      <p>3. <b>Please be on time.</b> Customers don&#39;t like late arrivals 🥺</p>
+      <p>4. If you want to change anything from design please let us know in advance.</p>
+      <p>5. Always carry gluedots and avoid using tapes.</p>
+      <p>6. Please collect the payment before leaving the spot. In case of any payment-related issues, please reach out to us at the same time. <b>Do not leave the spot without taking payment from the spot</b></p>
+      <p><b>It&apos;s an important day for customers, we need to make it perfect ☺</b></p>
+      </div>
+    )}
+  </>
+        
+ <div
+  onClick={() => router.push("/hora-partner/partner-privacy-policy")}
+  style={{ display: "flex", alignItems: "center", margin: "10px", justifyContent: "center" }}
+>
+  Privacy Policy
+</div>
+      </div>
+      </Layout>
+    </>
+  );
+};
+
+export default Home;

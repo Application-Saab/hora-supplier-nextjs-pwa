@@ -1,7 +1,7 @@
 import '../styles/globals.css'
 import type { AppProps } from 'next/app'
 import '../styles/login.css';
-import './orders-details/OrderDashboard.css';
+import './hora-partner/orders-details/OrderDashboard.css';
 import { useEffect, useRef, useCallback } from 'react';
 import axios from 'axios';
 import { BASE_URL } from '../apiconstant/apiconstant';
@@ -155,11 +155,11 @@ function useCapacitorPushNotifications(playSound: (sound?: string) => void) {
         const url =
         notification?.notification?.data?.url ||
         notification?.data?.url ||
-        '/supplier-new-order';
+        '/hora-partner/supplier-new-order';
 
         // Handle notification tap: navigate to /new-order
         if (typeof window !== 'undefined') {
-          // window.location.href = '/supplier-new-order';
+          // window.location.href = '/hora-partner/supplier-new-order';
           router.push(url);
         }
       });

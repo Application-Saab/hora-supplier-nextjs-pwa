@@ -8,13 +8,13 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import logo from '../assets/hora-logo-light.png';
 import backArr from '../assets/back_arrow1.png';
 
-const Navbar = ({ backLink = "/home", navTitle, showBackButton = true }) => {
+const Navbar = ({ backLink = "/hora-partner/home", navTitle, showBackButton = true }) => {
   const router = useRouter();
 
   
   const handleLogout = () => {
     localStorage.removeItem("token");
-    router.push("/");
+    router.push("/hora-partner/login");
   };
 
   return (

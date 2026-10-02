@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { Storage } from "@capacitor/storage";
 import axios from "axios";
-import { useTimer } from "../apiconstant/useTimer";
+import { useTimer } from "../../../apiconstant/useTimer";
 // import login from "../apiconstant/login";
 import {
   BASE_URL,
   OTP_GENERATE_END_POINT,
   API_SUCCESS_CODE,
   OTP_VERIFY_ENDPOINT,
-} from "../apiconstant/apiconstant";
+} from "../../../apiconstant/apiconstant";
 import { useRouter } from "next/router";
 import Image from "next/image";
-import logo from '../assets/new_logo_light.png.png';
+import logo from '../../../assets/new_logo_light.png.png';
 // import "../styles/login.css"; // Ensure it's not a CSS module if using classNames directly
 
 const Login = () => {
