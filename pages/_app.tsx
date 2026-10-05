@@ -9,6 +9,8 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useRouter } from 'next/router';
 import '../component/OrderList/orderlist.css';
+import "./myProfile/profile.css";
+import "../component/ImageComponents/imagesComponents.css"
 
 // Only import firebase modules on the client side
 if (typeof window !== 'undefined') {

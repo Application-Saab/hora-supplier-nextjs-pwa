@@ -20,11 +20,12 @@ const Home = () => {
 const router = useRouter();
   let supplierJobType;
    let supplierID;
+  let supplierJobProfile;
 
   if (typeof window !== "undefined") {
    supplierJobType = localStorage.getItem("supplierJobType");
     supplierID = localStorage.getItem('supplierID');
-
+    supplierJobProfile = localStorage.getItem("supplierJobProfile");
 }
 
   const menuItems = [
@@ -41,6 +42,9 @@ const router = useRouter();
     // { id: 6, name: "Order Reports", icon: reportLogo, path: "/orders-details" },
     // { id: 6, name: "Decoration Image Upload", icon: reportLogo, path: "decoration-image-upload" },  
     { id: 6, name: "Past Order", icon: reportLogo, path: "/past-order" },
+    ...(supplierJobProfile == "Photography"
+      ? [{ id: 7, name: "Profile", icon: myAccountLogo, path: "/myProfile" }]
+      : []),
       
   ];
   const [error, setError] = useState(null);
