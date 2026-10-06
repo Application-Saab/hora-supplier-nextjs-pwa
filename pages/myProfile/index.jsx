@@ -29,6 +29,7 @@ import Layout from "../../component/Layout";
 import { BASE_URL, BASE_URL2 } from "../../apiconstant/apiconstant";
 import ImageGrid from "../../component/ImageComponents/ImageGrid";
 import CommonImagePopup from "../../component/ImageComponents/CommonImagePopup";
+import { getSocket } from "../../folderSocket";
 
 const ChevronDownIcon = () => (
     <svg width="12" height="8" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -48,24 +49,18 @@ const Profile = () => {
     const [age, setAge] = useState("");
     const [experienceValue, setExperienceValue] = useState("");
     const [city, setCity] = useState("");
-    const [phoneNumber, setphoneNumber]= useState("");
+    const [phoneNumber, setphoneNumber] = useState("");
     const [scrollPosition, setScrollPosition] = useState(0);
     const [allSpecializations, setAllSpecializations] = useState([]);
     const [selectedSpecializations, setSelectedSpecializations] = useState([]);
     const [showActionMenu, setShowActionMenu] = useState(false);
-    const [recentWorkFolder, setRecentWorkFolder] = useState(null);
     const actionMenuRef = useRef(null);
-
     const [recentWorkPhotos, setRecentWorkPhotos] = useState([]);
     const [recentWorkSubFolders, setRecentWorkSubFolders] = useState([]);
-
     const [newFolderName, setNewFolderName] = useState("");
     const [creatingFolder, setCreatingFolder] = useState(false);
-
     const [loading, setLoading] = useState(true);
-
     const [selectedIndex, setSelectedIndex] = useState(null);
-
     const closePopup = useCallback(() => setSelectedIndex(null), []);
     const handleImageClick = useCallback((index) => setSelectedIndex(index), []);
 
@@ -120,7 +115,6 @@ const Profile = () => {
         }
     }, [recentWorkSubFolders, recentWorkPhotos]);
 
-    // Selected subfolder ki images
     const filteredPhotos = useMemo(() => {
         if (!Array.isArray(recentWorkPhotos)) return [];
 
@@ -182,11 +176,6 @@ const Profile = () => {
             );
 
             const createResult = await createResponse.json();
-
-            if (createResponse.status === 201) {
-                setRecentWorkFolder(createResult.folder);
-                return;
-            }
 
             if (
                 createResponse.status === 400 &&
@@ -319,7 +308,7 @@ const Profile = () => {
             );
 
             setRecentWorkSubFolders(mainFolder?.subFolders || []);
-            setRecentWorkPhotos(result.thumbnails || []);   // sirf array
+            setRecentWorkPhotos(result.thumbnails || []);
         } catch (error) {
             console.error("Get Recent Work Thumbnails Error:", error);
         }
@@ -347,7 +336,7 @@ const Profile = () => {
             formData.append("subFolderName", subFolderName);
 
             const response = await fetch(
-                `http://localhost:4000/create-subfolder`,
+                `${BASE_URL2}/create-subfolder`,
                 {
                     method: "POST",
                     body: formData,
@@ -478,6 +467,35 @@ const Profile = () => {
 
     useEffect(() => {
         getProfileData();
+    }, []);
+
+    useEffect(() => {
+        const socket = getSocket();
+        if (!socket) return;
+
+        const onDone = ({ file }) => {
+            if (!file) return;
+
+            const real = {
+                ...file,
+                thumbnailImageUrl: file.thumbnailImageUrl || file.originalUrl,
+            };
+
+            setRecentWorkPhotos((prev) => {
+                const exists = prev.some(
+                    (p) => String(p._id) === String(file._id) || p.fileId === file.fileId
+                );
+                if (exists) {
+                    return prev.map((p) =>
+                        String(p._id) === String(file._id) || p.fileId === file.fileId ? real : p
+                    );
+                }
+                return [real, ...prev];
+            });
+        };
+
+        socket.on("media:done", onDone);
+        return () => socket.off("media:done", onDone);
     }, []);
 
     const initialValues = {
@@ -930,7 +948,7 @@ const Profile = () => {
 
                     <div className="lower-container">
 
-                            <div className="about-container margin-top-5">
+                        <div className="about-container margin-top-5">
 
                             <div className="flex gap-8 justify-between margin-top-5">
                                 <div className="flex-1 right-content">
@@ -946,12 +964,10 @@ const Profile = () => {
                                 </div>
 
                                 <div>
-
                                     <button
                                         className="add-photos-btn"
                                         onClick={() => setActiveModal("selectFolder")}
                                     >
-
                                         <svg
                                             width="10"
                                             height="10"
@@ -1037,7 +1053,6 @@ const Profile = () => {
                                 })}
                             </div>
 
-                            {/* Selected subfolder ki images */}
                             <div className="image-box" style={{ minHeight: "250px" }}>
                                 {filteredPhotos.length > 0 ? (
                                     <ImageGrid
@@ -1060,10 +1075,6 @@ const Profile = () => {
                                 )}
                             </div>
                         </div>
-
-
-
-
                     </div>
 
 
@@ -1072,79 +1083,79 @@ const Profile = () => {
                         selectedIndex={selectedIndex}
                         setSelectedIndex={setSelectedIndex}
                         onClose={closePopup}
-                            renderActions={(currentImage, index) => (
-                                <div>
-                                    <div style={{ position: "relative" }}>
-                                        <Image
-                                            src={multiGroup}
-                                            alt="More"
-                                            width={25}
-                                            height={25}
-                                            onClick={() => setShowActionMenu((prev) => !prev)}
-                                        />
+                        renderActions={(currentImage, index) => (
+                            <div>
+                                <div style={{ position: "relative" }}>
+                                    <Image
+                                        src={multiGroup}
+                                        alt="More"
+                                        width={25}
+                                        height={25}
+                                        onClick={() => setShowActionMenu((prev) => !prev)}
+                                    />
 
-                                        {showActionMenu && (
-                                            <div className="action-menu" ref={actionMenuRef}>
-                                                <div className="action-item">
-                                                    <strong>Shared by:</strong>
-                                                    <p>{formatPhoneNumber(phoneNumber)}</p>
-                                                </div>
+                                    {showActionMenu && (
+                                        <div className="action-menu" ref={actionMenuRef}>
+                                            <div className="action-item">
+                                                <strong>Shared by:</strong>
+                                                <p>{formatPhoneNumber(phoneNumber)}</p>
+                                            </div>
 
-                                                <div className="action-inner-container">
-                                                    {currentImage?.type !== "video" && (
-                                                        <div
-                                                            className="action-item flex"
-                                                            onClick={() => {
-                                                                const current = filteredPhotos[selectedIndex];
-                                                                handleDownloadImage(current);
-                                                            }}
-                                                        >
-                                                            <Image src={downloadVector} width={19} height={15} />
-                                                            <span>Download</span>
-                                                        </div>
-                                                    )}
-
+                                            <div className="action-inner-container">
+                                                {currentImage?.type !== "video" && (
                                                     <div
+                                                        className="action-item flex"
                                                         onClick={() => {
                                                             const current = filteredPhotos[selectedIndex];
-                                                            if (!current) return;
-                                                            handleImageShare(current?.originalUrl, current?._id);
-                                                            setShowActionMenu(false);
+                                                            handleDownloadImage(current);
                                                         }}
-                                                        className="action-item flex gallery-share-icon"
                                                     >
-                                                        <Image src={shareVector} width={19} height={15} />
-                                                        <span>Share</span>
+                                                        <Image src={downloadVector} width={19} height={15} />
+                                                        <span>Download</span>
                                                     </div>
-                                                        <div
-                                                            className="action-item flex"
-                                                            onClick={handleDeleteImage}
-                                                        >
-                                                            <Image
-                                                                src={deleteVector}
-                                                                width={19}
-                                                                height={15}
-                                                                alt="Delete"
-                                                            />
-                                                            <span>Delete</span>
-                                                        </div>
+                                                )}
+
+                                                <div
+                                                    onClick={() => {
+                                                        const current = filteredPhotos[selectedIndex];
+                                                        if (!current) return;
+                                                        handleImageShare(current?.originalUrl, current?._id);
+                                                        setShowActionMenu(false);
+                                                    }}
+                                                    className="action-item flex gallery-share-icon"
+                                                >
+                                                    <Image src={shareVector} width={19} height={15} />
+                                                    <span>Share</span>
+                                                </div>
+                                                <div
+                                                    className="action-item flex"
+                                                    onClick={handleDeleteImage}
+                                                >
+                                                    <Image
+                                                        src={deleteVector}
+                                                        width={19}
+                                                        height={15}
+                                                        alt="Delete"
+                                                    />
+                                                    <span>Delete</span>
                                                 </div>
                                             </div>
-                                        )}
-                                    </div>
+                                        </div>
+                                    )}
                                 </div>
-                            )}
+                            </div>
+                        )}
                         renderFooter={() => null}
                     />
 
-                        {snackbar.show && (
-                            <div className="custom-snackbar">
-                                <span>
-                                    <IoIosCloudDone color="green" size={30} />
-                                </span>
-                                {snackbar.message}
-                            </div>
-                        )}
+                    {snackbar.show && (
+                        <div className="custom-snackbar">
+                            <span>
+                                <IoIosCloudDone color="green" size={30} />
+                            </span>
+                            {snackbar.message}
+                        </div>
+                    )}
 
 
                     <Modal
@@ -1404,7 +1415,7 @@ const Profile = () => {
                         onAddFolder={() => setActiveModal("createFolder")}
                         onNext={() => { }}
                         subFolders={recentWorkSubFolders}
-                            recentWorkPhotos={recentWorkPhotos}
+                        recentWorkPhotos={recentWorkPhotos}
 
                     />
 

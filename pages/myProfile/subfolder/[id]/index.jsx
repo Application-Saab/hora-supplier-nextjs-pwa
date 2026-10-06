@@ -4,26 +4,19 @@ import React, { useEffect, useRef, useState, useCallback, useMemo } from "react"
 import { useRouter } from "next/router";
 import axios from "axios";
 import Layout from "../../../../component/Layout";
-import {
-    BASE_URL,
-    BASE_URL2,
-} from "../../../../apiconstant/apiconstant";
+import {BASE_URL,BASE_URL2} from "../../../../apiconstant/apiconstant";
 import backIcon from "../../../../assets/photographerprofile/back.svg";
 import addIcon from "../../../../assets/photographerprofile/addIcon.svg";
 import ImageGrid from "../../../../component/ImageComponents/ImageGrid";
 import CommonImagePopup from "../../../../component/ImageComponents/CommonImagePopup";
+import { getSocket } from "../../../../folderSocket";
 
-// Ek saath kitni files upload hongi
 const CONCURRENCY = 1;
 
-// Video multipart upload settings
-const CHUNK_SIZE = 25 * 1024 * 1024; // 25MB chunks
-const VIDEO_CHUNK_CONCURRENCY = 3; // ek video ke 3 chunks parallel
+const CHUNK_SIZE = 25 * 1024 * 1024;
+const VIDEO_CHUNK_CONCURRENCY = 3;
 const MAX_RETRIES = 3;
 
-// =========================
-// VIDEO HELPERS
-// =========================
 const putChunk = (url, blob, contentType, onProgress) =>
     new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
@@ -70,28 +63,25 @@ const getExtension = (fileName) => {
     return idx !== -1 ? fileName.slice(idx).toLowerCase() : ".mp4";
 };
 
+const baseName = (k) => String(k || "").split("/").pop();
+
 export default function SubFolder() {
     const router = useRouter();
     const folderId = router.query.id;
     const [selectedIndex, setSelectedIndex] = useState(null);
     const fileInputRef = useRef(null);
-    const [showActionMenu, setShowActionMenu] = useState(false);
     const [subFolder, setSubFolder] = useState(null);
     const [thumbnails, setThumbnails] = useState([]);
     const [loading, setLoading] = useState(true);
-
-    // Upload state
     const [uploading, setUploading] = useState(false);
     const [upload, setUpload] = useState({
         visible: false,
         total: 0,
-        completed: 0, // success + failed dono (progress bar ke liye)
+        completed: 0,
         failed: 0,
     });
 
-    // Current video ka upload %
     const [videoPercent, setVideoPercent] = useState(0);
-
     const closePopup = useCallback(() => {
         setSelectedIndex(null);
     }, []);
@@ -108,43 +98,6 @@ export default function SubFolder() {
         }
     };
 
-    const downloadFile = async (url) => {
-        const fileWithExt = url.split("/").pop();
-
-        const parts = fileWithExt.split("-");
-        const ext = parts.pop();
-        const filename = parts.join("-") + "." + ext;
-        try {
-            const response = await fetchWithError(url, { mode: "cors" });
-            const blob = await response.blob();
-
-            // Create a download link
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.download = filename || "downloaded-image.jpg";
-            document.body.appendChild(link);
-            link.click();
-
-            // Cleanup
-            document.body.removeChild(link);
-            URL.revokeObjectURL(link.href);
-        } catch (error) {
-            console.error("Error downloading the file:", error);
-        }
-    };
-
-    const handleDownloadImage = async (currentImage) => {
-        try {
-            setShowActionMenu(false);
-            await downloadFile(currentImage?.originalUrl);
-            showSnackbar("Image downloaded successfully");
-        } catch (err) {
-            showSnackbar("Download failed");
-        }
-    };
-
-    // Done button states
-    const [pendingDone, setPendingDone] = useState(false); // kuch upload hua hai, Done dabana baaki hai
     const [submittingDone, setSubmittingDone] = useState(false);
 
     const getSupplierID = () => {
@@ -152,10 +105,6 @@ export default function SubFolder() {
         return localStorage.getItem("supplierID") || "";
     };
 
-    // =========================
-    // GET SUBFOLDER DATA
-    // silent = true -> full page loader nahi dikhana
-    // =========================
     const getSubFolderData = useCallback(
         async (silent = false) => {
             if (!folderId) return;
@@ -195,9 +144,63 @@ export default function SubFolder() {
         getSubFolderData();
     }, [router.isReady, folderId, getSubFolderData]);
 
-    // =========================
-    // SINGLE IMAGE UPLOAD (presigned URL -> S3)
-    // =========================
+
+    useEffect(() => {
+        if (!folderId) return;
+        const socket = getSocket();
+        if (!socket) return;
+
+
+        const onDone = ({ subFolderId, file }) => {
+            if (!file) return;
+
+            const belongs =
+                String(subFolderId || "") === String(folderId) ||
+                (Array.isArray(file.folderIds) && file.folderIds.map(String).includes(String(folderId)));
+            if (!belongs) return;
+
+            const real = {
+                ...file,
+                stableKey: file._id,
+                thumbnailImageUrl: file.thumbnailImageUrl || file.originalUrl,
+            };
+
+            setThumbnails((prev) => {
+                const idx = prev.findIndex(
+                    (t) =>
+                        t.fileId === file.fileId ||
+                        (t.isTemp && t.key && baseName(t.key) === file.fileId)
+                );
+
+                if (idx !== -1) {
+                    const next = [...prev];
+                    next[idx] = { ...real, stableKey: prev[idx].stableKey || real.stableKey };
+                    return next;
+                }
+                return [real, ...prev];
+            });
+
+        };
+
+        const onFailed = ({ fileId }) => {
+            setThumbnails((prev) =>
+                prev.filter((t) => !(t.isTemp && t.key && baseName(t.key) === fileId))
+            );
+        };
+
+        socket.on("media:processing:start", onStart);
+        socket.on("media:done", onDone);
+        socket.on("media:failed", onFailed);
+        socket.on("media:folder:done", onFolderDone);
+
+        return () => {
+            socket.off("media:processing:start", onStart);
+            socket.off("media:done", onDone);
+            socket.off("media:failed", onFailed);
+            socket.off("media:folder:done", onFolderDone);
+        };
+    }, [folderId]);
+
     const uploadSingleFile = async (file, tempId) => {
         try {
             const token = localStorage.getItem("supplierToken");
@@ -207,10 +210,8 @@ export default function SubFolder() {
 
             const uniqueId = generateUniqueId();
 
-            // folderId prefix -> backend isi se subfolder filter karta hai
             const uniqueFileName = `${folderId}_${uniqueId}${fileExtension}`;
 
-            // 1) Presigned URL lo
             const response = await axios.post(
                 `${BASE_URL2}/get-event-capsule-presigned-url`,
                 {
@@ -227,12 +228,10 @@ export default function SubFolder() {
                 throw new Error("Presigned URL not received");
             }
 
-            // 2) Direct S3 upload
             await axios.put(uploadURL, file, {
                 headers: { "Content-Type": file.type },
             });
 
-            // 3) Upload ho gaya -> grid item ka loader hatao
             setThumbnails((prev) =>
                 prev.map((t) =>
                     t._id === tempId ? { ...t, uploading: false, key } : t
@@ -242,31 +241,23 @@ export default function SubFolder() {
             return { success: true, key };
         } catch (error) {
             console.error(`Upload failed for ${file.name}:`, error);
-
-            // Fail hua -> grid se hata do
             setThumbnails((prev) => prev.filter((t) => t._id !== tempId));
 
             return { success: false };
         }
     };
-
-    // =========================
-    // SINGLE VIDEO UPLOAD (multipart: 25MB chunks, 3 parallel)
-    // =========================
     const uploadSingleVideo = async (file, tempId) => {
         try {
             const supplierID = getSupplierID();
             const contentType = file.type || "video/mp4";
             const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
 
-            // folderId prefix -> backend isi se subfolder filter karta hai
             const uniqueFileName = `${folderId}_${generateUniqueId()}${getExtension(
                 file.name
             )}`;
 
             setVideoPercent(0);
 
-            // 1) Initiate
             const initiateRes = await fetch(`${BASE_URL2}/initiate`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -282,7 +273,6 @@ export default function SubFolder() {
 
             const { uploadId, key, presignedUrls } = await initiateRes.json();
 
-            // 2) Chunks banao
             const chunks = [];
             for (let i = 0; i < totalChunks; i++) {
                 const start = i * CHUNK_SIZE;
@@ -308,7 +298,6 @@ export default function SubFolder() {
                 );
             };
 
-            // 3) 3 parallel workers
             const chunkWorker = async () => {
                 while (nextChunk < chunks.length) {
                     const chunk = chunks[nextChunk++];
@@ -335,7 +324,6 @@ export default function SubFolder() {
                 )
             );
 
-            // 4) Complete (parts sorted)
             completedParts.sort((a, b) => a.PartNumber - b.PartNumber);
 
             const completeRes = await fetch(`${BASE_URL2}/complete`, {
@@ -348,7 +336,6 @@ export default function SubFolder() {
 
             setVideoPercent(100);
 
-            // 5) Grid item ka loader hatao
             setThumbnails((prev) =>
                 prev.map((t) =>
                     t._id === tempId ? { ...t, uploading: false, key } : t
@@ -359,16 +346,12 @@ export default function SubFolder() {
         } catch (error) {
             console.error(`Video upload failed for ${file.name}:`, error);
 
-            // Fail hua -> grid se hata do
             setThumbnails((prev) => prev.filter((t) => t._id !== tempId));
 
             return { success: false };
         }
     };
 
-    // =========================
-    // ADD PHOTOS / VIDEOS -> file select -> upload
-    // =========================
     const handleFileSelect = async (e) => {
         const files = Array.from(e.target.files || []);
         if (!files.length) return;
@@ -380,7 +363,6 @@ export default function SubFolder() {
             return;
         }
 
-        // Har file ka temp item (ImageGrid ke format me)
         const tempItems = files.map((file, i) => {
             const tempId = `temp_${Date.now()}_${i}`;
             const localUrl = URL.createObjectURL(file);
@@ -399,7 +381,6 @@ export default function SubFolder() {
             };
         });
 
-        // Grid me sabse upar turant dikhao
         setThumbnails((prev) => [...tempItems, ...prev]);
 
         setUploading(true);
@@ -422,7 +403,7 @@ export default function SubFolder() {
                         ? await uploadSingleVideo(item.file, item._id)
                         : await uploadSingleFile(item.file, item._id);
 
-                if (result.success) setPendingDone(true);
+                
 
                 setUpload((prev) => ({
                     ...prev,
@@ -445,9 +426,6 @@ export default function SubFolder() {
         }
     };
 
-    // =========================
-    // DONE BUTTON -> supplier-upload-done API
-    // =========================
     const handleDone = async () => {
         const supplierID = getSupplierID();
 
@@ -472,8 +450,7 @@ export default function SubFolder() {
             );
 
             if (response.data?.success) {
-                // Done ho gaya, button hata do
-                setPendingDone(false);
+                alert(response.data?.message || "Upload completed successfully.");
                 setUpload({ visible: false, total: 0, completed: 0, failed: 0 });
             } else {
                 alert(response.data?.message || "Failed to mark as done");
@@ -490,15 +467,11 @@ export default function SubFolder() {
         }
     };
 
-    // =========================
-    // LOADER VALUES
-    // =========================
     const { total, completed, failed } = upload;
     const percent = total ? Math.round((completed / total) * 100) : 0;
     const isFinished = total > 0 && completed === total;
     const successCount = completed - failed;
 
-    // Upload done hone ke 3 second baad popup apne aap band
     useEffect(() => {
         if (!isFinished) return;
 
@@ -525,7 +498,6 @@ export default function SubFolder() {
         <Layout backLink="/myProfile">
             <div className="subfolder-page">
                 <div className="subfolder-banner">
-                    {/* Back Icon */}
                     <img
                         src={backIcon.src}
                         alt="Back"
@@ -533,7 +505,6 @@ export default function SubFolder() {
                         onClick={() => router.push(`/myProfile`)}
                     />
 
-                    {/* Subfolder Name */}
                     <h1 className="subfolder-title">
                         {loading ? "" : subFolder?.folderName || ""}
                     </h1>
@@ -548,7 +519,6 @@ export default function SubFolder() {
                         ) : (
                             <>
                                 <div className="subfolder-header-container">
-                                    {/* Hidden file input */}
                                     <input
                                         ref={fileInputRef}
                                         type="file"
@@ -581,31 +551,30 @@ export default function SubFolder() {
                                         <span>{uploading ? "Uploading..." : "Add Photos"}</span>
                                     </button>
 
-                                    {/* Done button */}
-                                    {pendingDone && (
-                                        <button
-                                            type="button"
-                                            onClick={handleDone}
-                                            disabled={uploading || submittingDone}
-                                            style={{
-                                                marginLeft: "10px",
-                                                padding: "8px 18px",
-                                                borderRadius: "6px",
-                                                border: "none",
-                                                backgroundColor: "#8B5A8C",
-                                                color: "#fff",
-                                                fontSize: "14px",
-                                                fontWeight: 600,
-                                                opacity: uploading || submittingDone ? 0.6 : 1,
-                                                cursor:
-                                                    uploading || submittingDone
-                                                        ? "not-allowed"
-                                                        : "pointer",
-                                            }}
-                                        >
-                                            {submittingDone ? "Processing..." : "Done"}
-                                        </button>
-                                    )}
+
+                                    <button
+                                        type="button"
+                                        onClick={handleDone}
+                                        disabled={uploading || submittingDone}
+                                        style={{
+                                            marginLeft: "10px",
+                                            padding: "8px 18px",
+                                            borderRadius: "6px",
+                                            border: "none",
+                                            backgroundColor: "#97538C",
+                                            color: "#fff",
+                                            fontSize: "14px",
+                                            fontWeight: 600,
+                                            opacity: uploading || submittingDone ? 0.6 : 1,
+                                            cursor:
+                                                uploading || submittingDone
+                                                    ? "not-allowed"
+                                                    : "pointer",
+                                        }}
+                                    >
+                                        {submittingDone ? "Processing..." : "Done"}
+                                    </button>
+
 
                                     <div className="total-photos">
                                         Total {thumbnails.length || 0} Photos
@@ -640,10 +609,6 @@ export default function SubFolder() {
                     </div>
                 </div>
 
-                {/* =========================
-                    UPLOAD PROGRESS POPUP
-                    page ke bottom se 40px upar
-                ========================= */}
                 {upload.visible && (
                     <div
                         style={{
@@ -661,7 +626,6 @@ export default function SubFolder() {
                             zIndex: 9999,
                         }}
                     >
-                        {/* Top row: title + count */}
                         <div
                             style={{
                                 display: "flex",
@@ -690,7 +654,6 @@ export default function SubFolder() {
                             </div>
                         </div>
 
-                        {/* Progress bar */}
                         <div
                             style={{
                                 width: "100%",
@@ -711,7 +674,6 @@ export default function SubFolder() {
                             />
                         </div>
 
-                        {/* Current video progress */}
                         {uploading && videoPercent > 0 && videoPercent < 100 && (
                             <div
                                 style={{
@@ -724,7 +686,6 @@ export default function SubFolder() {
                             </div>
                         )}
 
-                        {/* Status text */}
                         <div
                             style={{
                                 marginTop: "7px",

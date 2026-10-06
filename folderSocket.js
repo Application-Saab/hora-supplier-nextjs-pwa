@@ -1,7 +1,6 @@
 import { io } from "socket.io-client";
 import { BASE_URL2 } from "./apiconstant/apiconstant";
-// ⚠️ Socket usi server se connect hona chahiye jo processSupplierS3Folder chala raha hai.
-// Agar wo BASE_URL2 par hai to BASE_URL2 import karke neeche use karo.
+
 
 let socket = null;
 
@@ -22,7 +21,6 @@ export const connectSocket = (userId) => {
     return socket;
 };
 
-// Jab bhi socket chahiye ye call karo (login ke baad bhi chalega)
 export const getSocket = () => {
     if (typeof window === "undefined") return null;
     if (socket) return socket;
@@ -30,7 +28,6 @@ export const getSocket = () => {
     return userId ? connectSocket(userId) : null;
 };
 
-// Purane imports ke liye
 if (typeof window !== "undefined") getSocket();
 
 export default socket;

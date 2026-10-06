@@ -25,7 +25,7 @@ const SelectFolderModal = ({ isOpen, onClose, onAddFolder, onNext, subFolders = 
                             >
                                 <path
                                     d="M7 1V13M1 7H13"
-                                    stroke="#8b5a8c"
+                                    stroke="#97538C"
                                     strokeWidth="1.5"
                                     strokeLinecap="round"
                                 />
@@ -67,7 +67,7 @@ const SelectFolderModal = ({ isOpen, onClose, onAddFolder, onNext, subFolders = 
                                     style={{
                                         border:
                                             selectedFolder?._id === subFolder._id
-                                                ? "2.14px solid #8b5a8c"
+                                                ? "2.14px solid #97538C"
                                                 : "2.14px solid #E0E0E0",
                                     }}
                                 >

@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 
 const Modal = ({ isOpen, onClose, title, children }) => {
-    // Esc key dabane par close karne ke liye
     useEffect(() => {
         const handleKeyDown = (e) => {
             if (e.key === "Escape") onClose();
