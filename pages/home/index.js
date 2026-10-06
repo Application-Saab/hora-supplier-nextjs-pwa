@@ -54,7 +54,7 @@ const router = useRouter();
     let mobileNumber;
 
     if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
-      token = localStorage.getItem('token');
+      token = localStorage.getItem('supplierToken');
       mobileNumber = localStorage.getItem('mobileNumber');
     }	
     const fetchData = async () => {

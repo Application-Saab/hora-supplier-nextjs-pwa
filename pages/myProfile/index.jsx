@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useMemo, useCallback } from "react";
+import React, { useEffect, useState, useMemo, useCallback, useRef } from "react";
 import profileBanner from "../../assets/photographerprofile/profileBanner.jpg";
 import profileImage from "../../assets/photographerprofile/profileImage.svg";
 import location from "../../assets/photographerprofile/location.svg";
@@ -13,6 +13,11 @@ import recent from "../../assets/photographerprofile/recent.svg";
 import user from "../../assets/photographerprofile/user.svg";
 import camera from "../../assets/photographerprofile/camera.svg";
 import checkIcon from "../../assets/photographerprofile/checkIcon.svg";
+import multiGroup from "../../assets/photographerprofile/multiGroup.svg";
+import downloadVector from "../../assets/photographerprofile/downloadVector.svg";
+import shareVector from "../../assets/photographerprofile/shareVector.svg";
+import deleteVector from "../../assets/photographerprofile/deleteVector.svg";
+import { IoIosCloudDone } from "react-icons/io";
 import Modal from "./Modal";
 import CreateFolderModal from "./CreateFolderModal";
 import SelectFolderModal from "./SelectFolderModal";
@@ -21,7 +26,7 @@ import "@fontsource/inter/600";
 import "@fontsource/inter/700";
 import Image from "next/image";
 import Layout from "../../component/Layout";
-import { BASE_URL } from "../../apiconstant/apiconstant";
+import { BASE_URL, BASE_URL2 } from "../../apiconstant/apiconstant";
 import ImageGrid from "../../component/ImageComponents/ImageGrid";
 import CommonImagePopup from "../../component/ImageComponents/CommonImagePopup";
 
@@ -43,11 +48,13 @@ const Profile = () => {
     const [age, setAge] = useState("");
     const [experienceValue, setExperienceValue] = useState("");
     const [city, setCity] = useState("");
+    const [phoneNumber, setphoneNumber]= useState("");
     const [scrollPosition, setScrollPosition] = useState(0);
     const [allSpecializations, setAllSpecializations] = useState([]);
     const [selectedSpecializations, setSelectedSpecializations] = useState([]);
-
+    const [showActionMenu, setShowActionMenu] = useState(false);
     const [recentWorkFolder, setRecentWorkFolder] = useState(null);
+    const actionMenuRef = useRef(null);
 
     const [recentWorkPhotos, setRecentWorkPhotos] = useState([]);
     const [recentWorkSubFolders, setRecentWorkSubFolders] = useState([]);
@@ -63,7 +70,35 @@ const Profile = () => {
     const handleImageClick = useCallback((index) => setSelectedIndex(index), []);
 
 
-    // Pehla subfolder by default select ho jaye
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (
+                actionMenuRef.current &&
+                !actionMenuRef.current.contains(event.target)
+            ) {
+                setShowActionMenu(false);
+            }
+        };
+
+        if (showActionMenu) {
+            document.addEventListener("mousedown", handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [showActionMenu]);
+
+    const formatPhoneNumber = (num) => {
+        if (!num) return "N/A";
+
+        const str = num.toString();
+        if (str.length < 4) return "N/A";
+
+        const last4 = str.slice(-4);
+        return `91+ XXXXXX${last4}`;
+    };
+
     useEffect(() => {
         if (activeTab === "all" && recentWorkSubFolders.length > 0) {
             const firstFolderWithPhoto = recentWorkSubFolders.find((subFolder) => {
@@ -168,6 +203,101 @@ const Profile = () => {
         }
     };
 
+
+    const [snackbar, setSnackbar] = useState({
+        show: false,
+        message: "Image downloaded successfully",
+    });
+
+
+    const snackbarTimeout = useRef(null);
+
+    const showSnackbar = (message) => {
+        setSnackbar({
+            show: true,
+            message,
+        });
+
+        if (snackbarTimeout.current) {
+            clearTimeout(snackbarTimeout.current);
+        }
+
+        snackbarTimeout.current = setTimeout(() => {
+            setSnackbar({
+                show: false,
+                message: "",
+            });
+        }, 5000);
+    };
+
+
+
+    const handleImageShare = async (imageUrl, id) => {
+        if (!imageUrl) return;
+
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: "Photo",
+                    text: "Check out this photo!",
+                    url: imageUrl,
+                });
+            } catch (error) {
+                console.error("Error sharing image:", error);
+            }
+        } else {
+            await navigator.clipboard.writeText(imageUrl);
+            alert("Image link copied!");
+        }
+    };
+
+    const handleDeleteImage = async () => {
+        const currentImage = filteredPhotos[selectedIndex];
+
+        if (!currentImage?._id) return;
+
+        if (
+            !window.confirm(
+                "Are you sure you want to delete this image?"
+            )
+        ) {
+            return;
+        }
+
+        try {
+            const res = await fetch(
+                `${BASE_URL2}/delete-image/${currentImage._id}`,
+                {
+                    method: "DELETE",
+                }
+            );
+
+            if (!res.ok) {
+                const err = await res.text();
+                throw new Error(err);
+            }
+
+            setRecentWorkPhotos((prev) => {
+                const newList = prev.filter(
+                    (img) => img._id !== currentImage._id
+                );
+
+                if (newList.length === 0) {
+                    setSelectedIndex(null);
+                } else if (selectedIndex >= newList.length) {
+                    setSelectedIndex(newList.length - 1);
+                }
+
+                return newList;
+            });
+
+            setShowActionMenu(false);
+        } catch (err) {
+            console.error("Delete failed:", err);
+            alert("Failed to delete image");
+        }
+    };
+
     const getRecentWorkThumbnails = async (ownerId) => {
         try {
             if (!ownerId) return;
@@ -243,6 +373,52 @@ const Profile = () => {
         }
     };
 
+    const handleDownloadImage = async (currentImage) => {
+        try {
+            setShowActionMenu(false);
+
+            const url = currentImage?.originalUrl;
+
+            if (!url) {
+                throw new Error("Image URL not found");
+            }
+
+            const fileWithExt = url.split("/").pop();
+
+            const parts = fileWithExt.split("-");
+            const ext = parts.pop();
+            const filename = parts.join("-") + "." + ext;
+
+            const response = await fetch(url, {
+                mode: "cors",
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to download image");
+            }
+
+            const blob = await response.blob();
+            const blobUrl = URL.createObjectURL(blob);
+
+            const link = document.createElement("a");
+            link.href = blobUrl;
+            link.download = filename || "downloaded-image.jpg";
+
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            // thoda delay do
+            setTimeout(() => {
+                URL.revokeObjectURL(blobUrl);
+            }, 1000);
+
+            showSnackbar("Image downloaded successfully");
+        } catch (err) {
+            console.error("Error downloading the file:", err);
+            showSnackbar("Download failed");
+        }
+    };
     const getProfileData = async () => {
         try {
             setLoading(true);
@@ -279,7 +455,7 @@ const Profile = () => {
                 setAge(userData.age || "");
                 setExperienceValue(userData.experience || "");
                 setCity(userData.city || "");
-
+                setphoneNumber(userData?.phone)
                 setSelectedSpecializations(
                     userData.userSpecializations || []
                 );
@@ -896,9 +1072,79 @@ const Profile = () => {
                         selectedIndex={selectedIndex}
                         setSelectedIndex={setSelectedIndex}
                         onClose={closePopup}
-                        renderActions={() => null}
+                            renderActions={(currentImage, index) => (
+                                <div>
+                                    <div style={{ position: "relative" }}>
+                                        <Image
+                                            src={multiGroup}
+                                            alt="More"
+                                            width={25}
+                                            height={25}
+                                            onClick={() => setShowActionMenu((prev) => !prev)}
+                                        />
+
+                                        {showActionMenu && (
+                                            <div className="action-menu" ref={actionMenuRef}>
+                                                <div className="action-item">
+                                                    <strong>Shared by:</strong>
+                                                    <p>{formatPhoneNumber(phoneNumber)}</p>
+                                                </div>
+
+                                                <div className="action-inner-container">
+                                                    {currentImage?.type !== "video" && (
+                                                        <div
+                                                            className="action-item flex"
+                                                            onClick={() => {
+                                                                const current = filteredPhotos[selectedIndex];
+                                                                handleDownloadImage(current);
+                                                            }}
+                                                        >
+                                                            <Image src={downloadVector} width={19} height={15} />
+                                                            <span>Download</span>
+                                                        </div>
+                                                    )}
+
+                                                    <div
+                                                        onClick={() => {
+                                                            const current = filteredPhotos[selectedIndex];
+                                                            if (!current) return;
+                                                            handleImageShare(current?.originalUrl, current?._id);
+                                                            setShowActionMenu(false);
+                                                        }}
+                                                        className="action-item flex gallery-share-icon"
+                                                    >
+                                                        <Image src={shareVector} width={19} height={15} />
+                                                        <span>Share</span>
+                                                    </div>
+                                                        <div
+                                                            className="action-item flex"
+                                                            onClick={handleDeleteImage}
+                                                        >
+                                                            <Image
+                                                                src={deleteVector}
+                                                                width={19}
+                                                                height={15}
+                                                                alt="Delete"
+                                                            />
+                                                            <span>Delete</span>
+                                                        </div>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
                         renderFooter={() => null}
                     />
+
+                        {snackbar.show && (
+                            <div className="custom-snackbar">
+                                <span>
+                                    <IoIosCloudDone color="green" size={30} />
+                                </span>
+                                {snackbar.message}
+                            </div>
+                        )}
 
 
                     <Modal
@@ -1158,6 +1404,8 @@ const Profile = () => {
                         onAddFolder={() => setActiveModal("createFolder")}
                         onNext={() => { }}
                         subFolders={recentWorkSubFolders}
+                            recentWorkPhotos={recentWorkPhotos}
+
                     />
 
                     <CreateFolderModal

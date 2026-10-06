@@ -10,7 +10,7 @@ const LazyVideo = ({
 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [duration, setDuration] = useState(null);
-  
+
   useEffect(() => {
     if (initialDuration) {
       setDuration(initialDuration);
@@ -34,7 +34,7 @@ const LazyVideo = ({
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          currentVideo.play().catch(() => {});
+          currentVideo.play().catch(() => { });
         } else {
           currentVideo.pause();
         }
@@ -47,12 +47,8 @@ const LazyVideo = ({
     observer.observe(currentVideo);
 
     return () => {
-      if (currentVideo) {
-        observer.unobserve(currentVideo);
-        currentVideo.removeAttribute("src");
-        currentVideo.src = "";
-        currentVideo.load();
-      }
+      observer.disconnect();
+      currentVideo.pause();
     };
   }, []);
 
@@ -67,7 +63,7 @@ const LazyVideo = ({
       const dur = video.duration;
       if (!isNaN(dur)) setDuration(formatDuration(dur));
     };
-    
+
     return () => {
       video.removeAttribute("src");
       video.src = "";
@@ -89,10 +85,19 @@ const LazyVideo = ({
         muted
         playsInline
         preload="metadata"
-        className={`lazy-video-element ${className || ""} ${
-          isLoaded ? "loaded" : "loading"
-        }`}
-        onLoadedData={() => setIsLoaded(true)}
+        className={`lazy-video-element ${className || ""} ${isLoaded ? "loaded" : "loading"
+          }`}
+        onLoadedMetadata={(e) => {
+        }}
+        onLoadedData={() => {
+          setIsLoaded(true);
+        }}
+        onCanPlay={() => {
+        }}
+        onPlay={() => {
+        }}
+        onError={(e) => {
+        }}
       />
 
       {/* Spinner while loading */}
@@ -107,7 +112,7 @@ const LazyVideo = ({
         <div className="lazy-video-overlay">
           <span className="lazy-video-duration">{duration}</span>
           <FaPlayCircle className="lazy-video-play-icon" />
-        </div>  
+        </div>
       )}
     </div>
   );

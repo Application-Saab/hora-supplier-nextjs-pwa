@@ -67,7 +67,7 @@ const OrderDetailTab = ({
 
   const acceptOrder = async () => {
     try {
-      const token = await localStorage.getItem("token");
+      const token = await localStorage.getItem("supplierToken");
 
       const response = await fetch(BASE_URL + ACCEPT_ORDER, {
         method: "POST",

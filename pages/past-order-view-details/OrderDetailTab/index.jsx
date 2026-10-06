@@ -282,7 +282,7 @@ ${decorations}
 
   const cancelOrder = async () => {
     try {
-      const token = await localStorage.getItem("token");
+      const token = await localStorage.getItem("supplierToken");
 
       const response = await fetch(BASE_URL + ACCEPT_ORDER, {
         method: "POST",
@@ -378,7 +378,7 @@ ${decorations}
 
     const currDateTime = currDate + currTime;
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem("supplierToken");
 
       const response = fetch(BASE_URL + START_ORDER, {
         method: "POST",

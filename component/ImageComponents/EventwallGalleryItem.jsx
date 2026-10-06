@@ -26,8 +26,16 @@ export const EventwallGalleryItemWonderland = ({
     fullVideoSrc = thumbnail?.postUrl;
   } else if (!isEventWall) {
   imageUrl = thumbnail.thumbnailImageUrl || thumbnail.originalUrl || null;
-  previewSrc = thumbnail.type === "video" ? thumbnail.videoClipUrl : null;
-  fullVideoSrc = thumbnail.type === "video" ? thumbnail.originalUrl : null;
+
+  previewSrc =
+    thumbnail.type === "video"
+      ? thumbnail.videoClipUrl || thumbnail.originalUrl
+      : null;
+
+  fullVideoSrc =
+    thumbnail.type === "video"
+      ? thumbnail.videoClipUrl || thumbnail.originalUrl
+      : null;
 }
   
   return (

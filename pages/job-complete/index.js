@@ -170,7 +170,7 @@ const PictureUpload = () => {
 
     const currDateTime = currDate + "  " + currTime;
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem("supplierToken");
 
       const response = fetch(BASE_URL + COMPLETE_ORDER, {
         method: "POST",

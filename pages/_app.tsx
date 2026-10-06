@@ -27,7 +27,7 @@ if (typeof window !== 'undefined') {
 
 function isUserLoggedIn() {
   if (typeof window === 'undefined') return false;
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem('supplierToken');
   return !!token;
 }
 

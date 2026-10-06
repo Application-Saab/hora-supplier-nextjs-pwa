@@ -39,7 +39,7 @@ const ProfileUpdate = () => {
     try {
       let token;
       if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
-        token = localStorage.getItem('token');
+        token = localStorage.getItem('supplierToken');
       }	
       const url = BASE_URL + UPDATE_RESUME_PROFILE;
 
@@ -88,7 +88,7 @@ const ProfileUpdate = () => {
     try {
       let token;
       if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
-        token = localStorage.getItem('token');
+        token = localStorage.getItem('supplierToken');
       }	
       const url = `${BASE_URL}${SUPPLIER_UPDATE_PERSONAL_DETAILS}/${supplierID}`; // Define your endpoint
 

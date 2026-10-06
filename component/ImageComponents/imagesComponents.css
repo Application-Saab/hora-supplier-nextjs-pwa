@@ -299,3 +299,72 @@ svg.svg-inline--fa.fa-arrow-left.fa-xl.closeEffect {
 .slick-next {
     right: 10px !important;
 }
+
+.lazy-video-wrapper {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    border-radius: 5px;
+    background-color: #e9ecef;
+    min-height: 50px;
+}
+
+.lazy-video-element {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    opacity: 0;
+    transition: opacity 0.4s ease-in-out;
+}
+
+.lazy-video-element.loaded {
+    opacity: 1;
+}
+
+.lazy-video-spinner-container {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.lazy-video-spinner {
+    width: 26px;
+    height: 26px;
+    border: 3px solid rgba(0, 0, 0, 0.2);
+    border-top-color: #333;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.lazy-video-overlay {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    display: flex;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    padding: 2px 6px;
+    border-radius: 6px;
+    font-size: 13px;
+}
+
+.lazy-video-play-icon {
+    font-size: 14px;
+    margin-left: 5px;
+    opacity: 0.9;
+}
+
+.lazy-video-duration {
+    font-size: 13px;
+}

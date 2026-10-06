@@ -686,6 +686,27 @@ div.input-group>label {
     grid-template-columns: repeat(3, 1fr);
     gap: 14px 10px;
     justify-items: center;
+        max-height: 400px;
+            overflow-y: auto;
+            overflow-x: hidden;
+}
+
+.sf-grid::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sf-grid::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.sf-grid::-webkit-scrollbar-thumb {
+    background: #c4c4c4;
+    border-radius: 10px;
+}
+
+.sf-grid::-webkit-scrollbar-thumb:hover {
+    background: #999;
 }
 
 .sf-add-card {
@@ -762,7 +783,7 @@ div.input-group>label {
     width: 81.9px;
     height: 81.9px;
     border-radius: 50%;
-    border: 2px solid #e5e7eb;
+    /* border: 2px solid #e5e7eb; */
     overflow: hidden;
     display: flex;
     align-items: center;
@@ -1144,4 +1165,73 @@ padding-left: 32px;
 .gallery-headerCard .folder-dp-alt {
     width: 100%;
     height: 100%;
+}
+.action-menu {
+    position: absolute;
+    top: 16px;
+    right: 0;
+    width: 210px;
+    background: #F8F6FB;
+    border-radius: 10px;
+    z-index: 1000;
+    padding-bottom: 14px;
+}
+.action-item {
+    padding: 5px 14px;
+    font-size: 14.71px;
+    cursor: pointer;
+    color: #3D3B3B;
+    font-weight: 400;
+    font-family: "Roboto", sans-serif;
+}
+
+.flex {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+}
+
+.action-item strong {
+    display: block;
+    font-weight: 500;
+    color: #302C2C;
+    font-size: 17px;
+}
+
+.action-item p {
+    font-weight: 300;
+    color: #474242;
+    margin: 0px;
+}
+.action-inner-container {
+    background-color: #fff;
+    margin: 3px 8px;
+    border-radius: 12.3px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    padding: 4px 0px;
+}
+
+.custom-snackbar {
+    width: 90%;
+    max-width: 480px;
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    background: #FFFFFF;
+    color: #97538C;
+
+    padding: 12px 15px;
+    border-radius: 12px;
+
+    font-size: 14px;
+    font-weight: 500;
+
+    z-index: 999999;
+
+    animation: snackbarFade 0.3s ease;
 }

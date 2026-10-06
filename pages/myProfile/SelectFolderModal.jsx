@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Modal from "./Modal";
 import { useRouter } from "next/navigation";
 
-const SelectFolderModal = ({ isOpen, onClose, onAddFolder, onNext, subFolders = [] }) => {
+const SelectFolderModal = ({ isOpen, onClose, onAddFolder, onNext, subFolders = [], recentWorkPhotos = [], }) => {
 
     const [selectedFolder, setSelectedFolder] = useState(null);
     const router = useRouter();
@@ -37,37 +37,75 @@ const SelectFolderModal = ({ isOpen, onClose, onAddFolder, onNext, subFolders = 
                         </div>
                     </div>
 
-                    {subFolders.map((subFolder) => (
-                        <div
-                            key={subFolder._id}
-                            className="sf-folder"
-                            onClick={() => setSelectedFolder(subFolder)}
-                        >
-                            <div
-                                className="outer-sf-folder-circle"
-                                style={{
-                                    border:
-                                        selectedFolder?._id === subFolder._id
-                                            ? "2.14px solid #8b5a8c"
-                                            : "2.14px solid #E0E0E0",
-                                }}
-                            >
-                                <div className="sf-folder-circle">
-                                    {subFolder.folderDp ? (
-                                        <img src={subFolder.folderDp} alt={subFolder.folderName} />
-                                    ) : (
-                                        <span>
-                                            {subFolder.folderName?.charAt(0).toUpperCase()}
-                                        </span>
-                                    )}
-                                </div>
-                            </div>
+                    {subFolders.map((subFolder) => {
+                        const folderId = String(subFolder._id);
 
-                            <span className="sf-folder-name">
-                                {subFolder.folderName}
-                            </span>
-                        </div>
-                    ))}
+                        const subFolderPhotos = recentWorkPhotos.filter((photo) => {
+                            const folderIdsMatch =
+                                Array.isArray(photo.folderIds) &&
+                                photo.folderIds.map(String).includes(folderId);
+
+                            const fileIdMatch = String(photo.fileId || "").startsWith(
+                                `${folderId}_`
+                            );
+
+                            return folderIdsMatch || fileIdMatch;
+                        });
+
+                        const firstImage = subFolderPhotos.find(
+                            (photo) => photo.thumbnailImageUrl || photo.originalUrl
+                        );
+
+                        return (
+                            <div
+                                key={subFolder._id}
+                                className="sf-folder"
+                                onClick={() => setSelectedFolder(subFolder)}
+                            >
+                                <div
+                                    className="outer-sf-folder-circle"
+                                    style={{
+                                        border:
+                                            selectedFolder?._id === subFolder._id
+                                                ? "2.14px solid #8b5a8c"
+                                                : "2.14px solid #E0E0E0",
+                                    }}
+                                >
+                                    <div className="sf-folder-circle">
+                                        {firstImage ? (
+                                            <img
+                                                src={
+                                                    firstImage.thumbnailImageUrl ||
+                                                    firstImage.originalUrl
+                                                }
+                                                alt={subFolder.folderName}
+                                                onError={(e) => {
+                                                    const img = e.currentTarget;
+
+                                                    if (
+                                                        firstImage.originalUrl &&
+                                                        img.src !== firstImage.originalUrl
+                                                    ) {
+                                                        img.src = firstImage.originalUrl;
+                                                    } else {
+                                                        img.style.display = "none";
+                                                    }
+                                                }}
+                                            />
+                                        ) : (
+                                            <span>
+                                                {subFolder.folderName?.charAt(0).toUpperCase()}
+                                            </span>
+                                        )}
+                                    </div>
+                                </div>
+
+                                <span className="sf-folder-name">
+                                    {subFolder.folderName}
+                                </span>
+                            </div>
+                        );
+                    })}
                 </div>
 
                 <button
