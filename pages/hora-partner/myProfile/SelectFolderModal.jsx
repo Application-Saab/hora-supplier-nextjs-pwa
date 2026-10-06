@@ -111,7 +111,7 @@ const SelectFolderModal = ({ isOpen, onClose, onAddFolder, onNext, subFolders = 
                 <button
                     type="button"
                     className="sf-next-btn"
-                    onClick={() => router.push(`/myProfile/subfolder/${selectedFolder._id}`)}
+                    onClick={() => router.push(`/hora-partner/myProfile/subfolder/${selectedFolder._id}`)}
                     disabled={!selectedFolder}
                 >
                     Next

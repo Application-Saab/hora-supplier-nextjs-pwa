@@ -26,8 +26,18 @@ const Login = () => {
   const router = useRouter();
 
 
+  const isMobileDevice = () => {
+    if (typeof navigator === "undefined" || !navigator.userAgent) {
+      return false;
+    }
+
+    return /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|Mobile/i.test(
+      navigator.userAgent
+    );
+  };
+
   const loadAuthToken = () => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("supplierToken");
     const supplierJobProfile = localStorage.getItem("supplierJobProfile");
 
     if (token) {
@@ -81,7 +91,7 @@ const Login = () => {
         phone: mobileNumber, role: "supplier"
       }
       const device_token = localStorage.getItem("fmcToken");
-      if(device_token){
+      if (isMobileDevice() && device_token){
         body.device_token = device_token;
       }
       const response = await axios.post(
@@ -118,7 +128,7 @@ const Login = () => {
       if (response.data.status === API_SUCCESS_CODE) {
         localStorage.setItem("isLoggedIn", "true");
         localStorage.setItem("mobileNumber", mobileNumber);
-        localStorage.setItem("token", response.data.token);
+        localStorage.setItem("supplierToken", response.data.token);
         localStorage.setItem("supplierID", response.data.data._id);
         const supplierJobProfile = localStorage.getItem("supplierJobProfile");
         await saveAuthToken(response.data.token);

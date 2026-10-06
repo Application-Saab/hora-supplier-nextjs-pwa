@@ -141,7 +141,7 @@
 }
 
 .align-start {
-    align-items: flex-start;
+    align-items: flex-start !important;
 }
 
 .gap-12 {
@@ -879,7 +879,7 @@ div.input-group>label {
     margin-top: 7px;
     position: relative;
 
-    background-image: url("../../assets/photographerprofile/subFolderBanner.svg");
+    background-image: url("../../../assets/photographerprofile/subFolderBanner.svg");
     background-size: cover;
     background-position: center;
 

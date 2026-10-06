@@ -1,22 +1,22 @@
 "use client";
 
 import React, { useEffect, useState, useMemo, useCallback, useRef } from "react";
-import profileBanner from "../../assets/photographerprofile/profileBanner.jpg";
-import profileImage from "../../assets/photographerprofile/profileImage.svg";
-import location from "../../assets/photographerprofile/location.svg";
-import experience from "../../assets/photographerprofile/experience.svg";
-import userProfile from "../../assets/photographerprofile/userProfile.svg";
-import editIcon from "../../assets/photographerprofile/editIcon.svg";
-import aboutUser from "../../assets/photographerprofile/aboutUser.svg";
-import star from "../../assets/photographerprofile/star.svg";
-import recent from "../../assets/photographerprofile/recent.svg";
-import user from "../../assets/photographerprofile/user.svg";
-import camera from "../../assets/photographerprofile/camera.svg";
-import checkIcon from "../../assets/photographerprofile/checkIcon.svg";
-import multiGroup from "../../assets/photographerprofile/multiGroup.svg";
-import downloadVector from "../../assets/photographerprofile/downloadVector.svg";
-import shareVector from "../../assets/photographerprofile/shareVector.svg";
-import deleteVector from "../../assets/photographerprofile/deleteVector.svg";
+import profileBanner from "../../../assets/photographerprofile/profileBanner.jpg";
+import profileImage from "../../../assets/photographerprofile/profileImage.svg";
+import location from "../../../assets/photographerprofile/location.svg";
+import experience from "../../../assets/photographerprofile/experience.svg";
+import userProfile from "../../../assets/photographerprofile/userProfile.svg";
+import editIcon from "../../../assets/photographerprofile/editIcon.svg";
+import aboutUser from "../../../assets/photographerprofile/aboutUser.svg";
+import star from "../../../assets/photographerprofile/star.svg";
+import recent from "../../../assets/photographerprofile/recent.svg";
+import user from "../../../assets/photographerprofile/user.svg";
+import camera from "../../../assets/photographerprofile/camera.svg";
+import checkIcon from "../../../assets/photographerprofile/checkIcon.svg";
+import multiGroup from "../../../assets/photographerprofile/multiGroup.svg";
+import downloadVector from "../../../assets/photographerprofile/downloadVector.svg";
+import shareVector from "../../../assets/photographerprofile/shareVector.svg";
+import deleteVector from "../../../assets/photographerprofile/deleteVector.svg";
 import { IoIosCloudDone } from "react-icons/io";
 import Modal from "./Modal";
 import CreateFolderModal from "./CreateFolderModal";
@@ -25,11 +25,11 @@ import "@fontsource/inter/400";
 import "@fontsource/inter/600";
 import "@fontsource/inter/700";
 import Image from "next/image";
-import Layout from "../../component/Layout";
-import { BASE_URL, BASE_URL2 } from "../../apiconstant/apiconstant";
-import ImageGrid from "../../component/ImageComponents/ImageGrid";
-import CommonImagePopup from "../../component/ImageComponents/CommonImagePopup";
-import { getSocket } from "../../folderSocket";
+import Layout from "../../../component/Layout";
+import { BASE_URL, BASE_URL2 } from "../../../apiconstant/apiconstant";
+import ImageGrid from "../../../component/ImageComponents/ImageGrid";
+import CommonImagePopup from "../../../component/ImageComponents/CommonImagePopup";
+import { getSocket } from "../../../folderSocket";
 
 const ChevronDownIcon = () => (
     <svg width="12" height="8" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -732,7 +732,7 @@ const Profile = () => {
     console.log("recentWorkSubFolders", recentWorkSubFolders)
 
     return (
-        <Layout backLink="/home">
+        <Layout backLink="/hora-partner/home">
             {loading ? (
                 <div className="profile-loader">
                     <div className="loader-circle"></div>

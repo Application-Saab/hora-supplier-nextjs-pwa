@@ -3,13 +3,13 @@
 import React, { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { useRouter } from "next/router";
 import axios from "axios";
-import Layout from "../../../../component/Layout";
-import {BASE_URL,BASE_URL2} from "../../../../apiconstant/apiconstant";
-import backIcon from "../../../../assets/photographerprofile/back.svg";
-import addIcon from "../../../../assets/photographerprofile/addIcon.svg";
-import ImageGrid from "../../../../component/ImageComponents/ImageGrid";
-import CommonImagePopup from "../../../../component/ImageComponents/CommonImagePopup";
-import { getSocket } from "../../../../folderSocket";
+import Layout from "../../../../../component/Layout";
+import {BASE_URL,BASE_URL2} from "../../../../../apiconstant/apiconstant";
+import backIcon from "../../../../../assets/photographerprofile/back.svg";
+import addIcon from "../../../../../assets/photographerprofile/addIcon.svg";
+import ImageGrid from "../../../../../component/ImageComponents/ImageGrid";
+import CommonImagePopup from "../../../../../component/ImageComponents/CommonImagePopup";
+import { getSocket } from "../../../../../folderSocket";
 
 const CONCURRENCY = 1;
 
@@ -74,6 +74,7 @@ export default function SubFolder() {
     const [thumbnails, setThumbnails] = useState([]);
     const [loading, setLoading] = useState(true);
     const [uploading, setUploading] = useState(false);
+    const [processing, setProcessing] = useState({ active: false, total: 0, done: 0 });
     const [upload, setUpload] = useState({
         visible: false,
         total: 0,
@@ -150,6 +151,9 @@ export default function SubFolder() {
         const socket = getSocket();
         if (!socket) return;
 
+        const onStart = ({ total }) => {
+            setProcessing({ active: true, total, done: 0 });
+        };
 
         const onDone = ({ subFolderId, file }) => {
             if (!file) return;
@@ -186,6 +190,10 @@ export default function SubFolder() {
             setThumbnails((prev) =>
                 prev.filter((t) => !(t.isTemp && t.key && baseName(t.key) === fileId))
             );
+        };
+
+        const onFolderDone = () => {
+            setProcessing({ active: false, total: 0, done: 0 });
         };
 
         socket.on("media:processing:start", onStart);
@@ -495,14 +503,14 @@ export default function SubFolder() {
     }, [visibleThumbnails]);
 
     return (
-        <Layout backLink="/myProfile">
+        <Layout backLink="/hora-partner/myProfile">
             <div className="subfolder-page">
                 <div className="subfolder-banner">
                     <img
                         src={backIcon.src}
                         alt="Back"
                         className="subfolder-back-icon"
-                        onClick={() => router.push(`/myProfile`)}
+                        onClick={() => router.push(`/hora-partner/myProfile`)}
                     />
 
                     <h1 className="subfolder-title">
