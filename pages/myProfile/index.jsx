@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import profileBanner from "../../assets/photographerprofile/profileBanner.jpg";
 import profileImage from "../../assets/photographerprofile/profileImage.svg";
 import location from "../../assets/photographerprofile/location.svg";
@@ -22,6 +22,8 @@ import "@fontsource/inter/700";
 import Image from "next/image";
 import Layout from "../../component/Layout";
 import { BASE_URL } from "../../apiconstant/apiconstant";
+import ImageGrid from "../../component/ImageComponents/ImageGrid";
+import CommonImagePopup from "../../component/ImageComponents/CommonImagePopup";
 
 const ChevronDownIcon = () => (
     <svg width="12" height="8" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -54,6 +56,57 @@ const Profile = () => {
     const [creatingFolder, setCreatingFolder] = useState(false);
 
     const [loading, setLoading] = useState(true);
+
+    const [selectedIndex, setSelectedIndex] = useState(null);
+
+    const closePopup = useCallback(() => setSelectedIndex(null), []);
+    const handleImageClick = useCallback((index) => setSelectedIndex(index), []);
+
+
+    // Pehla subfolder by default select ho jaye
+    useEffect(() => {
+        if (activeTab === "all" && recentWorkSubFolders.length > 0) {
+            const firstFolderWithPhoto = recentWorkSubFolders.find((subFolder) => {
+                return recentWorkPhotos.some((photo) => {
+                    const folderId = String(subFolder._id);
+
+                    return (
+                        (Array.isArray(photo.folderIds) &&
+                            photo.folderIds.map(String).includes(folderId)) ||
+                        String(photo.fileId || "").startsWith(`${folderId}_`)
+                    );
+                });
+            });
+
+            setActiveTab(
+                firstFolderWithPhoto?._id ||
+                recentWorkSubFolders[0]._id
+            );
+        }
+    }, [recentWorkSubFolders, recentWorkPhotos]);
+
+    // Selected subfolder ki images
+    const filteredPhotos = useMemo(() => {
+        if (!Array.isArray(recentWorkPhotos)) return [];
+
+        if (activeTab === "all") {
+            return recentWorkPhotos;
+        }
+
+        return recentWorkPhotos.filter((img) => {
+            const folderId = String(activeTab);
+
+            const folderIdsMatch = Array.isArray(img.folderIds)
+                ? img.folderIds.map(String).includes(folderId)
+                : false;
+
+            const fileIdMatch = String(img.fileId || "").startsWith(
+                `${folderId}_`
+            );
+
+            return folderIdsMatch || fileIdMatch;
+        });
+    }, [recentWorkPhotos, activeTab]);
 
     const getLocalStorageData = () => {
         if (typeof window === "undefined") {
@@ -127,20 +180,16 @@ const Profile = () => {
 
             const result = await response.json();
 
-            console.log("Recent Work Thumbnails:", result);
+            if (!response.ok) {
+                throw new Error(result.message || "Failed to fetch thumbnails");
+            }
 
             const mainFolder = (result.folders || []).find(
                 (folder) => folder.folderName === folderName
             );
 
             setRecentWorkSubFolders(mainFolder?.subFolders || []);
-            setRecentWorkPhotos(result.thumbnails || []);
-
-            if (!response.ok) {
-                throw new Error(result.message || "Failed to fetch thumbnails");
-            }
-
-            setRecentWorkPhotos(result.data || result || []);
+            setRecentWorkPhotos(result.thumbnails || []);   // sirf array
         } catch (error) {
             console.error("Get Recent Work Thumbnails Error:", error);
         }
@@ -705,7 +754,7 @@ const Profile = () => {
 
                     <div className="lower-container">
 
-                        <div className="about-container">
+                            <div className="about-container margin-top-5">
 
                             <div className="flex gap-8 justify-between margin-top-5">
                                 <div className="flex-1 right-content">
@@ -749,42 +798,108 @@ const Profile = () => {
                                 </div>
                             </div>
 
-                                <div className="gallery-headerCard">
-                                {recentWorkSubFolders.map((subFolder) => (
-                                    <div
-                                        key={subFolder._id}
-                                        className={`card-item ${activeTab === subFolder._id ? "active" : ""}`}
-                                        onClick={() => {
-                                            setActiveTab(subFolder._id);
-                                        }}
-                                    >
-                                        <div className="circle-img-folder circle-img-both">
-                                            <div className={`${subFolder?.folderDp?.thumbnailUrl ? 'circle-img-inner' : ""}`}>
-                                                {subFolder.folderDp ? (
-                                                <img
-                                                    src={subFolder?.folderDp?.thumbnailUrl || "h"}
-                                                    alt={subFolder?.folderName || "Album"}
-                                                />
+                            <div className="gallery-headerCard">
+                                {recentWorkSubFolders.map((subFolder) => {
+
+                                    const subFolderPhotos = recentWorkPhotos.filter((photo) => {
+                                        const folderId = String(subFolder._id);
+
+                                        const folderIdsMatch =
+                                            Array.isArray(photo.folderIds) &&
+                                            photo.folderIds.map(String).includes(folderId);
+
+                                        const fileIdMatch = String(photo.fileId || "").startsWith(
+                                            `${folderId}_`
+                                        );
+
+                                        return folderIdsMatch || fileIdMatch;
+                                    });
+
+                                    const firstImage = subFolderPhotos.find(
+                                        (photo) => photo.thumbnailImageUrl || photo.originalUrl
+                                    );
+
+                                    return (
+                                        <div
+                                            key={subFolder._id}
+                                            className={`card-item ${activeTab === subFolder._id ? "active" : ""
+                                                }`}
+                                            onClick={() => setActiveTab(subFolder._id)}
+                                        >
+                                            <div className="circle-img-folder circle-img-both">
+
+                                                {firstImage ? (
+                                                    <div className="circle-img-inner">
+                                                        <img
+                                                            src={firstImage.thumbnailImageUrl || firstImage.originalUrl}
+                                                            alt={subFolder?.folderName || "Album"}
+                                                            onError={(e) => {
+                                                                const img = e.currentTarget;
+                                                                if (firstImage.originalUrl && img.src !== firstImage.originalUrl) {
+                                                                    img.src = firstImage.originalUrl;
+                                                                } else {
+                                                                    img.style.display = "none";
+                                                                }
+                                                            }}
+                                                        />
+                                                    </div>
                                                 ) : (
-                                                <div className="folder-dp-alt-outer">
-                                                <span className="folder-dp-alt">
-                                                    {subFolder.folderName?.charAt(0).toUpperCase()}
-                                                </span>
-                                                        </div>
-                                    )}
+                                                    <div className="folder-dp-alt-outer">
+                                                        <span className="folder-dp-alt">
+                                                            {subFolder.folderName?.charAt(0).toUpperCase()}
+                                                        </span>
+                                                    </div>
+                                                )}
+
                                             </div>
+
+                                            <span>
+                                                {subFolder?.folderName || "Album"}
+                                            </span>
                                         </div>
-                                        <span>{subFolder?.folderName || "Album"}</span> 
-                                    </div>
-                                ))}
+                                    );
+                                })}
                             </div>
 
+                            {/* Selected subfolder ki images */}
+                            <div className="image-box" style={{ minHeight: "250px" }}>
+                                {filteredPhotos.length > 0 ? (
+                                    <ImageGrid
+                                        data={filteredPhotos}
+                                        loading={false}
+                                        isEventWall={false}
+                                        handleSelectImage={() => { }}
+                                        handleImageClick={(indexOnPage) => handleImageClick(indexOnPage)}
+                                        isEditing={false}
+                                        isSearchMode={false}
+                                        activeSubFolderId={false}
+                                        isActualMyPhotos={false}
+                                        selectedImages={[]}
+                                        setSelectedImages={() => { }}
+                                    />
+                                ) : (
+                                    <div className="empty-iamges-text total-photos">
+                                        No photos in this folder yet..
+                                    </div>
+                                )}
+                            </div>
                         </div>
 
 
 
 
                     </div>
+
+
+                    <CommonImagePopup
+                        images={filteredPhotos}
+                        selectedIndex={selectedIndex}
+                        setSelectedIndex={setSelectedIndex}
+                        onClose={closePopup}
+                        renderActions={() => null}
+                        renderFooter={() => null}
+                    />
+
 
                     <Modal
                         isOpen={activeModal === "details"}
