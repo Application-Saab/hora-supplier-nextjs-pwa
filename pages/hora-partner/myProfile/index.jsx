@@ -1174,7 +1174,8 @@ const Profile = () => {
                                 <div className="form-label">Profile Image</div>
                                 <div className="profile-upload-section">
                                     <div className="profile-img-preview">
-                                        {profileImagePreview || userDetails?.avatar ? (
+                                            {profileImagePreview || (userDetails?.avatar &&
+                                                userDetails.avatar !== "attachment-1678985070996.jpg") ? (
                                             <Image
                                                 src={profileImagePreview || userDetails.avatar}
                                                 alt="Profile"
