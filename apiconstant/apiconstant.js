@@ -1,4 +1,5 @@
-export const BASE_URL="https://horaservices.com";
+export const BASE_URL ="https://horaservices.com";
+export const BASE_URL2 = "https://horaservices.com/media-api";
 export const OTP_GENERATE_END_POINT= "/api/user/otp_generate";
 export const API_SUCCESS_CODE=200;
 export const OTP_VERIFY_ENDPOINT = "/api/user/otp_verify";

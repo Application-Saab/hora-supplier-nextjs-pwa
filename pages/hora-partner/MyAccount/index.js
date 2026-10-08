@@ -42,7 +42,7 @@ const PersonalDetails = () => {
 
 
     const handleLogout = () => {
-      localStorage.removeItem("token");
+      localStorage.removeItem("supplierToken");
       router.push("/hora-partner/login");
     };
 

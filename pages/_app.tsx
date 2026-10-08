@@ -9,6 +9,8 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useRouter } from 'next/router';
 import '../component/OrderList/orderlist.css';
+import "./hora-partner/myProfile/profile.css";
+import "../component/ImageComponents/imagesComponents.css"
 
 // Only import firebase modules on the client side
 if (typeof window !== 'undefined') {
@@ -25,7 +27,7 @@ if (typeof window !== 'undefined') {
 
 function isUserLoggedIn() {
   if (typeof window === 'undefined') return false;
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem('supplierToken');
   return !!token;
 }
 

@@ -20,10 +20,12 @@ const Home = () => {
 const router = useRouter();
   let supplierJobType;
    let supplierID;
+  let supplierJobProfile;
 
   if (typeof window !== "undefined") {
    supplierJobType = localStorage.getItem("supplierJobType");
     supplierID = localStorage.getItem('supplierID');
+    supplierJobProfile = localStorage.getItem("supplierJobProfile");
 
 }
 
@@ -41,7 +43,9 @@ const router = useRouter();
     // { id: 6, name: "Order Reports", icon: reportLogo, path: "/hora-partner/orders-details" },
     // { id: 6, name: "Decoration Image Upload", icon: reportLogo, path: "decoration-image-upload" },  
     { id: 6, name: "Past Order", icon: reportLogo, path: "/hora-partner/past-order" },
-      
+    ...(supplierJobProfile == "Photography"
+      ? [{ id: 7, name: "Profile", icon: myAccountLogo, path: "/hora-partner/myProfile" }]
+      : []),
   ];
   const [error, setError] = useState(null);
 
@@ -50,7 +54,7 @@ const router = useRouter();
     let mobileNumber;
 
     if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
-      token = localStorage.getItem('token');
+      token = localStorage.getItem('supplierToken');
       mobileNumber = localStorage.getItem('mobileNumber');
     }	
     const fetchData = async () => {
