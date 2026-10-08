@@ -267,6 +267,10 @@ const finalOrders = bookedOrders.filter((order) => {
     return false;
   }
 
+  if(order.status === 0 && order.order_status === 0){
+    return false;
+  }
+
   // Emergency order
   if (order.status === 1 && order.isEmergencyOrder === true) {
     return order.processedBy?.some(
