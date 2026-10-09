@@ -33,7 +33,9 @@ const Layout = ({ children, navTitle, backLink, showBackButton = true }) => {
       <Navbar backLink={backLink} navTitle={navTitle} showBackButton={showBackButton} />
       <div>
         <main>
+          <div className='main-app-container'>
           {children}
+          </div>
         </main>
       </div>
     </div>
