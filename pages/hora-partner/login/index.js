@@ -123,8 +123,16 @@ const Login = () => {
         const supplierJobProfile = localStorage.getItem("supplierJobProfile");
         await saveAuthToken(response.data.token);
         localStorage.setItem("supplierJobProfile", response?.data?.data?.job_profile);
+        const supplierResponse = response?.data?.data;
+
+        const isProfileComplete =
+          supplierResponse?.name &&
+          supplierResponse?.age &&
+          supplierResponse?.experience &&
+          supplierResponse?.city &&
+          supplierResponse?.job_profile;
      
-        if (supplierJobProfile != null) {
+        if (isProfileComplete) {
           router.push("/hora-partner/home");
         } else {
           router.push("/hora-partner/Profile");
