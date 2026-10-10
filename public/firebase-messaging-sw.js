@@ -12,41 +12,67 @@ firebase.initializeApp({
 });
 
 const messaging = firebase.messaging();
- 
-// Handle background messages
-messaging.onBackgroundMessage(function(payload) {
-  console.log('[firebase-messaging-sw.js] Received background message ', payload);
-  const notificationTitle = payload.notification.title;
-  const notificationOptions = {
-    body: payload.notification.body,
-    icon: '/icon-192x192.png', // You can customize this
-    data: {
-      url: payload.data?.url || '/supplier-new-order', // Hardcoded URL to open on click
-      sound: payload.data?.sound || 'notification',
-    }
-  };
 
-  self.registration.showNotification(notificationTitle, notificationOptions);
+messaging.onBackgroundMessage((payload) => {
+  // Firebase/browser handles notification payloads.
+  // Do not show a second notification for the same payload.
+  if (payload.notification) {
+    return;
+  }
+
+  // Data-only web push messages need a notification created here.
+  const data = payload.data || {};
+  const title = data.title || 'HORA Notification';
+  const body = data.body || 'You have a new notification.';
+  const url =
+    typeof data.url === 'string' &&
+    data.url.startsWith('/') &&
+    !data.url.startsWith('//')
+      ? data.url
+      : '/supplier-new-order';
+
+  return self.registration.showNotification(title, {
+    body,
+    icon: '/icon-192x192.png',
+    data: { url },
+    tag: data.notificationId || undefined,
+  });
 });
 
-// Handle notification click event
-self.addEventListener('notificationclick', function(event) {
+self.addEventListener('notificationclick', (event) => {
   event.notification.close();
 
-  const urlToOpen = event.notification.data.url || '/supplier-new-order';
+  const requestedUrl = event.notification.data?.url;
+  const url =
+    typeof requestedUrl === 'string' &&
+    requestedUrl.startsWith('/') &&
+    !requestedUrl.startsWith('//')
+      ? requestedUrl
+      : '/supplier-new-order';
+
+  const targetUrl = new URL(url, self.location.origin).href;
 
   event.waitUntil(
-    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(windowClients => {
-      for (const client of windowClients) {
-        // If there's already a tab/window open with the URL, focus it.
-        if (client.url.includes(urlToOpen) && 'focus' in client) {
-          return client.focus();
+    (async () => {
+      const windows = await self.clients.matchAll({
+        type: 'window',
+        includeUncontrolled: true,
+      });
+
+      for (const client of windows) {
+        if (client.url.startsWith(self.location.origin)) {
+          await client.focus();
+
+          client.postMessage({
+            type: 'HORA_NOTIFICATION_CLICK',
+            url,
+          });
+
+          return;
         }
       }
-      // Otherwise, open a new tab/window with the URL.
-      if (clients.openWindow) {
-        return clients.openWindow(urlToOpen);
-      }
-    })
+
+      await self.clients.openWindow(targetUrl);
+    })()
   );
 });

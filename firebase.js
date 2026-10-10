@@ -1,6 +1,5 @@
 // Import the functions you need from the SDKs you need
-import { initializeApp } from 'firebase/app';
-import { getMessaging } from 'firebase/messaging';
+import { initializeApp, getApps, getApp } from 'firebase/app';
 
 // TODO: Replace the following with your app's Firebase project configuration
 const firebaseConfig = {
@@ -12,12 +11,8 @@ const firebaseConfig = {
   appId: "1:545787711672:web:47fe2f098e71936033a44d"
   };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
+const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 
-// Initialize Firebase Cloud Messaging and get a reference to the service
-const messaging = getMessaging(app);
-
-export { app, messaging }; 
+export { app };
 
 
