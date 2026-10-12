@@ -1,5 +1,5 @@
 
-import { useEffect } from "react";
+import { useEffect, useRef, useCallback } from "react"; 
 import { Capacitor } from "@capacitor/core";
 import { FirebaseMessaging } from "@capacitor-firebase/messaging";
 import { getToken, onMessage } from "firebase/messaging";
@@ -82,6 +82,35 @@ async function syncDeviceTokenWithBackend(token: string): Promise<void> {
 }
 
 export default function FirebaseNotificationManager() {
+
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  const playNotificationSound = useCallback(
+    async (isEmergency: boolean) => {
+      try {
+        const audio = audioRef.current;
+
+        if (!audio) {
+          console.log("[FCM] Audio element not available");
+          return;
+        }
+
+        audio.src = isEmergency
+          ? "/emergency_notification.mp3"
+          : "/notification.mp3";
+
+        audio.currentTime = 0;
+        await audio.play();
+
+        console.log("[FCM] Foreground sound played");
+      } catch (error) {
+        console.error("[FCM] Sound playback failed:", error);
+      }
+    },
+    []
+  );
+
+
   useEffect(() => {
     let disposed = false;
     let initializationStarted = false;
@@ -122,6 +151,15 @@ export default function FirebaseNotificationManager() {
             );
 
             toast.info(body ? `${title}: ${body}` : title);
+
+            const data = notification?.data as
+              | Record<string, unknown>
+              | undefined;
+
+            playNotificationSound(
+              data?.channelId === EMERGENCY_CHANNEL_ID
+            );
+
           }
         );
 
@@ -271,6 +309,13 @@ export default function FirebaseNotificationManager() {
           );
 
           toast.info(body ? `${title}: ${body}` : title);
+
+          const data = payload.data || {};
+
+          playNotificationSound(
+            data.channelId === EMERGENCY_CHANNEL_ID
+          );
+
         });
 
         if (disposed) {
@@ -328,6 +373,8 @@ export default function FirebaseNotificationManager() {
   }, []);
 
   return (
+    <>
+    <audio ref={audioRef} preload="auto" />
     <ToastContainer
       position="top-right"
       autoClose={5000}
@@ -336,5 +383,6 @@ export default function FirebaseNotificationManager() {
       pauseOnFocusLoss
       draggable
     />
+    </>
   );
 }
