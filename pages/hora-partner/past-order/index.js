@@ -497,16 +497,6 @@ const handleViewDetails = (order) => {
                     gap: "6px"
                   }}
                 onClick={() => handleViewDetails(order)}
-                onMouseEnter={(e) => {
-                  e.target.style.background = "linear-gradient(135deg, #8a3f85 0%, #a14d9a 100%)";
-                  e.target.style.transform = "translateY(-1px)";
-                  e.target.style.boxShadow = "0 3px 6px rgba(156,77,151,0.3)";
-                }}
-                onMouseLeave={(e) => {
-                  e.target.style.background = "linear-gradient(135deg, #9c4d97 0%, #b55ba3 100%)";
-                  e.target.style.transform = "translateY(0)";
-                  e.target.style.boxShadow = "0 1px 3px rgba(0,0,0,0.1)";
-                }}
               >
                   Upload Links <span style={{ fontSize: "1.1rem" }}>
                     (

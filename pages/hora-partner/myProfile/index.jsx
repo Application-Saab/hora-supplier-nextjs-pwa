@@ -738,7 +738,7 @@ const Profile = () => {
                     <div className="loader-circle"></div>
                 </div>
             ) : (
-                <div className="profile-container">
+                    <div className="new-profile-container">
 
                     <Image
                         src={profileBanner}

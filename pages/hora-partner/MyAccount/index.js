@@ -37,7 +37,7 @@ const PersonalDetails = () => {
   }
 
   const UpdateDetailFunction = () => {
-    router.push("./hora-partner/Profile");
+    router.push("./Profile");
   };
 
 
