@@ -11,6 +11,7 @@ import com.google.android.play.core.appupdate.AppUpdateManagerFactory;
 import com.google.android.play.core.appupdate.AppUpdateInfo;
 import com.google.android.play.core.install.model.AppUpdateType;
 import com.google.android.play.core.install.model.UpdateAvailability;
+import com.getcapacitor.Plugin;
 
 public class MainActivity extends BridgeActivity {
 
@@ -19,8 +20,9 @@ public class MainActivity extends BridgeActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        checkForUpdate(); // 🔥 start me hi check
+      registerPlugin(NotificationHealthPlugin.class);
+      super.onCreate(savedInstanceState);
+      checkForUpdate();
     }
 
     private void checkForUpdate() {

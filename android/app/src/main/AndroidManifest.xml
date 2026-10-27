@@ -39,9 +39,18 @@
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@mipmap/ic_launcher" />
 
+            <meta-data
+    android:name="com.google.firebase.messaging.default_notification_channel_id"
+    android:value="fcm_custom_sound_channel_v2" />
+
     </application>
 
     <!-- ✅ Only keep this -->
+    <!-- Permissions -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
 
 </manifest>
