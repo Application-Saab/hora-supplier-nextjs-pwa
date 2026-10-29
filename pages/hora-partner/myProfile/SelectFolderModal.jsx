@@ -10,7 +10,7 @@ const SelectFolderModal = ({ isOpen, onClose, onAddFolder, onNext, subFolders = 
     const router = useRouter();
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose} title="Select the folder">
+        <Modal isOpen={isOpen} onClose={onClose} widthClass="modal-folder-content" title="Select the folder">
             <div className="sf-wrapper">
                 <div className="sf-grid">
                     {/* Create folder card */}
