@@ -7,9 +7,14 @@ import Layout from "../../../../../component/Layout";
 import {BASE_URL,BASE_URL2} from "../../../../../apiconstant/apiconstant";
 import backIcon from "../../../../../assets/photographerprofile/back.svg";
 import addIcon from "../../../../../assets/photographerprofile/addIcon.svg";
+import downloadVector from "../../../../../assets/photographerprofile/downloadVector.svg";
+import shareVector from "../../../../../assets/photographerprofile/shareVector.svg";
+import deleteVector from "../../../../../assets/photographerprofile/deleteVector.svg";
 import ImageGrid from "../../../../../component/ImageComponents/ImageGrid";
 import CommonImagePopup from "../../../../../component/ImageComponents/CommonImagePopup";
 import { getSocket } from "../../../../../folderSocket";
+import multiGroup from "../../../../../assets/photographerprofile/multiGroup.svg";
+import Image from "next/image";
 
 const CONCURRENCY = 1;
 
@@ -74,6 +79,7 @@ export default function SubFolder() {
     const [thumbnails, setThumbnails] = useState([]);
     const [loading, setLoading] = useState(true);
     const [uploading, setUploading] = useState(false);
+    const [showActionMenu, setShowActionMenu] = useState(false);
     const [processing, setProcessing] = useState({ active: false, total: 0, done: 0 });
     const [upload, setUpload] = useState({
         visible: false,
@@ -81,6 +87,186 @@ export default function SubFolder() {
         completed: 0,
         failed: 0,
     });
+
+        const [phoneNumber, setphoneNumber] = useState("");
+
+
+            const [snackbar, setSnackbar] = useState({
+                show: false,
+                message: "Image downloaded successfully",
+            });
+        
+    
+        const actionMenuRef = useRef(null);
+    useEffect(() => {
+        const number = localStorage.getItem("mobileNumber");
+        setphoneNumber(number || "");
+    }, []);
+    
+    
+        useEffect(() => {
+            const handleClickOutside = (event) => {
+                if (
+                    actionMenuRef.current &&
+                    !actionMenuRef.current.contains(event.target)
+                ) {
+                    setShowActionMenu(false);
+                }
+            };
+    
+            if (showActionMenu) {
+                document.addEventListener("mousedown", handleClickOutside);
+            }
+    
+            return () => {
+                document.removeEventListener("mousedown", handleClickOutside);
+            };
+        }, [showActionMenu]);
+
+
+    const formatPhoneNumber = (num) => {
+        if (!num) return "N/A";
+
+        const str = num.toString();
+        if (str.length < 4) return "N/A";
+
+        const last4 = str.slice(-4);
+        return `91+ XXXXXX${last4}`;
+    };
+
+
+    const handleDownloadImage = async (currentImage) => {
+        const url = currentImage?.originalUrl;
+
+        if (!url) {
+            console.error("Image URL is missing");
+            return;
+        }
+        let blobUrl;
+        try {
+            const response = await fetch(
+                url + (url.includes("?") ? "&" : "?") + "corsTest=" + Date.now(),
+                {
+                    method: "GET",
+                    mode: "cors",
+                    cache: "no-store",
+                }
+            );
+            if (!response.ok) {
+                throw new Error(`Download failed: ${response.status}`);
+            }
+            const blob = await response.blob();
+            const fileWithExt = decodeURIComponent(
+                new URL(url).pathname.split("/").pop()
+            );
+            const filename = fileWithExt || "downloaded-image.jpg";
+            blobUrl = URL.createObjectURL(blob);
+
+            const link = document.createElement("a");
+            link.href = blobUrl;
+            link.download = filename;
+
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+
+        } catch (error) {
+            console.error("Error downloading the file:", error);
+        } finally {
+            if (blobUrl) {
+                setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+            }
+        }
+    };
+
+
+
+    const handleImageShare = async (imageUrl, id) => {
+        if (!imageUrl) return;
+
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: "Photo",
+                    text: "Check out this photo!",
+                    url: imageUrl,
+                });
+            } catch (error) {
+                console.error("Error sharing image:", error);
+            }
+        } else {
+            await navigator.clipboard.writeText(imageUrl);
+            alert("Image link copied!");
+        }
+    };
+
+
+        const handleDeleteImage = async () => {
+            const currentImage = popupImages[selectedIndex];
+    
+            if (!currentImage?._id) return;
+    
+            if (
+                !window.confirm(
+                    "Are you sure you want to delete this image?"
+                )
+            ) {
+                return;
+            }
+    
+            try {
+                const res = await fetch(
+                    `${BASE_URL2}/delete-image/${currentImage._id}`,
+                    {
+                        method: "DELETE",
+                    }
+                );
+    
+                if (!res.ok) {
+                    const err = await res.text();
+                    throw new Error(err);
+                }
+    
+                setThumbnails((prev) => {
+                    const newList = prev.filter(
+                        (img) => img._id !== currentImage._id
+                    );
+
+                    if (newList.length === 0) {
+                        setSelectedIndex(null);
+                    } else if (selectedIndex >= newList.length) {
+                        setSelectedIndex(newList.length - 1);
+                    }
+
+                    return newList;
+                });
+    
+                setShowActionMenu(false);
+            } catch (err) {
+                console.error("Delete failed:", err);
+                alert("Failed to delete image");
+            }
+        };
+
+            const snackbarTimeout = useRef(null);
+    const showSnackbar = (message) => {
+        setSnackbar({
+            show: true,
+            message,
+        });
+
+        if (snackbarTimeout.current) {
+            clearTimeout(snackbarTimeout.current);
+        }
+
+        snackbarTimeout.current = setTimeout(() => {
+            setSnackbar({
+                show: false,
+                message: "",
+            });
+        }, 5000);
+    };
+
 
     const [videoPercent, setVideoPercent] = useState(0);
     const closePopup = useCallback(() => {
@@ -242,14 +428,26 @@ export default function SubFolder() {
 
             setThumbnails((prev) =>
                 prev.map((t) =>
-                    t._id === tempId ? { ...t, uploading: false, key } : t
+                    t._id === tempId ? {
+                        ...t,
+                        uploading: false,
+                        uploadStatus: "success",
+                        key
+                    } : t
                 )
             );
 
             return { success: true, key };
         } catch (error) {
             console.error(`Upload failed for ${file.name}:`, error);
-            setThumbnails((prev) => prev.filter((t) => t._id !== tempId));
+
+            setThumbnails((prev) =>
+                prev.map((t) =>
+                    t._id === tempId
+                        ? { ...t, uploading: false, uploadStatus: "failed" }
+                        : t
+                )
+            );
 
             return { success: false };
         }
@@ -346,7 +544,12 @@ export default function SubFolder() {
 
             setThumbnails((prev) =>
                 prev.map((t) =>
-                    t._id === tempId ? { ...t, uploading: false, key } : t
+                    t._id === tempId ? {
+                        ...t,
+                        uploading: false,
+                        uploadStatus: "success",
+                        key
+                    } : t
                 )
             );
 
@@ -354,10 +557,17 @@ export default function SubFolder() {
         } catch (error) {
             console.error(`Video upload failed for ${file.name}:`, error);
 
-            setThumbnails((prev) => prev.filter((t) => t._id !== tempId));
+            setThumbnails((prev) =>
+                prev.map((t) =>
+                    t._id === tempId
+                        ? { ...t, uploading: false, uploadStatus: "failed" }
+                        : t
+                )
+            );
 
             return { success: false };
         }
+
     };
 
     const handleFileSelect = async (e) => {
@@ -400,6 +610,7 @@ export default function SubFolder() {
         });
 
         let nextIndex = 0;
+        const successfulUploads = [];
 
         const worker = async () => {
             while (nextIndex < tempItems.length) {
@@ -411,6 +622,9 @@ export default function SubFolder() {
                         ? await uploadSingleVideo(item.file, item._id)
                         : await uploadSingleFile(item.file, item._id);
 
+                if (result.success) {
+                    successfulUploads.push(result.key);
+                }
                 
 
                 setUpload((prev) => ({
@@ -427,6 +641,9 @@ export default function SubFolder() {
                     worker()
                 )
             );
+            if (successfulUploads.length > 0) {
+                await handleDone();
+            }
         } finally {
             setUploading(false);
             setVideoPercent(0);
@@ -557,30 +774,6 @@ export default function SubFolder() {
                                             width={15}
                                         />
                                         <span>{uploading ? "Uploading..." : "Add Photos"}</span>
-                                    </button>
-
-
-                                    <button
-                                        type="button"
-                                        onClick={handleDone}
-                                        disabled={uploading || submittingDone}
-                                        style={{
-                                            marginLeft: "10px",
-                                            padding: "8px 18px",
-                                            borderRadius: "6px",
-                                            border: "none",
-                                            backgroundColor: "#97538C",
-                                            color: "#fff",
-                                            fontSize: "14px",
-                                            fontWeight: 600,
-                                            opacity: uploading || submittingDone ? 0.6 : 1,
-                                            cursor:
-                                                uploading || submittingDone
-                                                    ? "not-allowed"
-                                                    : "pointer",
-                                        }}
-                                    >
-                                        {submittingDone ? "Processing..." : "Done"}
                                     </button>
 
 
@@ -718,7 +911,68 @@ export default function SubFolder() {
                     selectedIndex={selectedIndex}
                     setSelectedIndex={setSelectedIndex}
                     onClose={closePopup}
-                    renderActions={() => null}
+                    renderActions={(currentImage, index) => (
+                        <div>
+                            <div style={{ position: "relative" }}>
+                                <Image
+                                    src={multiGroup}
+                                    alt="More"
+                                    width={25}
+                                    height={25}
+                                    onClick={() => setShowActionMenu((prev) => !prev)}
+                                />
+
+                                {showActionMenu && (
+                                    <div className="action-menu" ref={actionMenuRef}>
+                                        <div className="action-item">
+                                            <strong>Shared by:</strong>
+                                            <p>{formatPhoneNumber(phoneNumber)}</p>
+                                        </div>
+
+                                        <div className="action-inner-container">
+                                            {currentImage?.type !== "video" && (
+                                                <div
+                                                    className="action-item flex"
+                                                    onClick={() => {
+                                                        const current = popupImages[selectedIndex];
+                                                        handleDownloadImage(current);
+                                                    }}
+                                                >
+                                                    <Image src={downloadVector} width={19} height={15} />
+                                                    <span>Download</span>
+                                                </div>
+                                            )}
+
+                                            <div
+                                                onClick={() => {
+                                                    const current = popupImages[selectedIndex];
+                                                    if (!current) return;
+                                                    handleImageShare(current?.originalUrl, current?._id);
+                                                    setShowActionMenu(false);
+                                                }}
+                                                className="action-item flex gallery-share-icon"
+                                            >
+                                                <Image src={shareVector} width={19} height={15} />
+                                                <span>Share</span>
+                                            </div>
+                                            <div
+                                                className="action-item flex"
+                                                onClick={handleDeleteImage}
+                                            >
+                                                <Image
+                                                    src={deleteVector}
+                                                    width={19}
+                                                    height={15}
+                                                    alt="Delete"
+                                                />
+                                                <span>Delete</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
                     renderFooter={() => null}
                 />
             </div>

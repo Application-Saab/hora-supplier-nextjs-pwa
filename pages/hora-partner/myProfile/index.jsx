@@ -4,6 +4,9 @@ import React, { useEffect, useState, useMemo, useCallback, useRef } from "react"
 import profileBanner from "../../../assets/photographerprofile/profileBanner.jpg";
 import profileImage from "../../../assets/photographerprofile/profileImage.svg";
 import location from "../../../assets/photographerprofile/location.svg";
+import location2 from "../../../assets/photographerprofile/location2.svg";
+import arrow1 from "../../../assets/photographerprofile/arrow1.svg";
+import arrow2 from "../../../assets/photographerprofile/arrow2.svg";
 import experience from "../../../assets/photographerprofile/experience.svg";
 import userProfile from "../../../assets/photographerprofile/userProfile.svg";
 import editIcon from "../../../assets/photographerprofile/editIcon.svg";
@@ -30,6 +33,7 @@ import { BASE_URL, BASE_URL2 } from "../../../apiconstant/apiconstant";
 import ImageGrid from "../../../component/ImageComponents/ImageGrid";
 import CommonImagePopup from "../../../component/ImageComponents/CommonImagePopup";
 import { getSocket } from "../../../folderSocket";
+import { useRouter } from "next/navigation";
 
 const ChevronDownIcon = () => (
     <svg width="12" height="8" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -51,6 +55,7 @@ const Profile = () => {
     const [city, setCity] = useState("");
     const [phoneNumber, setphoneNumber] = useState("");
     const [scrollPosition, setScrollPosition] = useState(0);
+    const [thumbWidth, setThumbWidth] = useState(30);   
     const [allSpecializations, setAllSpecializations] = useState([]);
     const [selectedSpecializations, setSelectedSpecializations] = useState([]);
     const [showActionMenu, setShowActionMenu] = useState(false);
@@ -63,7 +68,7 @@ const Profile = () => {
     const [selectedIndex, setSelectedIndex] = useState(null);
     const closePopup = useCallback(() => setSelectedIndex(null), []);
     const handleImageClick = useCallback((index) => setSelectedIndex(index), []);
-
+    const router = useRouter();
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -353,7 +358,8 @@ const Profile = () => {
 
             await getRecentWorkThumbnails(supplierID);
 
-            setActiveModal("selectFolder");
+            setActiveModal(null);
+            router.push(`/hora-partner/myProfile/subfolder/${result.subFolder._id}`);
         } catch (error) {
             console.error("Create Subfolder Error:", error);
             alert(error.message || "Something went wrong");
@@ -362,55 +368,58 @@ const Profile = () => {
         }
     };
 
+
     const handleDownloadImage = async (currentImage) => {
+        const url = currentImage?.originalUrl;
+
+        if (!url) {
+            console.error("Image URL is missing");
+            return;
+        }
+
+        let blobUrl;
+
         try {
-            setShowActionMenu(false);
-
-            const url = currentImage?.originalUrl;
-
-            if (!url) {
-                throw new Error("Image URL not found");
-            }
-
-            const fileWithExt = url.split("/").pop();
-
-            const parts = fileWithExt.split("-");
-            const ext = parts.pop();
-            const filename = parts.join("-") + "." + ext;
-
-            const response = await fetch(url, {
-                mode: "cors",
-            });
-
+            const response = await fetch(
+                url + (url.includes("?") ? "&" : "?") + "corsTest=" + Date.now(),
+                {
+                    method: "GET",
+                    mode: "cors",
+                    cache: "no-store",
+                }
+            );
             if (!response.ok) {
-                throw new Error("Failed to download image");
+                throw new Error(`Download failed: ${response.status}`);
             }
 
             const blob = await response.blob();
-            const blobUrl = URL.createObjectURL(blob);
+
+            const fileWithExt = decodeURIComponent(
+                new URL(url).pathname.split("/").pop()
+            );
+
+            const filename = fileWithExt || "downloaded-image.jpg";
+
+            blobUrl = URL.createObjectURL(blob);
 
             const link = document.createElement("a");
             link.href = blobUrl;
-            link.download = filename || "downloaded-image.jpg";
+            link.download = filename;
 
             document.body.appendChild(link);
             link.click();
-            document.body.removeChild(link);
+            link.remove();
 
-            // thoda delay do
-            setTimeout(() => {
-                URL.revokeObjectURL(blobUrl);
-            }, 1000);
-
-            showSnackbar("Image downloaded successfully");
-        } catch (err) {
-            console.error("Error downloading the file:", err);
-            showSnackbar("Download failed");
+        } catch (error) {
+            console.error("Error downloading the file:", error);
+        } finally {
+            if (blobUrl) {
+                setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+            }
         }
     };
     const getProfileData = async () => {
         try {
-            setLoading(true);
 
             const { supplierID, mobileNumber } = getLocalStorageData();
 
@@ -466,6 +475,7 @@ const Profile = () => {
     };
 
     useEffect(() => {
+        setLoading(true);
         getProfileData();
     }, []);
 
@@ -521,7 +531,6 @@ const Profile = () => {
 
     const updatePersonalDetails = async () => {
         try {
-            setLoading(true);
 
             const { supplierID } = getLocalStorageData();
 
@@ -568,8 +577,6 @@ const Profile = () => {
             console.error("Update Personal Details Error:", error);
 
             alert(error.message || "Something went wrong");
-        } finally {
-            setLoading(false);
         }
     };
 
@@ -584,7 +591,6 @@ const Profile = () => {
         }
 
         try {
-            setLoading(true);
 
             const formData = new FormData();
             formData.append("image", file);
@@ -619,14 +625,11 @@ const Profile = () => {
         } catch (error) {
             console.error("Avatar Upload Error:", error);
             alert(error.message || "Image upload failed");
-        } finally {
-            setLoading(false);
         }
     };
 
     const updateAbout = async () => {
         try {
-            setLoading(true);
 
             const { supplierID } = getLocalStorageData();
 
@@ -660,9 +663,7 @@ const Profile = () => {
             console.error("Update About Error:", error);
 
             alert(error.message || "Something went wrong");
-        } finally {
-            setLoading(false);
-        }
+        } 
     };
 
     const toggleSpecialization = (id) => {
@@ -679,8 +680,6 @@ const Profile = () => {
 
     const updateSpecializations = async () => {
         try {
-            setLoading(true);
-
             const response = await fetch(
                 `${BASE_URL}/api/specializations/user/specializations`,
                 {
@@ -710,8 +709,6 @@ const Profile = () => {
             console.error("Update Specializations Error:", error);
 
             alert(error.message || "Something went wrong");
-        } finally {
-            setLoading(false);
         }
     };
 
@@ -725,11 +722,10 @@ const Profile = () => {
 
         if (el) {
             setHasHorizontalScroll(el.scrollWidth > el.clientWidth);
+            setThumbWidth((el.clientWidth / el.scrollWidth) * 100);   
         }
     }, [selectedSpecializationList]);
 
-
-    console.log("recentWorkSubFolders", recentWorkSubFolders)
 
     return (
         <Layout backLink="/hora-partner/home">
@@ -747,8 +743,8 @@ const Profile = () => {
                     />
 
                     <div className="profile-white-section">
-                        <div className={userDetails?.avatar ? "profile-circle" : "default-profile-circle"}>
-                            {userDetails?.avatar ? (
+                            <div className={(userDetails?.avatar && userDetails?.avatar !== "attachment-1678985070996.jpg") ? "profile-circle" : "default-profile-circle"}>
+                                {(userDetails?.avatar && userDetails?.avatar !== "attachment-1678985070996.jpg") ? (
                                 <Image
                                     src={userDetails.avatar}
                                     alt="photographer"
@@ -783,14 +779,15 @@ const Profile = () => {
                                     <Image
                                         src={userProfile}
                                         alt="profile-banner"
-                                        width={12}
-                                        height={13}
+                                        width={13}
+                                        height={14}
                                     />
                                 </span>
-
-                                <span className="profile-info-text">
-                                    Age - {userDetails?.age || "N/A"} Year
-                                </span>
+                                    <span className="profile-info-text">
+                                        Age - {userDetails?.age
+                                            ? `${userDetails.age}${String(userDetails.age).toLowerCase().includes("year") ? "" : " Year"}`
+                                            : "N/A"}
+                                    </span>
                             </div>
 
                             <div className="profile-info-row">
@@ -798,14 +795,15 @@ const Profile = () => {
                                     <Image
                                         src={experience}
                                         alt="profile-banner"
-                                        width={13}
-                                        height={15}
+                                        width={14}
+                                        height={16}
                                     />
                                 </span>
-
-                                <span className="profile-info-text">
-                                    Experience - {userDetails?.experience || "N/A"}
-                                </span>
+                                    <span className="profile-info-text">
+                                        Experience - {userDetails?.experience
+                                            ? `${userDetails.experience}${String(userDetails.experience).toLowerCase().includes("year") ? "" : " year"}`
+                                            : "N/A"}
+                                    </span>
                             </div>
 
                             <div className="profile-info-row">
@@ -813,8 +811,8 @@ const Profile = () => {
                                     <Image
                                         src={location}
                                         alt="profile-banner"
-                                        width={10}
-                                        height={14}
+                                        width={11}
+                                        height={15}
                                     />
                                 </span>
 
@@ -894,6 +892,7 @@ const Profile = () => {
                                     setScrollPosition(
                                         maxScroll > 0 ? el.scrollLeft / maxScroll : 0
                                     );
+                                    setThumbWidth((el.clientWidth / el.scrollWidth) * 100);
                                 }}
                                     className={`${selectedSpecializationList.length > 0 ? 'cards-scroll-container' : 'no-content'}`}>
 
@@ -902,12 +901,13 @@ const Profile = () => {
                                             <div key={item._id} className="spec-card">
 
                                                 <div>
-                                                    <div>
+                                                    <div className="outer-special-image-wrapper">
                                                         <Image
                                                             src={`${BASE_URL}/api/uploads/specialization/${item.image}`}
                                                             alt={item.name}
                                                             height={34}
-                                                            width={42}
+                                                            width={41}
+                                                            className="special-image-wrapper"
                                                         />
                                                     </div>
                                                 </div>
@@ -925,18 +925,33 @@ const Profile = () => {
                                 </div>
                                 {hasHorizontalScroll && (
                                     <div className="custom-scroll-bar">
-                                        <span className="arrow left">◀</span>
+                                        
+                                            <span className="arrow left">                                     
+                                                <Image
+                                                src={arrow1}
+                                                alt="profile-banner"
+                                                width={6}
+                                                height={5}
+                                            />
+                                            </span>
 
                                         <div className="track">
-                                            <div
-                                                className="thumb"
-                                                style={{
-                                                    transform: `translateX(${scrollPosition * 90}px)`
-                                                }}
-                                            ></div>
+                                                <div
+                                                    className="thumb"
+                                                    style={{
+                                                        width: `${thumbWidth}%`,
+                                                        left: `${scrollPosition * (100 - thumbWidth)}%`,
+                                                    }}
+                                                ></div>
                                         </div>
 
-                                        <span className="arrow right">▶</span>
+                                            <span className="arrow right">                                                
+                                                <Image
+                                                src={arrow2}
+                                                alt="profile-banner"
+                                                width={6}
+                                                height={5}
+                                            /></span>
                                     </div>
                                 )}
 
@@ -950,7 +965,7 @@ const Profile = () => {
 
                         <div className="about-container margin-top-5">
 
-                            <div className="flex gap-8 justify-between margin-top-5">
+                            <div className="flex gap-8 justify-between">
                                 <div className="flex-1 right-content">
 
                                     <div className="flex align-center gap-8 header-wrapper">
@@ -1004,7 +1019,10 @@ const Profile = () => {
                                             `${folderId}_`
                                         );
 
-                                        return folderIdsMatch || fileIdMatch;
+                                        return (
+                                            photo.type === "image" &&
+                                            (folderIdsMatch || fileIdMatch)
+                                        );
                                     });
 
                                     const firstImage = subFolderPhotos.find(
@@ -1174,7 +1192,7 @@ const Profile = () => {
                                 <div className="form-label">Profile Image</div>
                                 <div className="profile-upload-section">
                                     <div className="profile-img-preview">
-                                        {profileImagePreview || userDetails?.avatar ? (
+                                            {profileImagePreview || (userDetails?.avatar && userDetails?.avatar !== "attachment-1678985070996.jpg") ? (
                                             <Image
                                                 src={profileImagePreview || userDetails.avatar}
                                                 alt="Profile"
@@ -1282,7 +1300,7 @@ const Profile = () => {
 
                                 <div className="input-wrapper">
                                     <span className="input-icon">
-                                        <Image src={user} alt="editIcon" />
+                                        <Image src={location2} alt="editIcon" />
                                     </span>
 
                                     <select
@@ -1305,7 +1323,7 @@ const Profile = () => {
                             <button
                                 type="submit"
                                 className="modal-save-btn"
-                                disabled={loading || !isFormDirty}
+                                disabled={loading}
                             >
                                 {loading ? "Saving..." : "Save"}
                             </button>

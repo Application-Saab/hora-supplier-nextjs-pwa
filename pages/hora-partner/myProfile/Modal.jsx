@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 
-const Modal = ({ isOpen, onClose, title, children }) => {
+const Modal = ({ isOpen, onClose, title, children, widthClass ="modal-content" }) => {
     useEffect(() => {
         const handleKeyDown = (e) => {
             if (e.key === "Escape") onClose();
@@ -19,7 +19,7 @@ const Modal = ({ isOpen, onClose, title, children }) => {
 
     return (
         <div className="modal-overlay" onClick={onClose}>
-            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className={widthClass} onClick={(e) => e.stopPropagation()}>
                 <div className="modal-header">
                     <h2>{title}</h2>
                     <button className="modal-close-btn" onClick={onClose}>
