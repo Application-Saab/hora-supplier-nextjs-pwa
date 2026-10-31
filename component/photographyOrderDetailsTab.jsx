@@ -1,7 +1,8 @@
 import checkIcon from '../assets/checkIcon.png'
 import Image from "next/image";
 import { getInclusions } from '../utils/getInclusions'
-
+import { useRouter } from "next/navigation";
+// import ImageUpload from "./ImageUpload"
 
 const PhotographyOrderDetailsTab = ({
     orderDetail,
@@ -9,6 +10,15 @@ const PhotographyOrderDetailsTab = ({
     balanceAmount,
     bulletItems,
 }) => {
+
+        const router = useRouter();
+
+    const daysPassed = Math.floor(
+        (new Date().setHours(0, 0, 0, 0) - new Date(orderDetail?.order_date).setHours(0, 0, 0, 0)) / 86400000
+    );
+
+    const showUploadButton = daysPassed >= 0 && daysPassed <= 4;
+
     return (
         <div className="photography-decDetailsRight">
             <h1 className="mb-2">
@@ -107,6 +117,17 @@ const PhotographyOrderDetailsTab = ({
                     <span>₹ {balanceAmount || 0}</span>
                 </span>
             </span>
+
+
+    
+            {((orderDetail.order_status === 3 || orderDetail.order_status === 6) && (showUploadButton)) &&
+                <button 
+                style={{margin:"10px 0px"}}
+                className='save-btn-link' 
+                    onClick={() => router.push(`/hora-partner/order-upload/${orderDetail?.order_id}?id=${orderDetail?.fromId?._id ? orderDetail?.fromId?._id : orderDetail?.fromId}`)}>
+                Image Upload Here
+            </button>
+            }
         </div>
     )
 };

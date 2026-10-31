@@ -1,21 +1,14 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { BASE_URL, ORDERLIST_ENDPOINT, GET_PHOTOGRAPHY_BY_NAME } from "../../../apiconstant/apiconstant";
+import { BASE_URL, ORDERLIST_ENDPOINT } from "../../../apiconstant/apiconstant";
 import Layout from "../../../component/Layout";
 import { useRouter } from "next/router";
 
-const SUBMIT_LINK_ENDPOINT = "/api/photo/drive/add-order-drive-link";
 
 const GoogleDriveForm = () => {
   const router = useRouter();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [popupOpen, setPopupOpen] = useState(false);
-  const [selectedOrder, setSelectedOrder] = useState(null);
-  const [driveLink, setDriveLink] = useState("");
-  const [itemNames, setItemNames] = useState([]);
 
-  console.log(selectedOrder,"selectedOrder");
 
   let supplierID, supplierJobType;
   if (
@@ -279,42 +272,6 @@ const GoogleDriveForm = () => {
     fetchOrders();
   }, [supplierID, supplierJobType]);
 
-  const handleSubmitDriveLink = async () => {
-    if (!driveLink.startsWith("https://drive.google.com/")) {
-      alert("Invalid Google Drive link");
-      return;
-    }
-    try {
-      await axios.post(BASE_URL + SUBMIT_LINK_ENDPOINT, {
-        order_id: selectedOrder.order_id,
-        folderUrl: driveLink,
-      });
-
-      await fetch(`${BASE_URL}/api/photo/drive/update-google-sheet`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          orderIdDb: selectedOrder.order_id,
-          orderIdCustomer: selectedOrder.order_id + 10800,
-          phone: selectedOrder.phone_no,
-          fulfillmentDate: selectedOrder.order_date
-            ? new Date(selectedOrder.order_date).toLocaleDateString("en-GB")
-            : "N/A",
-          services: "Photography",
-          driveLink: driveLink,
-          horaWebLink: "N/A",
-        }),
-      });
-
-      alert("Drive link submitted!");
-      setPopupOpen(false);
-      setDriveLink("");
-      window.location.reload();
-    } catch (err) {
-      console.error(err.response?.data?.error, "testing");
-      alert(err.response?.data?.error || "Invalid Google Drive folder URL");
-    }
-  };
 
   
 const handleViewDetails = (order) => {
@@ -327,30 +284,6 @@ const handleViewDetails = (order) => {
     },
   });
 };
-  const handleViewDetails1 = async (order) => {
-    setSelectedOrder(order);
-    setPopupOpen(true);
-    setDriveLink("");
-    setItemNames([]);
-
-    try {
-      if (!order.items || order.items.length === 0) return;
-
-      const url = `${BASE_URL}${GET_PHOTOGRAPHY_BY_NAME}`;
-      const response = await axios.get(url);
-      const apiData = response.data;
-
-      if (apiData?.data?.length > 0) {
-        const matchedItems = order.items
-          .map(itemId => apiData.data.find(item => item._id === itemId))
-          .filter(Boolean);
-
-        setItemNames(matchedItems.map(m => m.name));
-      }
-    } catch (err) {
-      console.error("Error fetching item names", err);
-    }
-  };
 
 
   const inclusionToApiKeyMap = {
@@ -397,38 +330,6 @@ const handleViewDetails = (order) => {
 
       areAllLinksSubmitted = totalInclusionsCount > 0 && submittedLinksCount === totalInclusionsCount;
     }
-
-    const handleFileUpload = async () => {
-      const input = document.createElement("input");
-      input.type = "file";
-      input.multiple = true;
-      input.onchange = async (e) => {
-        const files = e.target.files;
-        if (!files?.length) return;
-        const formData = new FormData();
-        [...files].forEach((f) => formData.append("files", f));
-
-        const uploadRes = await fetch(
-          "https://horaservices.com/api/multiple_image_upload",
-          {
-            method: "POST",
-            body: formData,
-          }
-        );
-        const uploadData = await uploadRes.json();
-
-        await fetch("https://horaservices.com/api/order/edit", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            _id: order._id,
-            userOrderDishImageArray: uploadData.data,
-          }),
-        });
-        window.location.reload();
-      };
-      input.click();
-    };
 
     return (
       <li style={styles.orderItem}>

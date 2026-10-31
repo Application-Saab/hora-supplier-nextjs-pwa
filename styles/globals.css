@@ -4198,3 +4198,10 @@ main.order-list .order-container {
 .p-10 {
   padding: 15px !important;
 }
+
+.expiry-text{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 600px;
+}
