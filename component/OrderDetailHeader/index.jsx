@@ -57,6 +57,10 @@ const OrderDetailHeader = ({ orderDetail }) => {
               <span className="fw-semiBold myOrderDetails-heading">Google Map Location:</span>{" "}
               <a href={orderDetail.addressId.address2} style={{ fontWeight: "bold", cursor: "pointer", wordWrap: "break-word", color: 'blue', borderBottom: '1px solid blue' }} target="_blank" rel="noopener">{orderDetail.addressId.address2}</a>
             </p>
+            <p className="mt-2">
+              <span className="fw-semiBold myOrderDetails-heading">Event Name:</span>{" "}
+              {orderDetail?.eventData?.hostName ? orderDetail?.eventData?.hostName : (orderDetail?.eventName || "N/A") }
+            </p>
 
           </div>
         )}
