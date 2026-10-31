@@ -2,17 +2,15 @@ import React, { useEffect, useState } from "react";
 import { BASE_URL, ORDERLIST_ENDPOINT } from "../../../apiconstant/apiconstant.js";
 import { useRouter } from "next/router";
 import Layout from "../../../component/Layout.js";
-import socket, { connectSocket } from "../../../socket.js";
+import { connectSocket } from "../../../socket.js";
 import OrderList from "../../../component/OrderList/index.jsx";
 
 const Orderlist = () => {
   const router = useRouter();
   const [orders, setOrders] = useState([]);
-  // Popup state (must be inside the component)
   const [showPopup, setShowPopup] = useState(false);
   const [ordersLoaded, setOrdersLoaded] = useState(false);
 
-  //order_status: { type: Number, default: 0 /* 0-Booking ,1-Accepted ,2-pending/in-progress, 3-delivery/completed, 4-failed, 5- handle -> {1,2,3}, 6- expire  */ }
 
   let supplierJobType;
   let supplierID;
@@ -30,10 +28,9 @@ const Orderlist = () => {
   }
 
   if (supplierCity === "Bengaluru") {
-    supplierCity = "Bangalore"; // Adjusting for city name
+    supplierCity = "Bangalore"; 
   }
 
-  // let phoneNumber = localStorage.getItem("mobileNumber");
   let phoneNumber = null;
   if (typeof window !== "undefined") {
     phoneNumber = localStorage.getItem("mobileNumber");
@@ -169,14 +166,8 @@ useEffect(() => {
     return new Date(dateString).toLocaleDateString("en-GB", options);
   };
 
-  const openContinueShopping = () => {
-    router.push("/");
-  };
-
   const handleViewDetail = (order) => {
     const { _id, order_id, type, otp } = order;
-    // localStorage.setItem("orderOtp" , otp )
-
     if (
       typeof window !== "undefined" &&
       typeof window.localStorage !== "undefined"
@@ -193,25 +184,6 @@ useEffect(() => {
     });
   };
 
-
-  if (!ordersLoaded ) {
-    return (
-      <center>
-        <div className="custom-spinner">
-          <div>
-            <div className="spinner-border" role="status">
-              <span className="visually-hidden">Loading...</span>
-            </div>
-            <div style={{ color: "#9252AA", textAlign: "center" }}>
-              <h4>Data is loading...</h4>
-            </div>
-          </div>
-        </div>
-      </center>
-    );
-  }
-
-  // Show popup if userStatus === 0
   if (showPopup) {
     return (
       <div style={{
@@ -267,7 +239,6 @@ const finalOrders = bookedOrders.filter((order) => {
     return false;
   }
 
-  // Emergency order
   if (order.status === 1 && order.isEmergencyOrder === true) {
     return order.processedBy?.some(
       (processed) =>
@@ -275,13 +246,17 @@ const finalOrders = bookedOrders.filter((order) => {
     );
   }
 
-  // Existing condition for normal orders
   return order.status === 1 || (order.status === 0 && order.isEmergencyOrder === true);
 });
 
 
   return (
     <Layout>
+      {!ordersLoaded ? 
+        <div className="profile-loader">
+          <div className="loader-circle"></div>
+        </div>
+      :
       <main className="order-list">
         <div className="orderlist-container">
           {finalOrders.length === 0 ? (
@@ -309,6 +284,7 @@ const finalOrders = bookedOrders.filter((order) => {
           )}
         </div>
       </main>
+}
     </Layout>
   );
 };
