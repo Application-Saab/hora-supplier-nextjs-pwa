@@ -120,14 +120,7 @@ const PhotographyOrderDetailsTab = ({
 
 
     
-            {((orderDetail.order_status === 3 || orderDetail.order_status === 6) && (showUploadButton)) &&
-                <button 
-                style={{margin:"10px 0px"}}
-                className='save-btn-link' 
-                    onClick={() => router.push(`/hora-partner/order-upload/${orderDetail?.order_id}?id=${orderDetail?.fromId?._id ? orderDetail?.fromId?._id : orderDetail?.fromId}`)}>
-                Image Upload Here
-            </button>
-            }
+
         </div>
     )
 };

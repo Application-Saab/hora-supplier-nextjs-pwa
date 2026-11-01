@@ -42,7 +42,7 @@ const OrderDetailTab = ({
   const { apiOrderId } = router.query;
   const [tab, setTab] = useState("Menu");
   const [orderStatus, setOrderStatus] = useState(orderDetail?.order_status);
-
+  const [activeUploadTab, setActiveUploadTab] = useState("images");
   const [supplierID, setSupplierID] = useState(null);
   const [otp, setOtp] = useState(null);
 
@@ -646,6 +646,63 @@ ${decorations}
                     balanceAmount={balanceAmount}
                     bulletItems={bulletItems}
                   />
+
+                  <div className="upload-options-wrapper">
+                  <div className="upload-tabs">
+                    <button
+                      className={`upload-tab ${activeUploadTab === "images" ? "active" : ""}`}
+                      onClick={() => setActiveUploadTab("images")}
+                    >
+                      <span>📸</span>
+                      Upload Images
+                    </button>
+
+                    <button
+                      className={`upload-tab ${activeUploadTab === "drive" ? "active" : ""}`}
+                      onClick={() => setActiveUploadTab("drive")}
+                    >
+                      <span>🔗</span>
+                      Google Drive Links
+                    </button>
+                  </div>
+
+                  {activeUploadTab === "images" && (
+                    <div className="upload-tab-content image-upload-tab">
+
+                      {(orderDetail.order_status === 3 || orderDetail.order_status === 6) ? (
+                        <div
+                          className="image-upload-redirect"
+                          onClick={() =>
+                            router.push(
+                              `/hora-partner/order-upload/${orderDetail?.order_id}?id=${orderDetail?.fromId?._id
+                                ? orderDetail?.fromId?._id
+                                : orderDetail?.fromId
+                              } `
+                            )
+                          }
+                        >
+                          <div className="redirect-icon">↑</div>
+
+                          <div className="redirect-text">
+                            <h4>Upload Your Images & Videos</h4>
+                            <p>Click below to open the upload page</p>
+                          </div>
+
+                          <div className="redirect-action">
+                            Click to Redirect
+                            <span>→</span>
+                          </div>
+                        </div>
+                      ) : (
+                        <p className="upload-unavailable">
+                          Image upload is not available for this order status.
+                        </p>
+                      )}
+
+                    </div>
+                  )}
+                  {activeUploadTab === "drive" && (
+                    <>
                   {driveLinksInput.length > 0 && (
                     <div className="actual-image-container">
                       <div className="fw-semiBold">Current Status</div>
@@ -711,6 +768,9 @@ ${decorations}
                       </div>
                     </div>
                   )}
+                    </>
+                )}
+                </div>
                 </div>
       ) : null}
       <div>
@@ -924,3 +984,8 @@ const styles = {
       "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
   },
 };
+
+
+
+
+

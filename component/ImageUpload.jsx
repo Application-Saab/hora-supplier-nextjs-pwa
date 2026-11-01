@@ -81,6 +81,8 @@ export default function ImageUpload({ orderId, customerId }) {
     const [thumbnails, setThumbnails] = useState([]);
     const [loading, setLoading] = useState(true);
     const [uploading, setUploading] = useState(false);
+    const [customerPhone, setCustomerPhone] = useState("");
+    const [apiId, setApiId] = useState("");
     const [processing, setProcessing] = useState({ active: false, total: 0, done: 0 });
     const [upload, setUpload] = useState({
         visible: false,
@@ -124,6 +126,8 @@ export default function ImageUpload({ orderId, customerId }) {
 
             if (response.status === 200) {
                 setOrderDate(responseData?.data?.order_date || "");
+                setCustomerPhone(responseData?.data?.phone_no || "");
+                setApiId(responseData?.data?._id || "");
             } else {
                 setOrderDate("");
                 alert("Failed to fetch photography order details.");
@@ -162,13 +166,13 @@ export default function ImageUpload({ orderId, customerId }) {
 
     const getSubFolderData = useCallback(
         async (silent = false) => {
-            if (!folderId || !isWithinUploadWindow) return;
+            if (!folderId ) return;
 
             try {
                 if (!silent) setLoading(true);
 
                 const response = await fetch(
-                    `${BASE_URL}/api/photo/thumbnailsWithinProject?folderName=${orderId}_${customerId}`
+                    `${BASE_URL}/api/photo/thumbnailsWithinProject?folderName=${orderId}_${customerId}_${customerPhone}`
                 );
 
                 const result = await response.json();
@@ -184,24 +188,19 @@ export default function ImageUpload({ orderId, customerId }) {
                 if (!silent) setLoading(false);
             }
         },
-        [folderId, orderId, customerId, isWithinUploadWindow]
+        [folderId, orderId, customerId, customerPhone]
     );
 
     useEffect(() => {
-        if (!router.isReady || !folderId || orderDateLoading) return;
-
-        if (!isWithinUploadWindow) {
-            setThumbnails([]);
-            setLoading(false);
-            return;
-        }
+        if (!router.isReady || !orderId || !customerId || !customerPhone) return;
 
         getSubFolderData();
     }, [
         router.isReady,
         folderId,
-        orderDateLoading,
-        isWithinUploadWindow,
+        orderId,
+        customerId,
+        customerPhone,
         getSubFolderData
     ]);
 
@@ -285,7 +284,7 @@ export default function ImageUpload({ orderId, customerId }) {
                 {
                     fileName: uniqueFileName,
                     fileType: file.type,
-                    folderName: `${orderId}_${customerId}`,
+                    folderName: `${orderId}_${customerId}_${customerPhone}`,
                 },
                 { headers: { Authorization: `${token}` } }
             );
@@ -316,7 +315,6 @@ export default function ImageUpload({ orderId, customerId }) {
     };
     const uploadSingleVideo = async (file, tempId) => {
         try {
-            const supplierID = getSupplierID();
             const contentType = file.type || "video/mp4";
             const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
 
@@ -333,7 +331,7 @@ export default function ImageUpload({ orderId, customerId }) {
                     fileName: uniqueFileName,
                     fileType: contentType,
                     totalChunks,
-                    folderName: `recentWork_${supplierID}`,
+                    folderName: `${orderId}_${customerId}_${customerPhone}`,
                 }),
             });
 
@@ -422,11 +420,11 @@ export default function ImageUpload({ orderId, customerId }) {
 
     const handleFileSelect = async (e) => {
 
-        if (!isWithinUploadWindow) {
-            alert("Upload access has expired.");
-            e.target.value = "";
-            return;
-        }
+        // if (!isWithinUploadWindow) {
+        //     alert("Upload access has expired.");
+        //     e.target.value = "";
+        //     return;
+        // }
 
         const files = Array.from(e.target.files || []);
         if (!files.length) return;
@@ -513,10 +511,10 @@ export default function ImageUpload({ orderId, customerId }) {
     const handleDone = async () => {
         const supplierID = getSupplierID();
 
-        if (!isWithinUploadWindow) {
-            alert("Upload access has expired.");
-            return;
-        }
+        // if (!isWithinUploadWindow) {
+        //     alert("Upload access has expired.");
+        //     return;
+        // }
 
         if (!supplierID || !folderId) {
             alert("Supplier ID or folder missing.");
@@ -531,7 +529,7 @@ export default function ImageUpload({ orderId, customerId }) {
             const response = await axios.post(
                 `${BASE_URL2}/supplier-order-upload-done`,
                 {
-                    folderName: `${orderId}_${customerId}`,
+                    folderName: `${orderId}_${customerId}_${customerPhone}`,
                     userId: customerId,
                 },
                 { headers: { Authorization: `${token}` } }
@@ -585,12 +583,12 @@ export default function ImageUpload({ orderId, customerId }) {
     return (
             <div className="subfolder-page">
                 <div className="subfolder-banner">
-                    {/* <img
+                    <img
                         src={backIcon.src}
                         alt="Back"
                         className="subfolder-back-icon"
                     onClick={() => router.push(`/hora-partner/past-order-view-details?apiOrderId=${apiId}&orderType=8&orderId=${orderId}`)}
-                    /> */}
+                    />
 
                     <h1 className="subfolder-title">
                         {/* {loading ? "" : viewOnlyOrderId || ""} */}

@@ -1,4 +1,4 @@
-export const BASE_URL ="https://horaservices.com";
+export const BASE_URL ="http://localhost:9000";
 export const BASE_URL2 = "http://localhost:4000";
 export const OTP_GENERATE_END_POINT= "/api/user/otp_generate";
 export const API_SUCCESS_CODE=200;
