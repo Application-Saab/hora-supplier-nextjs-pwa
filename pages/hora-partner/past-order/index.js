@@ -8,7 +8,7 @@ const GoogleDriveForm = () => {
   const router = useRouter();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [statusFilter, setStatusFilter] = useState("all"); 
+  const [statusFilter, setStatusFilter] = useState("all");
 
 
   let supplierID, supplierJobType;
@@ -63,8 +63,11 @@ const GoogleDriveForm = () => {
       display: "flex",
       gap: "6px",
       marginBottom: "16px",
-      overflowX: "auto",
-      paddingBottom: "4px",
+      overflowX: "scroll",
+      overflowY: "hidden",
+      paddingBottom: "8px",
+      scrollbarWidth: "thin",
+      scrollbarColor: "#bdbdbd transparent",
     },
     filterTab: (active) => ({
       padding: "6px 14px",
@@ -107,7 +110,7 @@ const GoogleDriveForm = () => {
       fontWeight: "500",
     },
     buttonBase: {
-      padding: "8px 14px",
+      padding: "10px 18px",
       border: "none",
       borderRadius: "8px",
       fontSize: "12px",
@@ -233,14 +236,69 @@ const GoogleDriveForm = () => {
     });
   };
 
-  const inclusionToApiKeyMap = {
-    "Raw Photos": "rawPhotos",
-    "Edited Photos": "editedPhotos",
-    "Teaser": "teaser",
-    "Edited Video": "editedVideos",
-    "Raw Video": "rawVideos",
-    "Drone Shoot": "droneShoot",
-    "Edited Reel": "editedReel"
+  const inclusionToApiKey = (name) => {
+    const aliases = {
+      "Edited Video": "editedVideo",
+      "Raw Video": "rawVideos",
+    };
+
+    if (aliases[name]) return aliases[name];
+
+    return name
+      .trim()
+      .replace(/[^a-zA-Z0-9 ]/g, "")
+      .split(/\s+/)
+      .map((word, index) =>
+        index === 0
+          ? word.charAt(0).toLowerCase() + word.slice(1)
+          : word.charAt(0).toUpperCase() + word.slice(1)
+      )
+      .join("");
+  };
+
+
+  const lateSubmissionDeadlines = {
+    colorCorrectedPhotos: 48 * 60 * 60 * 1000,       // 48 hours
+    editedPhotos: 24 * 60 * 60 * 1000,    // 24 hours
+    editedVideos: 3 * 24 * 60 * 60 * 1000, // 3 days
+    album: 6 * 24 * 60 * 60 * 1000,      // 6 days
+  };
+
+  const isLateSubmission = (order) => {
+    const fulfillmentDate = new Date(order?.order_date).getTime();
+
+    if (!fulfillmentDate || isNaN(fulfillmentDate)) return false;
+
+    const inclusions = order?.call_checklist?.inclusions || {};
+    const existingLinks = order?.allDriveLinks || [];
+
+    const now = Date.now();
+
+    const lateInclusions = [
+      { name: "Raw Photos", apiKey: "colorCorrectedPhotos" },
+      { name: "Edited Photos", apiKey: "editedPhotos" },
+      { name: "Edited Video", apiKey: "editedVideos" },
+      { name: "Album", apiKey: "album" },
+    ];
+
+    return lateInclusions.some(({ name, apiKey }) => {
+      // Only check selected inclusions
+      if (inclusions[name] !== true) return false;
+
+      const deadline = fulfillmentDate + lateSubmissionDeadlines[apiKey];
+
+      // Check if link is already submitted
+      const isSubmitted = existingLinks.some(
+        (item) => item.linkType === apiKey && item.link?.trim()
+      );
+
+      // Raw Photos fallback
+      const rawPhotosSubmitted =
+        apiKey === "colorCorrectedPhotos" && !!order?.orderDriveLink?.trim();
+
+
+      return now > deadline && !isSubmitted && !rawPhotosSubmitted;
+    });
   };
 
   const OrderItem = ({ order }) => {
@@ -256,8 +314,9 @@ const GoogleDriveForm = () => {
         (key) => inclusions[key] === true
       );
 
-      const dynamicApiKeys = trueInclusionsList.map((key) => inclusionToApiKeyMap[key]);
-      const finalApiKeysToShow = [...new Set(dynamicApiKeys.filter(Boolean))];
+      const finalApiKeysToShow = [
+        ...new Set(trueInclusionsList.map(inclusionToApiKey).filter(Boolean)),
+      ];
 
       totalInclusionsCount = finalApiKeysToShow.length;
 
@@ -266,9 +325,27 @@ const GoogleDriveForm = () => {
           (item) => item.linkType === backendApiKey
         );
 
-        const rawPhotosLink = backendApiKey === "rawPhotos" ? order?.orderDriveLink : "";
+        const rawPhotosSubmitted =
+          backendApiKey === "colorCorrectedPhotos" &&
+          (
+            order?.imageUploadByApp === true ||
+            !!order?.orderDriveLink?.trim() ||
+            existingLinks.some(
+              (item) =>
+                item.linkType === "colorCorrectedPhotos" &&
+                !!item.link?.trim()
+            )
+          );
 
-        if (!!matchedSavedLink?.link || !!rawPhotosLink) {
+        const albumSubmitted =
+          backendApiKey === "album" &&
+          order?.isAlbumVerified === true;
+
+        if (
+          !!matchedSavedLink?.link?.trim() ||
+          rawPhotosSubmitted ||
+          albumSubmitted
+        ) {
           submittedLinksCount++;
         }
       });
@@ -276,25 +353,74 @@ const GoogleDriveForm = () => {
       areAllLinksSubmitted = totalInclusionsCount > 0 && submittedLinksCount === totalInclusionsCount;
     }
 
-    const isSubmitted = supplierJobType === 8 ? areAllLinksSubmitted : (order.userOrderDishImageArray?.length > 0);
-
     return (
       <li style={styles.orderItem}>
         <div style={styles.topRow}>
           <span style={styles.orderIdBadge}>
             Order #{order.order_id + 10800}
           </span>
+
           <span style={styles.reviewText}>
-            {order.userReviewRatingArray?.[0]
-              ? `⭐ ${order.userReviewRatingArray[0]} Rating`
-              : "No Feedback"}
+            {order.reviewStatus && (
+              <span>
+                {order.reviewStatus === "positive" ? "🤩 Positive Review" : "😞 Negative Review"}
+              </span>
+            )}
+
+            {order.userReviewRatingArray?.[0] && (
+              <span>
+                {" | "}⭐ {order.userReviewRatingArray[0]} Rating
+              </span>
+            )}
+
+            {!order.reviewStatus && !order.userReviewRatingArray?.[0] && "No Feedback"}
           </span>
         </div>
 
+        {order?.call_checklist?.inclusions?.Album === true && (
+          <div style={{
+            display: "flex",
+            justifyContent: "flex-end",
+            marginTop: "6px",
+            marginBottom: "8px",
+          }}>
+            <span style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "5px",
+              fontSize: "11px",
+              fontWeight: "600",
+              padding: "4px 8px",
+              borderRadius: "6px",
+              color: order.isAlbumVerified ? "#15803d" : "#d97706",
+              background: order.isAlbumVerified ? "#ecfdf3" : "#fffbeb",
+              whiteSpace: "nowrap",
+            }}>
+              {order.isAlbumVerified ? (
+                <>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11z" />
+                    <path d="m9 12 2 2 4-4" />
+                  </svg>
+                  Album Verified
+                </>
+              ) : (
+                <>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M12 8v4" />
+                    <path d="M12 16h.01" />
+                  </svg>
+                  Album Not Verified
+                </>
+              )}
+            </span>
+          </div>
+
+
+        )}
+
         <div style={styles.bottomRow}>
-          <span style={{ fontSize: "12px", color: isSubmitted ? "#27ae60" : "#e67e22", fontWeight: "600" }}>
-            {isSubmitted ? "● Completed" : "● Action Required"}
-          </span>
 
           <div style={styles.buttonContainer}>
             <button
@@ -330,7 +456,7 @@ const GoogleDriveForm = () => {
                 </button>
               ) : (
                 <button
-                      style={{ ...styles.buttonBase, ...styles.allSubmitted }}
+                  style={{ ...styles.buttonBase, ...styles.allSubmitted }}
                   disabled
                 >
                   ✓ Submitted
@@ -374,25 +500,124 @@ const GoogleDriveForm = () => {
     let submittedLinksCount = 0;
     let areAllLinksSubmitted = false;
 
+    // Photography supplier links submission check
     if (supplierJobType === 8) {
       const inclusions = order?.call_checklist?.inclusions || {};
       const existingLinks = order?.allDriveLinks || [];
-      const trueInclusionsList = Object.keys(inclusions).filter((key) => inclusions[key] === true);
-      const dynamicApiKeys = trueInclusionsList.map((key) => inclusionToApiKeyMap[key]);
-      const finalApiKeysToShow = [...new Set(dynamicApiKeys.filter(Boolean))];
+
+      const trueInclusionsList = Object.keys(inclusions).filter(
+        (key) => inclusions[key] === true
+      );
+
+      const finalApiKeysToShow = [
+        ...new Set(trueInclusionsList.map(inclusionToApiKey).filter(Boolean)),
+      ];
+
       totalInclusionsCount = finalApiKeysToShow.length;
+
       finalApiKeysToShow.forEach((backendApiKey) => {
-        const matchedSavedLink = existingLinks.find((item) => item.linkType === backendApiKey);
-        const rawPhotosLink = backendApiKey === "rawPhotos" ? order?.orderDriveLink : "";
-        if (!!matchedSavedLink?.link || !!rawPhotosLink) submittedLinksCount++;
+        const matchedSavedLink = existingLinks.find(
+          (item) => item.linkType === backendApiKey
+        );
+
+        const rawPhotosSubmitted =
+          backendApiKey === "colorCorrectedPhotos" &&
+          (
+            order?.imageUploadByApp === true ||
+            !!order?.orderDriveLink?.trim() ||
+            existingLinks.some(
+              (item) =>
+                item.linkType === "colorCorrectedPhotos" &&
+                !!item.link?.trim()
+            )
+          );
+
+        const albumSubmitted =
+          backendApiKey === "album" &&
+          order?.isAlbumVerified === true;
+
+        const isSubmitted =
+          !!matchedSavedLink?.link?.trim() ||
+          rawPhotosSubmitted ||
+          albumSubmitted;
+
+        if (isSubmitted) {
+          submittedLinksCount++;
+        }
       });
-      areAllLinksSubmitted = totalInclusionsCount > 0 && submittedLinksCount === totalInclusionsCount;
+
+      areAllLinksSubmitted =
+        totalInclusionsCount > 0 &&
+        submittedLinksCount === totalInclusionsCount;
     }
 
-    const isSubmitted = supplierJobType === 8 ? areAllLinksSubmitted : (order.userOrderDishImageArray?.length > 0);
+    // Submission status
+    const isSubmitted =
+      supplierJobType === 8
+        ? areAllLinksSubmitted
+        : (order?.userOrderDishImageArray?.length > 0);
 
+    const rating = String(order?.userReviewRatingArray?.[0] || "").trim();
+
+    const hasRating = ["0-6", "1-6", "6-8", "7-8", "9-10"].includes(rating);
+
+    // All orders
+    if (statusFilter === "all") return true;
+
+    // Pending / Completed
     if (statusFilter === "submitted") return isSubmitted;
-    if (statusFilter === "pending") return !isSubmitted;
+
+    if (statusFilter === "pending") {
+      const inclusions = order?.call_checklist?.inclusions || {};
+
+      // Album selected but not verified
+      if (
+        inclusions.Album === true &&
+        order?.isAlbumVerified !== true
+      ) {
+        return true;
+      }
+
+      return !isSubmitted;
+    }
+
+    // Late Submission
+    if (statusFilter === "lateSubmission") {
+      return supplierJobType === 8 && isLateSubmission(order);
+    }
+
+    // Rating filters
+    // 0-6: Include both 0-6 and 1-6
+
+    // Review has higher priority than rating
+    if (order?.reviewStatus === "negative") {
+      return statusFilter === "0-6";
+    }
+
+    if (order?.reviewStatus === "positive") {
+      return statusFilter === "9-10";
+    }
+
+    if (statusFilter === "0-6") {
+      return ["0-6", "1-6"].includes(rating);
+    }
+
+    // 6-8: Include both 6-8 and 7-8
+    if (statusFilter === "6-8") {
+      return ["6-8", "7-8"].includes(rating);
+    }
+
+    // 9-10
+    if (statusFilter === "9-10") {
+      return rating === "9-10";
+    }
+
+
+    // No Rating
+    if (statusFilter === "noRating") {
+      return !hasRating;
+    }
+
     return true;
   });
 
@@ -415,6 +640,21 @@ const GoogleDriveForm = () => {
           </button>
           <button style={styles.filterTab(statusFilter === "submitted")} onClick={() => setStatusFilter("submitted")}>
             Completed
+          </button>
+          <button style={styles.filterTab(statusFilter === "0-6")} onClick={() => setStatusFilter("0-6")}>
+            0-6
+          </button>
+          <button style={styles.filterTab(statusFilter === "6-8")} onClick={() => setStatusFilter("6-8")}>
+            6-8
+          </button>
+          <button style={styles.filterTab(statusFilter === "9-10")} onClick={() => setStatusFilter("9-10")}>
+            9-10
+          </button>
+          <button style={styles.filterTab(statusFilter === "noRating")} onClick={() => setStatusFilter("noRating")}>
+            No Rating
+          </button>
+          <button style={styles.filterTab(statusFilter === "lateSubmission")} onClick={() => setStatusFilter("lateSubmission")}>
+            Late Submission
           </button>
         </div>
 

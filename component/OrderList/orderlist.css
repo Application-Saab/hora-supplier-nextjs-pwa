@@ -489,3 +489,227 @@ margin-top: 2px !important;
     .orders-by-date{
       min-width: 100%;
     }
+
+.upload-options-wrapper {
+  width: 100%;
+  margin: 18px 0;
+}
+
+.upload-tabs {
+  display: flex;
+  gap: 10px;
+  padding: 6px;
+  background: #f3f4f8;
+  border-radius: 12px;
+  margin-bottom: 16px;
+}
+
+.upload-tab {
+  flex: 1;
+  border: none;
+  padding: 13px 10px;
+  border-radius: 9px;
+  background: transparent;
+  color: #555;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.upload-tab span {
+  margin-right: 7px;
+}
+
+.upload-tab.active {
+  background: #fff;
+  color: #000145;
+  box-shadow: 0 2px 9px rgba(0, 0, 0, 0.09);
+}
+
+.upload-tab-content {
+  padding: 18px;
+  background: #fff;
+  border: 1px solid #e9eaf0;
+  border-radius: 13px;
+  animation: uploadTabFade 0.25s ease;
+}
+
+@keyframes uploadTabFade {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Image upload redirect */
+
+.image-upload-redirect {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 20px;
+  background: linear-gradient(110deg, #f8eff7, #ffffff);
+  border: 1px solid #97538C;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.image-upload-redirect:hover {
+  border-color: #97538C;
+  box-shadow: 0 5px 18px rgba(253, 99, 31, 0.12);
+  transform: translateY(-2px);
+}
+
+.redirect-icon {
+  width: 46px;
+  height: 46px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #97538C;
+  color: #fff;
+  border-radius: 12px;
+  font-size: 26px;
+  font-weight: 600;
+}
+
+.redirect-text {
+  flex: 1;
+}
+
+.redirect-text h4 {
+  margin: 0 0 5px;
+  font-size: 15px;
+}
+
+.redirect-text p {
+  margin: 0;
+  color: #777;
+  font-size: 12px;
+}
+
+.redirect-action {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #97538C;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.redirect-action span {
+  font-size: 19px;
+  animation: arrowMove 0.9s infinite alternate;
+}
+
+@keyframes arrowMove {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(5px);
+  }
+}
+
+/* Drive links */
+
+.drive-status-success,
+.drive-status-pending {
+  display: block;
+  margin-top: 9px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.drive-status-success {
+  color: #28a745;
+}
+
+.drive-status-pending {
+  color: #dc3545;
+}
+
+.submit-link-container {
+  margin-top: 18px;
+}
+
+.link-header {
+  font-size: 14px;
+  font-weight: 700;
+  color: #000145;
+  margin-bottom: 14px;
+}
+
+.drive-link-group {
+  padding: 14px;
+  margin-bottom: 12px;
+  background: #f8f9fc;
+  border: 1px solid #eceef3;
+  border-radius: 10px;
+}
+
+.drive-link-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.drive-link-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 11px 12px;
+  border: 1px solid #dfe1e8;
+  border-radius: 8px;
+  outline: none;
+  font-size: 13px;
+}
+
+.drive-link-input:focus {
+  border-color: #97538C;
+  box-shadow: 0 0 0 3px rgba(253, 99, 31, 0.08);
+}
+
+.drivelinkBtnContainer {
+  margin-top: 10px;
+}
+
+.drive-empty-state,
+.upload-unavailable {
+  text-align: center;
+  padding: 25px 10px;
+  color: #777;
+  font-size: 13px;
+}
+
+@media (max-width: 600px) {
+  .upload-tabs {
+    gap: 5px;
+  }
+
+  .upload-tab {
+    font-size: 12px;
+    padding: 12px 5px;
+  }
+
+  .image-upload-redirect {
+    flex-wrap: wrap;
+    padding: 15px;
+  }
+
+  .redirect-action {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}

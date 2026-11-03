@@ -36,7 +36,7 @@ const OrderDetail = () => {
     if (
       orderType == 2 ||
       orderType === 6 ||
-      orderType === 7 
+      orderType === 7
     ) {
       fetchOrderDetailsMenu();
     } else if (orderType === 1) {
@@ -52,36 +52,36 @@ const OrderDetail = () => {
   }, [orderType, orderId, apiOrderId]);
 
   useEffect(() => {
-        if(orderType == 8 ){
-          fetchPhotographyDetails();
-        }
-      }, [orderType])
+    if (orderType == 8) {
+      fetchPhotographyDetails();
+    }
+  }, [orderType])
 
   const fetchPhotographyDetails = async () => {
-        try {
-          setLoading(true);
-          const response = await fetch(
-            BASE_URL + GET_PHOTOGRAPHY_ORDER_DETAILS + "/" + orderId
-          );
-          if(response.ok){
-            const responseData = await response.json();
-    
-          setOrderDetail(responseData?.data);
-          setDecorationItems(responseData?.data?.items[0]?.decoration);
-          setDecorationComments(responseData?.data?.decoration_comments);
-          setDecorationAddon(responseData?.data?.add_on);
-          setBalanceAmount(responseData?.data?.balance_amount);
-          setLoading(false);
-          }
-          else{
-            alert("Failed to fetch photography order details. Please try again.");  
-          } 
-        } catch (error) {
-          console.log("fetchDecorationOrderDetails error", error);
-          setLoading(false);
-        }
-      };
-  
+    try {
+      setLoading(true);
+      const response = await fetch(
+        BASE_URL + GET_PHOTOGRAPHY_ORDER_DETAILS + "/" + orderId
+      );
+      if (response.ok) {
+        const responseData = await response.json();
+
+        setOrderDetail(responseData?.data);
+        setDecorationItems(responseData?.data?.items[0]?.decoration);
+        setDecorationComments(responseData?.data?.decoration_comments);
+        setDecorationAddon(responseData?.data?.add_on);
+        setBalanceAmount(responseData?.data?.balance_amount);
+        setLoading(false);
+      }
+      else {
+        alert("Failed to fetch photography order details. Please try again.");
+      }
+    } catch (error) {
+      console.log("fetchDecorationOrderDetails error", error);
+      setLoading(false);
+    }
+  };
+
 
   const fetchOrderDetailsMenu = async () => {
     try {
@@ -90,7 +90,7 @@ const OrderDetail = () => {
         BASE_URL + ORDER_DETAILS_ENDPOINT + "/v1/" + apiOrderId
       );
       const responseData = await response.json();
-      
+
       setDecorationComments(responseData?.data?.decoration_comments);
       setBalanceAmount(responseData.data.balance_amount);
       setOrderDetail(responseData.data);
@@ -106,20 +106,20 @@ const OrderDetail = () => {
       const response = await fetch(
         BASE_URL + GET_BOOKING_ORDER_DETAILS + "/" + orderId
       );
-      if(response.ok){
+      if (response.ok) {
         const responseData = await response.json();
-      console.log(responseData, "responsedata");
+        console.log(responseData, "responsedata");
 
-      setOrderDetail(responseData?.data);
-      // setOrderDetail(responseData?.data?._doc);
-      // setDecorationItems(responseData?.data?.items[0]?.decoration);
-      setDecorationItems(responseData?.data?.items[0]?.decoration);
-      setDecorationComments(responseData?.data?.decoration_comments);
-      setDecorationAddon(responseData?.data?.add_on);
-      setBalanceAmount(responseData?.data?.balance_amount);
-            setLoading(false);
+        setOrderDetail(responseData?.data);
+        // setOrderDetail(responseData?.data?._doc);
+        // setDecorationItems(responseData?.data?.items[0]?.decoration);
+        setDecorationItems(responseData?.data?.items[0]?.decoration);
+        setDecorationComments(responseData?.data?.decoration_comments);
+        setDecorationAddon(responseData?.data?.add_on);
+        setBalanceAmount(responseData?.data?.balance_amount);
+        setLoading(false);
       }
-      else{
+      else {
         alert("Failed to fetch decoration order details. Please try again later.");
         setLoading(false);
       }
@@ -167,20 +167,21 @@ const OrderDetail = () => {
 
   return (
     <>
-    <Layout backLink = "/hora-partner/past-order">
-      <div className="orderheader-orderdetail">
-        <OrderDetailHeader orderDetail={orderDetail} />
-        <div className="order-detail-page-decoration">
-          <OrderDetailTab
-            orderDetail={orderDetail}
-            orderType={orderType}
-            decorationItems={decorationItems}
-            decorationComments={decorationComments}
-            decorationAddon={decorationAddon}
-            balanceAmount={balanceAmount}
-          />
+      <Layout backLink="/hora-partner/past-order">
+        <div className="orderheader-orderdetail">
+          <OrderDetailHeader orderDetail={orderDetail} />
+          <div className="order-detail-page-decoration">
+            <OrderDetailTab
+              orderDetail={orderDetail}
+              orderType={orderType}
+              decorationItems={decorationItems}
+              decorationComments={decorationComments}
+              decorationAddon={decorationAddon}
+              balanceAmount={balanceAmount}
+              onRefresh={fetchPhotographyDetails}
+            />
+          </div>
         </div>
-      </div>
       </Layout>
     </>
   );
