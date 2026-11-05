@@ -8,15 +8,21 @@ export const connectSocket = (userId) => {
     if (!userId) return null;
     if (socket) return socket;
 
-    socket = io(BASE_URL2, {
-        transports: ["websocket", "polling"],
+    console.log(BASE_URL2)
+
+    socket = io("https://horaservices.com", {
+        path: "/media-api/socket.io",
+        transports: ["polling", "websocket"],
         query: { userId },
-        autoConnect: true,
     });
 
     socket.on("connect", () => console.log("✅ CONNECTED:", socket.id));
     socket.on("disconnect", (reason) => console.log("❌ DISCONNECTED:", reason));
-    socket.on("connect_error", (err) => console.log("❌ CONNECT ERROR:", err.message));
+    socket.on("connect_error", (err) => {
+        console.log("❌ CONNECT ERROR:", err.message);
+        console.log("Description:", err.description);
+        console.log("Context:", err.context);
+    });
 
     return socket;
 };

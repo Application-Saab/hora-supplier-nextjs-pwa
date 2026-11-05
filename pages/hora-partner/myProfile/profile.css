@@ -92,7 +92,7 @@
 }
 
 .profile-info-text {
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 500;
     line-height: 1.2;
     margin: 0;
@@ -177,19 +177,32 @@
 }
 
 .spec-card {
-    max-width: 100px;
-    min-height: 70px;
+    max-width: 78px !important;
+    max-height: 78px !important;
+    min-width: 78px !important;
+    min-height: 78px !important;
     border: 0.2px solid #97538C24;
     border-radius: 10px;
-    padding: 10px 0px;
+    padding: 5px 7px !important;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: center !important;
     justify-content: flex-start;
     text-align: center;
     background: #ffffff;
     flex-shrink: 0;
     box-sizing: border-box;
+    gap: 5px;
+}
+
+.special-image-wrapper{
+height: 34px;
+width: 41px;
+object-fit: cover !important;
+}
+.outer-special-image-wrapper{
+height: 34px;
+    width: 41px;
 }
 
 .card-icon-box {
@@ -204,7 +217,7 @@
 }
 
 .card-title {
-    font-size: 11px;
+    font-size: 10px !important;
     font-weight: 500;
     color: #505050;
     line-height: 1.2;
@@ -215,31 +228,47 @@
 .custom-scroll-bar {
     display: flex;
     align-items: center;
-    justify-content: center;
     gap: 6px;
-    margin-top: 10px;
+    width: 203px !important;
+    max-width: 100%;
+    margin: 10px auto 0 auto;
+    padding: 0px 5px;
+    background-color: #F0EFF0;
+    /* poora pill grey */
+    border-radius: 999px;
+    box-sizing: border-box;
 }
 
 .custom-scroll-bar .arrow {
-    font-size: 8px;
+    flex-shrink: 0;
+    font-size: 6px;
+    padding: 2px 0px;
+    line-height: 1;
     color: #8B4584;
+    user-select: none;
+    cursor: pointer;
 }
 
 .custom-scroll-bar .track {
-    width: 130px;
-    height: 7px;
-    background-color: #E5E7EB;
-    border-radius: 10px;
+    flex: 1;
+    /* bachi hui poori jagah le */
+    min-width: 0;
+    height: 8px;
+    background-color: transparent;
+    /* pill ka grey hi dikhega */
+    border-radius: 999px;
     position: relative;
     overflow: hidden;
 }
 
 .custom-scroll-bar .thumb {
-    width: 40px;
+    position: absolute;
+    top: 0;
+    left: 0;
     height: 100%;
     background-color: #97538C;
-    border-radius: 10px;
-    transition: transform 0.05s linear;
+    border-radius: 999px;
+    transition: left 0.05s linear;
 }
 
 .justify-between {
@@ -287,9 +316,20 @@
     position: relative;
     background: #ffffff;
     width: 100%;
-    max-width: 380px;
+    max-width: 330px;
     border-radius: 14.52px;
-    padding: 16px 16px 20px 16px;
+    padding: 14px 14px 16px 14px;
+    box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.12);
+    box-sizing: border-box;
+    animation: fadeIn 0.2s ease-out;
+}
+
+.modal-folder-content {
+    position: relative;
+    background: #ffffff;
+    width: 100%;
+    border-radius: 14.52px;
+    padding: 14px 14px 16px 14px;
     box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.12);
     box-sizing: border-box;
     animation: fadeIn 0.2s ease-out;
@@ -297,12 +337,12 @@
 
 .modal-header {
     display: block;
-    margin-bottom: 8px;
+    margin-bottom: 5px;
 }
 
 .modal-header h2 {
-    font-size: 21.12px;
-    font-weight: 500;
+    font-size: 21.12px !important;
+    font-weight: 600 !important;
     color: #000;
     margin: 0;
 }
@@ -338,8 +378,8 @@
 .modal-form {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    margin-top: 8px;
+    gap: 8px;
+    /* margin-top: 8px; */
 }
 
 .form-label {
@@ -443,14 +483,42 @@
     min-height: 250px;
     overflow-y: auto;
     margin-bottom: 6px;
-    padding-right: 2px;
+    padding-right: 0px;
+}
+
+
+.spec-selection-list {
+    scrollbar-width: auto;
+    scrollbar-color: #a6a6a6 #eeeeee;
+}
+
+/* Chrome, Edge, Safari */
+.spec-selection-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.spec-selection-list::-webkit-scrollbar-track {
+    background: #eeeeee;
+    /* Light grey */
+    border-radius: 10px;
+}
+
+.spec-selection-list::-webkit-scrollbar-thumb {
+    background-color: #a6a6a6;
+    /* Dark grey */
+    border-radius: 10px;
+}
+
+.spec-selection-list::-webkit-scrollbar-thumb:hover {
+    background-color: #808080;
+    /* Aur dark grey on hover */
 }
 
 .spec-select-card {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 8px 12px;
+    padding: 8px 8px 8px 3px;
     border: 1px solid #00000052;
     border-radius: 10px;
     cursor: pointer;
@@ -466,7 +534,7 @@
 
 
 .spec-name {
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 500;
     color: #505050;
 }
@@ -492,11 +560,11 @@
 .input-group {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 5px;
 }
 
 div.input-group>label {
-    font-size: 10.93px;
+    font-size: 14px;
     font-weight: 600 !important;
     color: #162740;
     margin-bottom: 0 !important;
@@ -513,7 +581,7 @@ div.input-group>label {
     border: none !important;
     background: transparent !important;
     outline: none !important;
-    font-size: 12px;
+    font-size: 14px;
     color: #00000080;
     font-weight: 600;
     padding: 0;
@@ -530,6 +598,9 @@ div.input-group>label {
 }
 
 .input-wrapper {
+min-height: 36.96px !important;
+    max-width: 304px !important;
+    min-width: 304px !important;
     position: relative;
     display: flex;
     align-items: center;
@@ -545,7 +616,7 @@ div.input-group>label {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    margin-right: 10px;
+    margin-right: 6px;
     flex-shrink: 0;
     line-height: 1;
 }
@@ -560,9 +631,9 @@ div.input-group>label {
     border: none;
     background: transparent;
     outline: none;
-    font-size: 12px;
-    color: #00000080;
-    font-weight: 600;
+    font-size: 14px !important;
+    color: #00000080 !important;
+    font-weight: 600 !important;
     padding: 0;
     display: flex;
     align-items: center;
@@ -582,6 +653,7 @@ div.input-group>label {
 
 /* Save Action Button Styling */
 .modal-save-btn {
+    min-width: 303.6px;
     width: 100%;
     height: 43.56px;
     background-color: #97538C;
@@ -591,7 +663,7 @@ div.input-group>label {
     border: none;
     border-radius: 8.34px;
     cursor: pointer;
-    margin-top: 10px;
+    margin-top: 5px;
     transition: background-color 0.2s ease, opacity 0.2s ease;
 }
 
@@ -784,8 +856,8 @@ div.input-group>label {
 }
 
 .sf-folder-circle {
-    width: 81.9px;
-    height: 81.9px;
+    width: 75.9px !important;
+    height: 75.9px !important;
     border-radius: 50%;
     /* border: 2px solid #e5e7eb; */
     overflow: hidden;
@@ -1100,7 +1172,7 @@ div.input-group>label {
     gap: 16px;
     overflow-x: auto;
     scroll-behavior: smooth;
-    padding: 10px 0px 12px 0px;
+    padding: 20px 0px 12px 0px;
     scrollbar-width: none;
 }
 
@@ -1114,10 +1186,10 @@ div.input-group>label {
 
 /* Recent work - subfolder circle */
 .gallery-headerCard .circle-img-folder {
-    width: 72px !important;
-    height: 72px !important;
-    min-width: 72px;
-    min-height: 72px;
+    width: 67.62px !important;
+    height: 67.72px !important;
+    min-width: 67.62px;
+    min-height: 67.62px;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -1128,8 +1200,8 @@ div.input-group>label {
 }
 
 .gallery-headerCard .circle-img-inner {
-    width: calc(100% - 6px) !important;
-    height: calc(100% - 6px) !important;
+    width: calc(100% - 4px) !important;
+    height: calc(100% - 4px) !important;
     border-radius: 50%;
     overflow: hidden;
     display: flex;
@@ -1179,7 +1251,7 @@ div.input-group>label {
 .flex {
     display: flex;
     align-items: center;
-    gap: 11px;
+    gap: 8px;
 }
 
 .action-item strong {
@@ -1226,4 +1298,15 @@ div.input-group>label {
     z-index: 999999;
 
     animation: snackbarFade 0.3s ease;
+}
+
+
+.input-group .input-wrapper input {
+    background-color: #F8F9FC !important;
+}
+
+.about-text {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    min-width: 0;
 }
