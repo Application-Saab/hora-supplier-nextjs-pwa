@@ -26,7 +26,7 @@ const CreateFolderModal = ({
                     type="text"
                     className="cf-input"
                     placeholder="Type Folder Name"
-                    value={folderName}
+                    value={typeof folderName === "string" ? folderName : ""}
                     onChange={(e) => setFolderName(e.target.value)}
                     maxLength={50}
                 />
@@ -34,7 +34,7 @@ const CreateFolderModal = ({
                 <button
                     type="submit"
                     className="cf-create-btn"
-                    disabled={loading || !folderName.trim()}
+                    disabled={loading || !(typeof folderName === "string" ? folderName : "").trim()}
                 >
                     {loading ? "Creating..." : "Create"}
                 </button>
