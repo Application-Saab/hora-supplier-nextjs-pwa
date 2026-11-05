@@ -206,7 +206,7 @@ const OrderDetailTab = ({
     [...files].forEach((f) => formData.append("files", f));
 
     const uploadRes = await fetch(
-      "https://horaservices.com/api/multiple_image_upload",
+      `${BASE_URL}/api/multiple_image_upload`,
       {
         method: "POST",
         body: formData,
@@ -214,7 +214,7 @@ const OrderDetailTab = ({
     );
     const uploadData = await uploadRes.json();
 
-    await fetch("https://horaservices.com/api/order/edit", {
+    await fetch(`${BASE_URL}/api/order/edit`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -486,6 +486,7 @@ const OrderDetailTab = ({
 
               </div>
             )}
+
             {activeUploadTab === "drive" && (
               <>
                 {driveLinksInput.length > 0 && (
@@ -512,262 +513,191 @@ const OrderDetailTab = ({
                         ✗ All Drive Link Not Submitted Yet ( {submittedLinksCount} / {totalInclusionsCount} )
                       </span>
                     )}
+
+                    <div className="submit-link-container">
+                      <div className="link-header">Submit Links</div>
+
+                      {driveLinksInput.map((item, index) => {
+                        const isInputEmpty = !item.link || item.link.trim() === "";
+                        const isBtnDisabled = loading || isInputEmpty || item.isExisting;
+
+                        return (
+                          <div key={index} className="drive-link-group" style={{ marginBottom: '8px' }}>
+                            <label className="drive-link-label">
+                              {formatInclusionName(item.linkType) || item.linkType}
+                            </label>
+
+                            <input
+                              type="text"
+                              disabled={item.isExisting}
+                              placeholder={`Paste Google Drive link for ${formatInclusionName(item.linkType) || item.linkType
+                                }`}
+                              value={item.link}
+                              onChange={(e) => handleDynamicLinkChange(index, e.target.value)}
+                              className="drive-link-input"
+                            />
+
+                            {!item.isExisting && (
+                              <div className="drivelinkBtnContainer" style={{ marginTop: '8px' }}>
+                                <button
+                                  onClick={() => handleSaveSingleLink(index, orderDetail)}
+                                  disabled={isBtnDisabled}
+                                  className={`save-btn-link ${isBtnDisabled ? "save-btn-disabled" : ""}`}
+                                >
+                                  {loading && submittingIndex === index ? "Submitting..." : "Save Link"}
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
                 )}
-              </>
-            )}
 
-            <button
-              className={`upload-tab ${activeUploadTab === "drive" ? "active" : ""}`}
-              onClick={() => setActiveUploadTab("drive")}
-            >
-              <span>🔗</span>
-              Google Drive Links
-            </button>
-          </div>
 
-          {activeUploadTab === "images" && (
-            <div className="upload-tab-content image-upload-tab">
+                {/* ALBUM IMAGE UPLOAD UI */}
+                {orderDetail?.call_checklist?.inclusions?.Album === true && (
+                  <div className="album-upload-section">
 
-              {(orderDetail.order_status === 3 || orderDetail.order_status === 6) ? (
-                <div
-                  className="image-upload-redirect"
-                  onClick={() =>
-                    router.push(
-                      `/hora-partner/order-upload/${orderDetail?.order_id}?id=${orderDetail?.fromId?._id
-                        ? orderDetail?.fromId?._id
-                        : orderDetail?.fromId
-                      } `
-                    )
-                  }
-                >
-                  <div className="redirect-icon">↑</div>
+                    <div className="album-upload-header">
+                      <div>
+                        <h4>Album Verification</h4>
+                        <p>
+                          {orderDetail?.isAlbumVerified
+                            ? "Album images verified successfully."
+                            : "Upload album images for verification."}
+                        </p>
+                      </div>
+                    </div>
 
-                  <div className="redirect-text">
-                    <h4>Upload Your Images & Videos</h4>
-                    <p>Click below to open the upload page</p>
-                  </div>
+                    {/* Already Uploaded Images */}
+                    {orderDetail?.albumImages?.length > 0 && (
+                      <>
+                        <div className="album-preview-header">
+                          <span>Uploaded Images</span>
+                          <span>{orderDetail.albumImages.length}/5 Images</span>
+                        </div>
 
-                  <div className="redirect-action">
-                    Click to Redirect
-                    <span>→</span>
-                  </div>
-                </div>
-              ) : (
-                <p className="upload-unavailable">
-                  Image upload is not available for this order status.
-                </p>
-              )}
+                        <div className="album-preview-grid">
+                          {orderDetail.albumImages.map((img, index) => (
+                            <div className="album-preview-item" key={index}>
+                              <img
+                                src={img}
+                                alt={`Album ${index + 1}`}
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      </>
+                    )}
 
-            </div>
-          )}
-          {activeUploadTab === "drive" && (
-            <>
-              {driveLinksInput.length > 0 && (
-                <div className="actual-image-container">
-                  <div className="fw-semiBold">Current Status</div>
-                  {areAllLinksSubmitted ? (
-                    <span
+                    {/* Verification Status */}
+                    <p
                       style={{
-                        color: "#28a745",
-                        fontWeight: "500",
+                        color: orderDetail?.isAlbumVerified ? "#28a745" : "#dc3545",
+                        fontWeight: "600",
                         fontSize: "13px",
+                        marginTop: "12px"
                       }}
                     >
-                      ✓ All Drive Link Submitted ( {submittedLinksCount} / {totalInclusionsCount} )
-                    </span>
-                  ) : (
-                    <span
-                      style={{
-                        color: "#dc3545",
-                        fontWeight: "500",
-                        fontSize: "12px",
-                      }}
-                    >
-                      ✗ All Drive Link Not Submitted Yet ( {submittedLinksCount} / {totalInclusionsCount} )
-                    </span>
-                  )}
+                      {orderDetail?.isAlbumVerified
+                        ? "✓ Album Verified"
+                        : "✗ Album Verification Pending"}
+                    </p>
 
-                  <div className="submit-link-container">
-                    <div className="link-header">Submit Links</div>
-
-                    {driveLinksInput.map((item, index) => {
-                      const isInputEmpty = !item.link || item.link.trim() === "";
-                      const isBtnDisabled = loading || isInputEmpty || item.isExisting;
-
-                      return (
-                        <div key={index} className="drive-link-group" style={{ marginBottom: '8px' }}>
-                          <label className="drive-link-label">
-                            {formatInclusionName(item.linkType) || item.linkType}
+                    {/* Upload Section - Only when not verified */}
+                    {!orderDetail?.isAlbumVerified && (
+                      <>
+                        <div className="album-upload-box-wrapper">
+                          <label
+                            htmlFor="albumImageInput"
+                            className="album-upload-box"
+                            style={{ cursor: "pointer" }}
+                          >
+                            <div className="album-upload-icon">+</div>
+                            <h4>Select Album Images</h4>
+                            <span className="about-text">
+                              Minimum 1 and maximum 5 images
+                            </span>
                           </label>
 
                           <input
-                            type="text"
-                            disabled={item.isExisting}
-                            placeholder={`Paste Google Drive link for ${formatInclusionName(item.linkType) || item.linkType
-                              }`}
-                            value={item.link}
-                            onChange={(e) => handleDynamicLinkChange(index, e.target.value)}
-                            className="drive-link-input"
+                            id="albumImageInput"
+                            type="file"
+                            accept="image/*"
+                            multiple
+                            style={{ display: "none" }}
+                            onChange={(e) => {
+                              const selectedFiles = Array.from(e.target.files || []);
+
+                              if (selectedFiles.length > 5) {
+                                alert("You can select maximum 5 images.");
+                                e.target.value = "";
+                                return;
+                              }
+
+                              setAlbumImages(selectedFiles);
+                            }}
                           />
-
-                          {!item.isExisting && (
-                            <div className="drivelinkBtnContainer" style={{ marginTop: '8px' }}>
-                              <button
-                                onClick={() => handleSaveSingleLink(index, orderDetail)}
-                                disabled={isBtnDisabled}
-                                className={`save-btn-link ${isBtnDisabled ? "save-btn-disabled" : ""}`}
-                              >
-                                {loading && submittingIndex === index ? "Submitting..." : "Save Link"}
-                              </button>
-                            </div>
-                          )}
                         </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
 
+                        {/* Selected Images Preview */}
+                        {albumImages.length > 0 && (
+                          <>
+                            <div className="album-preview-header">
+                              <span>Selected Images</span>
+                              <p className="about-text">{albumImages.length}/5 Images</p>
+                            </div>
 
-              {/* ALBUM IMAGE UPLOAD UI */}
-              {orderDetail?.call_checklist?.inclusions?.Album === true && (
-                <div className="album-upload-section">
+                            <div className="album-preview-grid">
+                              {albumImages.map((file, index) => (
+                                <div className="album-preview-item" key={index}>
+                                  <img
+                                    src={URL.createObjectURL(file)}
+                                    alt={`Selected Album ${index + 1}`}
+                                  />
 
-                  <div className="album-upload-header">
-                    <div>
-                      <h4>Album Verification</h4>
-                      <p>
-                        {orderDetail?.isAlbumVerified
-                          ? "Album images verified successfully."
-                          : "Upload album images for verification."}
-                      </p>
-                    </div>
-                  </div>
+                                  <button
+                                    type="button"
+                                    className="album-remove-btn"
+                                    onClick={() => {
+                                      setAlbumImages((prev) =>
+                                        prev.filter((_, i) => i !== index)
+                                      );
+                                    }}
+                                  >
+                                    ×
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          </>
+                        )}
 
-                  {/* Already Uploaded Images */}
-                  {orderDetail?.albumImages?.length > 0 && (
-                    <>
-                      <div className="album-preview-header">
-                        <span>Uploaded Images</span>
-                        <span>{orderDetail.albumImages.length}/5 Images</span>
-                      </div>
-
-                      <div className="album-preview-grid">
-                        {orderDetail.albumImages.map((img, index) => (
-                          <div className="album-preview-item" key={index}>
-                            <img
-                              src={img}
-                              alt={`Album ${index + 1}`}
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    </>
-                  )}
-
-                  {/* Verification Status */}
-                  <p
-                    style={{
-                      color: orderDetail?.isAlbumVerified ? "#28a745" : "#dc3545",
-                      fontWeight: "600",
-                      fontSize: "13px",
-                      marginTop: "12px"
-                    }}
-                  >
-                    {orderDetail?.isAlbumVerified
-                      ? "✓ Album Verified"
-                      : "✗ Album Verification Pending"}
-                  </p>
-
-                  {/* Upload Section - Only when not verified */}
-                  {!orderDetail?.isAlbumVerified && (
-                    <>
-                      <div className="album-upload-box-wrapper">
-                        <label
-                          htmlFor="albumImageInput"
-                          className="album-upload-box"
-                          style={{ cursor: "pointer" }}
+                        {/* Submit Button */}
+                        <button
+                          type="button"
+                          className="album-submit-btn"
+                          onClick={handleAlbumUpload}
+                          disabled={albumUploading || albumImages.length === 0}
                         >
-                          <div className="album-upload-icon">+</div>
-                          <h4>Select Album Images</h4>
-                          <span className="about-text">
-                            Minimum 1 and maximum 5 images
-                          </span>
-                        </label>
+                          {albumUploading
+                            ? "Uploading..."
+                            : `Submit Album Images (${albumImages.length}/5)`}
+                        </button>
+                      </>
+                    )}
 
-                        <input
-                          id="albumImageInput"
-                          type="file"
-                          accept="image/*"
-                          multiple
-                          style={{ display: "none" }}
-                          onChange={(e) => {
-                            const selectedFiles = Array.from(e.target.files || []);
+                  </div>
+                )}
 
-                            if (selectedFiles.length > 5) {
-                              alert("You can select maximum 5 images.");
-                              e.target.value = "";
-                              return;
-                            }
+              </>
+            )}
+          </div>
 
-                            setAlbumImages(selectedFiles);
-                          }}
-                        />
-                      </div>
 
-                      {/* Selected Images Preview */}
-                      {albumImages.length > 0 && (
-                        <>
-                          <div className="album-preview-header">
-                            <span>Selected Images</span>
-                            <p className="about-text">{albumImages.length}/5 Images</p>
-                          </div>
 
-                          <div className="album-preview-grid">
-                            {albumImages.map((file, index) => (
-                              <div className="album-preview-item" key={index}>
-                                <img
-                                  src={URL.createObjectURL(file)}
-                                  alt={`Selected Album ${index + 1}`}
-                                />
-
-                                <button
-                                  type="button"
-                                  className="album-remove-btn"
-                                  onClick={() => {
-                                    setAlbumImages((prev) =>
-                                      prev.filter((_, i) => i !== index)
-                                    );
-                                  }}
-                                >
-                                  ×
-                                </button>
-                              </div>
-                            ))}
-                          </div>
-                        </>
-                      )}
-
-                      {/* Submit Button */}
-                      <button
-                        type="button"
-                        className="album-submit-btn"
-                        onClick={handleAlbumUpload}
-                        disabled={albumUploading || albumImages.length === 0}
-                      >
-                        {albumUploading
-                          ? "Uploading..."
-                          : `Submit Album Images (${albumImages.length}/5)`}
-                      </button>
-                    </>
-                  )}
-
-                </div>
-              )}
-
-            </>
-          )}
         </div>
       ) : null}
     </>
