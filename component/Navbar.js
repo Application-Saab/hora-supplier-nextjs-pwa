@@ -2,48 +2,42 @@
 import React from 'react';
 import Image from "next/image";
 import Link from 'next/link';
-import { useRouter } from 'next/router';
-import IconButton from '@mui/material/IconButton';
-import LogoutIcon from '@mui/icons-material/Logout';
-import logo from '../assets/hora-logo-light.png';
-import backArr from '../assets/back_arrow1.png';
+import logo from '../assets/new_logo_light.png.png';
+import backArr from '../assets/arrow-black.svg';
 
 const Navbar = ({ backLink = "/hora-partner/home", navTitle, showBackButton = true }) => {
-  const router = useRouter();
-
-  
-  const handleLogout = () => {
-    localStorage.removeItem("supplierToken");
-    router.push("/hora-partner/login");
-  };
 
   return (
-    <nav className="navbar" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+    <nav
+      className="navbar"
+      style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        width: '100%'
+      }}
+    >
       {/* Left Side: Back Button */}
-      {showBackButton && (
-        <div style={{ display: 'flex', alignItems: 'center' }}>
+      <div style={{ display: 'flex', alignItems: 'center' }}>
+        {showBackButton && (
           <Link href={backLink}>
             <Image
-              src={backArr}
-              width={30}
-              height={30}
+              src={backArr.src}
+              width={20}
+              height={20}
               alt="Back"
-              style={{ margin: "0 auto" }}
             />
           </Link>
-        </div>
-      )}
+        )}
+      </div>
 
-      {/* Center: Logo */}
+      {/* Right Side: Logo */}
       <Image
         src={logo}
         alt="logo"
         width={52}
         height={52}
-        style={{ margin: "0 auto" }}
       />
-
-     
     </nav>
   );
 };

@@ -143,14 +143,24 @@ const DecorationOrderDetailsTab = ({
                     <div key={index} className="orderlist-decDetails">
                         <div className="myOrder-decDetailsLeft">
                             <>
-                                <Image
-                                    src={`https://horaservices.com/api/uploads/compressed_webp/${product?.featured_images?.length > 0 && product?.featured_images[0]?.fileName?.split(".")[0]
-                                        }.webp`}
-                                    alt={product?.name}
-                                    height={300}
-                                    width={300}
-                                    style={{ height: "auto", width: "100%" }}
-                                />
+                                {orderDetail?.customProductImage ? (
+                                    <Image
+                                        src={`https://horaservices.com/api/uploads/compressed_webp/${orderDetail?.customProductImage}`}
+                                        width={300}
+                                        height={300}
+                                        alt="Custom Product"
+                                        style={{ height: "auto", width: "100%" }}
+                                    />
+                                ) : (
+                                    <Image
+                                        src={`https://horaservices.com/api/uploads/compressed_webp/${product?.featured_images?.length > 0 && product?.featured_images[0]?.fileName?.split(".")[0]
+                                            }.webp`}
+                                        alt={product?.name}
+                                        height={300}
+                                        width={300}
+                                        style={{ height: "auto", width: "100%" }}
+                                    />
+                                )}
                                 <div
                                     style={{
                                         position: "absolute",

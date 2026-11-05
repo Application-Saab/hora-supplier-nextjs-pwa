@@ -3,31 +3,10 @@ import OrderDetailsMenu from "../OrderDetailsMenu";
 import OrderDetailsIngre from "../OrderDetailsIngre";
 import OrderDetailsAppliances from "../OrderDetailsAppliances";
 import { useRouter } from "next/router";
-import {
-  BASE_URL,
-  ACCEPT_ORDER,
-  START_ORDER,
-} from "../../../../apiconstant/apiconstant";
+import { BASE_URL, BASE_URL2, } from "../../../../apiconstant/apiconstant";
 import axios from "axios";
 import DecorationOrderDetailsTab from "../../../../component/decorationOrderDetailsTab";
 import PhotographyOrderDetailsTab from "../../../../component/photographyOrderDetailsTab";
-
-// const BASE_URL = "";
-// const ORDER_CANCEL = "";
-// order.type is 2 for chef
-// order.type is 1 for decoration
-// order.type is 3 for waiter
-// order type 4 bar tender
-// order type 5 cleaner
-// order type 6 Food Delivery
-// order type 7 Live Catering
-
-const cleanHTML = (htmlString) => {
-  // Remove all <div> and </div> tags, keep inner content
-  return htmlString.replace(/<\/?div>/g, "").trim();
-};
-
-const SUBMIT_LINK_ENDPOINT = "/api/photo/drive/add-order-drive-link";
 
 const OrderDetailTab = ({
   orderDetail,
@@ -36,25 +15,15 @@ const OrderDetailTab = ({
   decorationComments,
   decorationAddon,
   balanceAmount,
+  onRefresh,
 }) => {
   const router = useRouter();
   const decorationArray = Array.isArray(decorationItems) ? decorationItems : [decorationItems];
-  const { apiOrderId } = router.query;
   const [tab, setTab] = useState("Menu");
-  const [orderStatus, setOrderStatus] = useState(orderDetail?.order_status);
   const [activeUploadTab, setActiveUploadTab] = useState("images");
-  const [supplierID, setSupplierID] = useState(null);
-  const [otp, setOtp] = useState(null);
-
-  const [otp1, setOtp1] = useState(["", "", "", ""]);
-  const [isOtpMatched, setIsOtpMatched] = useState(false);
-  const inputRefs = useRef([]);
-  const [errorMessage, setErrorMessage] = useState("");
-
-
-  const [driveLink, setDriveLink] = useState("");
-
-
+  const [albumImages, setAlbumImages] = useState([]);
+  const [albumUploading, setAlbumUploading] = useState(false);
+  const albumInputRef = useRef(null);
   const [driveLinksInput, setDriveLinksInput] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -68,7 +37,7 @@ const OrderDetailTab = ({
       throw new Error("Please provide at least one valid Google Drive link.");
     }
 
-    const rawPhotosRow = linksToSend.find((item) => item.linkType === "rawPhotos");
+    const rawPhotosRow = linksToSend.find((item) => item.linkType === "colorCorrectedPhotos");
     const rawFolderUrl = rawPhotosRow ? rawPhotosRow.link : "";
 
     const response = await axios.post(`${BASE_URL}/api/photo/drive/add-order-drive-link`, {
@@ -81,86 +50,40 @@ const OrderDetailTab = ({
     return response.data;
   };
 
-  const inclusionToApiKeyMap = {
-    "Raw Photos": "rawPhotos",
-    "Edited Photos": "editedPhotos",
-    "Teaser": "teaser",
-    "Edited Video": "editedVideos",
-    "Raw Video": "rawVideos",
-    "Drone Shoot": "droneShoot",
-    "Edited Reel": "editedReel"
-  };
-
-  const apiKeyToInclusionMap = {
-    rawPhotos: "Raw Photos",
-    editedPhotos: "Edited Photos",
-    teaser: "Teaser",
-    editedVideos: "Edited Video",
-    rawVideos: "Raw Video",
-    droneShoot: "Drone Shoot",
-    editedReel: "Edited Reel"
-  };
-
-
   useEffect(() => {
     if (orderDetail) {
       const inclusions = orderDetail?.call_checklist?.inclusions || {};
       const existingLinks = orderDetail?.allDriveLinks || [];
 
-      const trueInclusionsList = Object.keys(inclusions).filter(
-        (key) => inclusions[key] === true
-      );
+      const initialInputState = Object.keys(inclusions)
+        .filter((key) => inclusions[key] === true)
+        .filter((key) => key.toLowerCase() !== "album")
+        .map((name) => {
 
-      const dynamicApiKeys = trueInclusionsList.map(
-        (key) => inclusionToApiKeyMap[key]
-      );
+          const linkType = name
+            .replace(/\s+/g, "")
+            .replace(/^./, (str) => str.toLowerCase());
 
+          const matchedSavedLink = existingLinks.find(
+            (item) =>
+              item.linkType.toLowerCase() === linkType.toLowerCase()
+          );
 
-      const finalApiKeysToShow = [
-        ...new Set(dynamicApiKeys.filter(Boolean)),
-      ];
-
-      let initialInputState = finalApiKeysToShow.map((backendApiKey) => {
-        const matchedSavedLink = existingLinks.find(
-          (item) => item.linkType === backendApiKey
-        );
-
-        const rawPhotosLink =
-          backendApiKey === "rawPhotos"
-            ? orderDetail?.orderDriveLink
-            : "";
-
-        return {
-          linkType: backendApiKey,
-          link: matchedSavedLink?.link || rawPhotosLink || "",
-          isExisting: !!matchedSavedLink?.link || !!rawPhotosLink,
-        };
-
-      });
+          return {
+            linkType,
+            link:
+              matchedSavedLink?.link ||
+              (linkType === "colorCorrectedPhotos"
+                ? orderDetail?.orderDriveLink || ""
+                : ""),
+            isExisting: !!matchedSavedLink?.link ||
+              (linkType === "colorCorrectedPhotos" && !!orderDetail?.orderDriveLink),
+          };
+        });
 
       setDriveLinksInput(initialInputState);
     }
   }, [orderDetail]);
-
-
-  // const handleSaveAllLinks = async (currentOrder) => {
-  //   try {
-  //     setLoading(true);
-
-  //     const data = await saveOrderDriveLinks(currentOrder, driveLinksInput);
-
-  //     alert(data.message || "All drive links processed successfully!");
-
-  //   } catch (error) {
-  //     console.error("Error in component while saving links:", error);
-
-  //     alert(error.response?.data?.message || error.message || "Something went wrong");
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
-
   const totalInclusionsCount = driveLinksInput.length;
 
   const submittedLinksCount = driveLinksInput.filter(
@@ -194,7 +117,7 @@ const OrderDetailTab = ({
       );
 
     }
-     catch (error) {
+    catch (error) {
       console.error("Error while saving link:", error);
     }
     finally {
@@ -203,152 +126,57 @@ const OrderDetailTab = ({
     }
   }
 
-
-
   const handleDynamicLinkChange = (index, value) => {
     const updatedLinks = [...driveLinksInput];
     updatedLinks[index].link = value;
     setDriveLinksInput(updatedLinks);
   };
 
-
-  const formatOrderMessage = (orderDetail, decorationItems) => {
-    const orderId = orderDetail?.order_id || "";
-    const orderDate = orderDetail?.order_date
-      ? new Date(orderDetail.order_date).toLocaleDateString()
-      : "";
-    const orderTime = orderDetail?.order_time || "";
-    const city = orderDetail?.addressId?.city || "";
-    const address1 = orderDetail?.addressId?.address1 || "";
-    const address2 = orderDetail?.addressId?.address2 || "";
-    const locality = orderDetail?.order_locality || "";
-    const pincode = orderDetail?.order_pincode || "";
-    const totalAmount = orderDetail?.total_amount || "";
-
-    // Decoration items with inclusions
-    const decorations = decorationArray?.length
-      ? decorationArray
-        .map((item, i) => {
-          const inclusions = item.inclusion?.length
-            ? item.inclusion
-              .map((inc) =>
-                inc
-                  .replace(/<div>/g, "• ")
-                  .replace(/<\/div>/g, "\n")
-                  .trim()
-              )
-              .join("")
-            : "No inclusions";
-
-          return `${i + 1}. ${item.name}\n${inclusions}`;
-        })
-        .join("\n\n")
-      : "No decoration items";
-
-    return `
-📝 *Order Details*
-------------------------
-Order Id: ${orderId}
-Order Date: ${orderDate}
-City: ${city}
-Time: ${orderTime}
-Address1: ${address1}
-Address2: ${address2}
-Locality: ${locality}
-Pincode: ${pincode}
-Total Amount: ₹${totalAmount}
-
-🎉 *Decoration Items*
-------------------------
-${decorations}
-  `.trim();
-  };
-
-  let orderOtp;
-
-  if (
-    typeof window !== "undefined" &&
-    typeof window.localStorage !== "undefined"
-  ) {
-    orderOtp = localStorage.getItem("orderOtp");
-  }
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      setSupplierID(localStorage.getItem("supplierID"));
-      setOtp(localStorage.getItem("otp"));
+  const handleAlbumUpload = async () => {
+    if (albumImages.length < 1 || albumImages.length > 5) {
+      alert("Please select minimum 1 and maximum 5 images.");
+      return;
     }
-  }, []);
 
-  const cancelOrder = async () => {
     try {
-      const token = await localStorage.getItem("supplierToken");
+      setAlbumUploading(true);
 
-      const response = await fetch(BASE_URL + ACCEPT_ORDER, {
-        method: "POST",
-        headers: {
-          Accept: "application/json, text/plain, /",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          Authorisation: token,
-          otp: otp,
-          _id: apiOrderId,
-          userId: supplierID,
-        }),
-      });
+      for (let i = 0; i < albumImages.length; i++) {
+        const formData = new FormData();
 
-      alert("Order accepted successfully");
-      // router.push("/orderlist");
-    } catch (error) {
-      console.log("cancelOrder error", error);
-    }
-  };
+        formData.append("image", albumImages[i]);
+        formData.append("orderId", orderDetail._id);
+        formData.append("imageName", `album_${Date.now()}_${i + 1}.jpg`);
+        formData.append("phoneNo", orderDetail.phone_no || "");
 
-  const contactUsRedirection = async () => {
-    try {
-      window.open(
-        `whatsapp://send?phone=+918982321487&text=I've canceled my order, kindly assist with the refund process. Thanks!`
-      );
-    } catch (error) {
-      console.log("contactUsRedirection error", error);
-    }
-  };
-
-  const cancelcontactUsRedirection = async () => {
-    try {
-      window.open(
-        "whatsapp://send?phone=+918982321487&text=I%20have%20canceled%20my%20order%20kindly%20assist%20with%20the%20refund%20process%20Thanks!"
-      );
-    } catch (error) {
-      console.log("cancelcontactUsRedirection error", error);
-    }
-  };
-
-  const handleDivClick = () => {
-    setShowOtpInputs(true);
-  };
-
-  const handleChange = (value, index) => {
-    const newOtp = [...otp1];
-    newOtp[index] = value;
-    setOtp1(newOtp);
-
-    if (value && index < otp1.length - 1) {
-      inputRefs.current[index + 1].focus();
-    }
-
-    if (newOtp.join("") === orderOtp) {
-      setIsOtpMatched(true);
-      setErrorMessage("");
-    } else {
-      setIsOtpMatched(false);
-      if (newOtp.join("").length === otp1.length) {
-        setErrorMessage("Wrong OTP, please try again.");
-      } else {
-        setErrorMessage("");
+        await axios.post(
+          `${BASE_URL2}/upload-album-image`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data"
+            }
+          }
+        );
       }
+
+      alert("Album images uploaded successfully!");
+      setAlbumImages([]);
+      await onRefresh?.();
+    } catch (error) {
+      console.error("Album upload error:", error);
+      alert(error.response?.data?.message || "Album upload failed.");
+
+    } finally {
+      setAlbumUploading(false);
     }
+  };
+
+  const formatInclusionName = (key) => {
+    return key
+      .replace(/([a-z])([A-Z])/g, "$1 $2")
+      .replace(/([A-Z])([A-Z][a-z])/g, "$1 $2")
+      .replace(/^./, (str) => str.toUpperCase());
   };
 
   function parseInclusionToBullets(inclusionData) {
@@ -371,41 +199,6 @@ ${decorations}
   // In your component
   const bulletItems = parseInclusionToBullets(orderDetail?.items?.[0]?.photography?.inclusion);
 
-
-  const handleSubmit = () => {
-    const currDate = new Date().toLocaleDateString();
-    const currTime = new Date().toLocaleTimeString();
-
-    const currDateTime = currDate + currTime;
-    try {
-      const token = localStorage.getItem("supplierToken");
-
-      const response = fetch(BASE_URL + START_ORDER, {
-        method: "POST",
-        headers: {
-          Accept: "application/json, text/plain, /",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          // Authorisation: token,
-          otp: otp,
-          _id: apiOrderId,
-          userId: supplierID,
-          job_start_time: currDateTime,
-        }),
-      });
-
-      router.push({
-        pathname: `/hora-partner/job-complete`,
-        query: { apiOrderId },
-      });
-    } catch (error) {
-      console.log("acceptOrder error", error);
-    }
-  };
-
-
-
   const handleFileUpload = async (e) => {
     const files = e.target.files;
     if (!files?.length) return;
@@ -413,7 +206,7 @@ ${decorations}
     [...files].forEach((f) => formData.append("files", f));
 
     const uploadRes = await fetch(
-      "https://horaservices.com/api/multiple_image_upload",
+      `${BASE_URL}/api/multiple_image_upload`,
       {
         method: "POST",
         body: formData,
@@ -421,7 +214,7 @@ ${decorations}
     );
     const uploadData = await uploadRes.json();
 
-    await fetch("https://horaservices.com/api/order/edit", {
+    await fetch(`${BASE_URL}/api/order/edit`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -435,15 +228,6 @@ ${decorations}
 
   return (
     <>
-      {/* <div className="chef-details">
-        <img src="chef-image.jpg" alt="Chef" className="chef-image" />
-        <div className="chef-info">
-          <h3>Rahul Kumar Gupta</h3>
-          <p>⭐⭐⭐⭐</p>
-          <button className="rate-us-button">Rate Us</button>
-        </div>
-      </div> */}
-
       {parseInt(orderType) === 2 ? (
         <div>
           <div className="tabs">
@@ -609,6 +393,7 @@ ${decorations}
               type="file"
               id="fileUpload"
               multiple
+              ref={albumInputRef}
               accept="image/*"
               style={{ display: "none" }}
               onChange={handleFileUpload}
@@ -639,351 +424,288 @@ ${decorations}
         </div>
 
       ) : orderType == 8 ? (
-                <div>
-                  <PhotographyOrderDetailsTab
-                    orderDetail={orderDetail}
-                    decorationComments={decorationComments}
-                    balanceAmount={balanceAmount}
-                    bulletItems={bulletItems}
-                  />
+        <div>
+          <PhotographyOrderDetailsTab
+            orderDetail={orderDetail}
+            decorationComments={decorationComments}
+            balanceAmount={balanceAmount}
+            bulletItems={bulletItems}
+          />
 
-                  <div className="upload-options-wrapper">
-                  <div className="upload-tabs">
-                    <button
-                      className={`upload-tab ${activeUploadTab === "images" ? "active" : ""}`}
-                      onClick={() => setActiveUploadTab("images")}
-                    >
-                      <span>📸</span>
-                      Upload Images
-                    </button>
+          <div className="upload-options-wrapper">
+            <div className="upload-tabs">
+              <button
+                className={`upload-tab ${activeUploadTab === "images" ? "active" : ""}`}
+                onClick={() => setActiveUploadTab("images")}
+              >
+                <span>📸</span>
+                Upload Images
+              </button>
 
-                    <button
-                      className={`upload-tab ${activeUploadTab === "drive" ? "active" : ""}`}
-                      onClick={() => setActiveUploadTab("drive")}
-                    >
-                      <span>🔗</span>
-                      Google Drive Links
-                    </button>
-                  </div>
+              <button
+                className={`upload-tab ${activeUploadTab === "drive" ? "active" : ""}`}
+                onClick={() => setActiveUploadTab("drive")}
+              >
+                <span>🔗</span>
+                Google Drive Links
+              </button>
+            </div>
 
-                  {activeUploadTab === "images" && (
-                    <div className="upload-tab-content image-upload-tab">
+            {activeUploadTab === "images" && (
+              <div className="upload-tab-content image-upload-tab">
 
-                      {(orderDetail.order_status === 3 || orderDetail.order_status === 6) ? (
-                        <div
-                          className="image-upload-redirect"
-                          onClick={() =>
-                            router.push(
-                              `/hora-partner/order-upload/${orderDetail?.order_id}?id=${orderDetail?.fromId?._id
-                                ? orderDetail?.fromId?._id
-                                : orderDetail?.fromId
-                              } `
-                            )
-                          }
-                        >
-                          <div className="redirect-icon">↑</div>
+                {(orderDetail.order_status === 3 || orderDetail.order_status === 6) ? (
+                  <div
+                    className="image-upload-redirect"
+                    onClick={() =>
+                      router.push(
+                        `/hora-partner/order-upload/${orderDetail?.order_id}?id=${orderDetail?.fromId?._id
+                          ? orderDetail?.fromId?._id
+                          : orderDetail?.fromId
+                        } `
+                      )
+                    }
+                  >
+                    <div className="redirect-icon">↑</div>
 
-                          <div className="redirect-text">
-                            <h4>Upload Your Images & Videos</h4>
-                            <p>Click below to open the upload page</p>
-                          </div>
-
-                          <div className="redirect-action">
-                            Click to Redirect
-                            <span>→</span>
-                          </div>
-                        </div>
-                      ) : (
-                        <p className="upload-unavailable">
-                          Image upload is not available for this order status.
-                        </p>
-                      )}
-
+                    <div className="redirect-text">
+                      <h4>Upload Your Images & Videos</h4>
+                      <p>Click below to open the upload page</p>
                     </div>
-                  )}
-                  {activeUploadTab === "drive" && (
-                    <>
-                  {driveLinksInput.length > 0 && (
-                    <div className="actual-image-container">
-                      <div className="fw-semiBold">Current Status</div>
-                      {areAllLinksSubmitted ? (
-                        <span
-                          style={{
-                            color: "#28a745",
-                            fontWeight: "500",
-                            fontSize: "13px",
-                          }}
-                        >
-                          ✓ All Drive Link Submitted ( {submittedLinksCount} / {totalInclusionsCount} )
-                        </span>
-                      ) : (
-                        <span
-                          style={{
-                            color: "#dc3545",
-                            fontWeight: "500",
-                            fontSize: "12px",
-                          }}
-                        >
-                          ✗ All Drive Link Not Submitted Yet ( {submittedLinksCount} / {totalInclusionsCount} )
-                        </span>
-                      )}
 
-                      <div className="submit-link-container">
-                        <div className="link-header">Submit Links</div>
+                    <div className="redirect-action">
+                      Click to Redirect
+                      <span>→</span>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="upload-unavailable">
+                    Image upload is not available for this order status.
+                  </p>
+                )}
 
-                        {driveLinksInput.map((item, index) => {
-                          const isInputEmpty = !item.link || item.link.trim() === "";
-                          const isBtnDisabled = loading || isInputEmpty || item.isExisting;
+              </div>
+            )}
 
-                          return (
-                            <div key={index} className="drive-link-group" style={{ marginBottom: '8px' }}>
-                              <label className="drive-link-label">
-                                {apiKeyToInclusionMap[item.linkType] || item.linkType}
-                              </label>
+            {activeUploadTab === "drive" && (
+              <>
+                {driveLinksInput.length > 0 && (
+                  <div className="actual-image-container">
+                    <div className="fw-semiBold">Current Status</div>
+                    {areAllLinksSubmitted ? (
+                      <span
+                        style={{
+                          color: "#28a745",
+                          fontWeight: "500",
+                          fontSize: "13px",
+                        }}
+                      >
+                        ✓ All Drive Link Submitted ( {submittedLinksCount} / {totalInclusionsCount} )
+                      </span>
+                    ) : (
+                      <span
+                        style={{
+                          color: "#dc3545",
+                          fontWeight: "500",
+                          fontSize: "12px",
+                        }}
+                      >
+                        ✗ All Drive Link Not Submitted Yet ( {submittedLinksCount} / {totalInclusionsCount} )
+                      </span>
+                    )}
 
-                              <input
-                                type="text"
-                                disabled={item.isExisting}
-                                placeholder={`Paste Google Drive link for ${apiKeyToInclusionMap[item.linkType] || item.linkType
-                                  }`}
-                                value={item.link}
-                                onChange={(e) => handleDynamicLinkChange(index, e.target.value)}
-                                className="drive-link-input"
-                              />
+                    <div className="submit-link-container">
+                      <div className="link-header">Submit Links</div>
 
-                              {!item.isExisting && (
-                                <div className="drivelinkBtnContainer" style={{ marginTop: '8px' }}>
-                                  <button
-                                    onClick={() => handleSaveSingleLink(index, orderDetail)}
-                                    disabled={isBtnDisabled}
-                                    className={`save-btn-link ${isBtnDisabled ? "save-btn-disabled" : ""}`}
-                                  >
-                                    {loading && submittingIndex === index ? "Submitting..." : "Save Link"}
-                                  </button>
-                                </div>
-                              )}
-                            </div>
-                          );
-                        })}
+                      {driveLinksInput.map((item, index) => {
+                        const isInputEmpty = !item.link || item.link.trim() === "";
+                        const isBtnDisabled = loading || isInputEmpty || item.isExisting;
+
+                        return (
+                          <div key={index} className="drive-link-group" style={{ marginBottom: '8px' }}>
+                            <label className="drive-link-label">
+                              {formatInclusionName(item.linkType) || item.linkType}
+                            </label>
+
+                            <input
+                              type="text"
+                              disabled={item.isExisting}
+                              placeholder={`Paste Google Drive link for ${formatInclusionName(item.linkType) || item.linkType
+                                }`}
+                              value={item.link}
+                              onChange={(e) => handleDynamicLinkChange(index, e.target.value)}
+                              className="drive-link-input"
+                            />
+
+                            {!item.isExisting && (
+                              <div className="drivelinkBtnContainer" style={{ marginTop: '8px' }}>
+                                <button
+                                  onClick={() => handleSaveSingleLink(index, orderDetail)}
+                                  disabled={isBtnDisabled}
+                                  className={`save-btn-link ${isBtnDisabled ? "save-btn-disabled" : ""}`}
+                                >
+                                  {loading && submittingIndex === index ? "Submitting..." : "Save Link"}
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+
+                {/* ALBUM IMAGE UPLOAD UI */}
+                {orderDetail?.call_checklist?.inclusions?.Album === true && (
+                  <div className="album-upload-section">
+
+                    <div className="album-upload-header">
+                      <div>
+                        <h4>Album Verification</h4>
+                        <p>
+                          {orderDetail?.isAlbumVerified
+                            ? "Album images verified successfully."
+                            : "Upload album images for verification."}
+                        </p>
                       </div>
                     </div>
-                  )}
-                    </>
+
+                    {/* Already Uploaded Images */}
+                    {orderDetail?.albumImages?.length > 0 && (
+                      <>
+                        <div className="album-preview-header">
+                          <span>Uploaded Images</span>
+                          <span>{orderDetail.albumImages.length}/5 Images</span>
+                        </div>
+
+                        <div className="album-preview-grid">
+                          {orderDetail.albumImages.map((img, index) => (
+                            <div className="album-preview-item" key={index}>
+                              <img
+                                src={img}
+                                alt={`Album ${index + 1}`}
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      </>
+                    )}
+
+                    {/* Verification Status */}
+                    <p
+                      style={{
+                        color: orderDetail?.isAlbumVerified ? "#28a745" : "#dc3545",
+                        fontWeight: "600",
+                        fontSize: "13px",
+                        marginTop: "12px"
+                      }}
+                    >
+                      {orderDetail?.isAlbumVerified
+                        ? "✓ Album Verified"
+                        : "✗ Album Verification Pending"}
+                    </p>
+
+                    {/* Upload Section - Only when not verified */}
+                    {!orderDetail?.isAlbumVerified && (
+                      <>
+                        <div className="album-upload-box-wrapper">
+                          <label
+                            htmlFor="albumImageInput"
+                            className="album-upload-box"
+                            style={{ cursor: "pointer" }}
+                          >
+                            <div className="album-upload-icon">+</div>
+                            <h4>Select Album Images</h4>
+                            <span className="about-text">
+                              Minimum 1 and maximum 5 images
+                            </span>
+                          </label>
+
+                          <input
+                            id="albumImageInput"
+                            type="file"
+                            accept="image/*"
+                            multiple
+                            style={{ display: "none" }}
+                            onChange={(e) => {
+                              const selectedFiles = Array.from(e.target.files || []);
+
+                              if (selectedFiles.length > 5) {
+                                alert("You can select maximum 5 images.");
+                                e.target.value = "";
+                                return;
+                              }
+
+                              setAlbumImages(selectedFiles);
+                            }}
+                          />
+                        </div>
+
+                        {/* Selected Images Preview */}
+                        {albumImages.length > 0 && (
+                          <>
+                            <div className="album-preview-header">
+                              <span>Selected Images</span>
+                              <p className="about-text">{albumImages.length}/5 Images</p>
+                            </div>
+
+                            <div className="album-preview-grid">
+                              {albumImages.map((file, index) => (
+                                <div className="album-preview-item" key={index}>
+                                  <img
+                                    src={URL.createObjectURL(file)}
+                                    alt={`Selected Album ${index + 1}`}
+                                  />
+
+                                  <button
+                                    type="button"
+                                    className="album-remove-btn"
+                                    onClick={() => {
+                                      setAlbumImages((prev) =>
+                                        prev.filter((_, i) => i !== index)
+                                      );
+                                    }}
+                                  >
+                                    ×
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          </>
+                        )}
+
+                        {/* Submit Button */}
+                        <button
+                          type="button"
+                          className="album-submit-btn"
+                          onClick={handleAlbumUpload}
+                          disabled={albumUploading || albumImages.length === 0}
+                        >
+                          {albumUploading
+                            ? "Uploading..."
+                            : `Submit Album Images (${albumImages.length}/5)`}
+                        </button>
+                      </>
+                    )}
+
+                  </div>
                 )}
-                </div>
-                </div>
-      ) : null}
-      <div>
-        {/* <h1>sohan</h1>
-        <h2>{orderDetail.orderDriveLink}</h2> */}
 
-        {/* <div className="otp-container">
-          <h2 className="otp-title">Enter OTP</h2>
-          <p className="otp-instructions">
-            Please enter the OTP sent to your number
-          </p>
-          <div className="otp-inputs">
-            {otp1.map((_, index) => (
-              <Form.Control
-                key={index}
-                type="text"
-                maxLength="1"
-                value={otp1[index]}
-                onChange={(e) => handleChange(e.target.value, index)}
-                className="otp-input"
-                ref={(el) => (inputRefs.current[index] = el)}
-              />
-            ))}
+              </>
+            )}
           </div>
-          {errorMessage && <p className="error-message">{errorMessage}</p>}
-          {isOtpMatched && (
-            <button onClick={handleSubmit} className="startbutton">
-              Start Order
-            </button>
-          )}
-        </div> */}
-      </div>
 
-      {/* <div className="rate-us-footer">
-        <button className="rate-us-button">Rate Us</button>
-      </div> */}
-      {/* 
-<div onClick={cancelOrder}>
-          <button className="acceptOrder">Job Started</button>
-        </div> */}
+
+
+        </div>
+      ) : null}
     </>
   );
 };
 
 export default OrderDetailTab;
 
-const styles = {
-  container: {
-    maxWidth: "600px",
-    margin: "2px auto",
-    padding: "20px",
-    background: "#f8f9fa",
-    minHeight: "100vh",
-  },
-  heading: {
-    marginBottom: "20px",
-    textAlign: "center",
-    fontSize: "24px",
-    fontWeight: "600",
-    color: "#97538C",
-    fontWeight: "bold",
-  },
-  orderItem: {
-    padding: "15px",
-    marginBottom: "12px",
-    borderRadius: "8px",
-    border: "1px solid #e0e0e0",
-    background: "#fff",
-    boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
-  },
-  topRow: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: "8px",
-  },
-  orderIdText: {
-    fontSize: "16px",
-    fontWeight: "500",
-    color: "#333",
-    fontFamily:
-      "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-  },
-  reviewText: {
-    fontSize: "13px",
-    color: "#666",
-    fontFamily:
-      "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-  },
-  button: {
-    padding: "6px 14px",
-    border: "1px solid",
-    borderRadius: "4px",
-    fontSize: "13px",
-    fontWeight: "500",
-    cursor: "pointer",
-    fontFamily:
-      "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-    transition: "all 0.2s ease",
-  },
-  viewDetailsBtn: {
-    background: "#fff",
-    color: "#9c4d97",
-    borderColor: "#9c4d97",
-  },
-  submittedBtn: {
-    background: "#fff",
-    color: "#666",
-    borderColor: "#d0d0d0",
-    cursor: "default",
-  },
-  statusText: {
-    fontSize: "13px",
-    color: "#28a745",
-    fontWeight: "500",
-    fontFamily:
-      "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-  },
-  bottomRow: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  overlay: {
-    position: "fixed",
-    top: 0,
-    left: 0,
-    width: "100vw",
-    height: "100vh",
-    background: "rgba(0,0,0,0.5)",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    zIndex: 1000,
-  },
-  modal: {
-    background: "#fff",
-    borderRadius: "12px",
-    padding: "0",
-    width: "500px",
-    maxWidth: "90%",
-    maxHeight: "85vh",
-    overflow: "hidden",
-    boxShadow: "0 10px 40px rgba(0,0,0,0.2)",
-  },
-  modalHeader: {
-    padding: "20px 24px",
-    borderBottom: "1px solid #e0e0e0",
-    background: "#9c4d97",
-    color: "#fff",
-  },
-  modalTitle: {
-    fontSize: "18px",
-    fontWeight: "600",
-    margin: 0,
-    fontFamily:
-      "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-  },
-  modalBody: {
-    padding: "24px",
-    maxHeight: "calc(85vh - 200px)",
-    overflowY: "auto",
-  },
-  detailRow: {
-    display: "flex",
-    marginBottom: "16px",
-    fontSize: "14px",
-    fontFamily:
-      "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-  },
-  detailLabel: {
-    fontWeight: "600",
-    color: "#555",
-    minWidth: "140px",
-    marginRight: "12px",
-  },
-  detailValue: {
-    color: "#333",
-    flex: 1,
-  },
-  inputText: {
-    width: "100%",
-    padding: "10px 12px",
-    border: "1px solid #d0d0d0",
-    borderRadius: "6px",
-    marginTop: "16px",
-    fontSize: "14px",
-    fontFamily:
-      "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-    resize: "vertical",
-    minHeight: "80px",
-  },
-  modalFooter: {
-    padding: "16px 24px",
-    borderTop: "1px solid #e0e0e0",
-    display: "flex",
-    justifyContent: "flex-end",
-    gap: "12px",
-    background: "#f8f9fa",
-  },
-  cancelBtn: {
-    padding: "8px 20px",
-    background: "#fff",
-    color: "#666",
-    border: "1px solid #d0d0d0",
-    borderRadius: "6px",
-    cursor: "pointer",
-    fontSize: "14px",
-    fontWeight: "500",
-    fontFamily:
-      "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-  },
-};
 
 
 

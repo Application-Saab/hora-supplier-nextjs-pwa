@@ -191,7 +191,6 @@ label {
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.25);
-  opacity: 0.3;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -275,14 +274,13 @@ label {
 .navbar {
   display: flex;
   align-items: center;
-  justify-self: center;
-  padding: 10px;
-  background: linear-gradient(
-    119deg,
-    rgb(103, 48, 178) -20.39%,
-    rgb(238, 116, 100) 80.65%
-  );
-  background-color: #f8f9fa;
+  justify-content: space-between;
+  padding: 10px 16px;
+  width: 100%;
+  background-color: #fff;
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25) !important;
+  position: relative;
+  z-index: 100;
 }
 
 .navbar-icon {
@@ -408,7 +406,6 @@ select {
 }
 
 .navbar {
-  background-color: #333;
   padding: 1rem;
   color: white;
   width: 100%;
@@ -514,6 +511,7 @@ main {
         max-width: 480px;
         width: 100%;
         background-color: white !important;
+        padding-bottom: 50px !important;
 }
 
 main.shifted {
@@ -4199,9 +4197,187 @@ main.order-list .order-container {
   padding: 15px !important;
 }
 
-.expiry-text{
+.expiry-text {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 600px;
+}
+
+.filterTabs::-webkit-scrollbar {
+  height: 10px;
+  display: block;
+}
+
+.filterTabs::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.filterTabs::-webkit-scrollbar-thumb {
+  background: #bdbdbd;
+  border-radius: 10px;
+}
+
+.filterTabs::-webkit-scrollbar-thumb:hover {
+  background: #999;
+}
+
+.album-upload-section {
+  margin: 8px;
+  padding: 18px;
+  background: #fff;
+  border: 1px solid #eadce8;
+  border-radius: 12px;
+}
+
+.album-upload-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.album-upload-header h4 {
+  font-size: 16px;
+  font-weight: 700;
+  color: #333;
+  margin: 0 0 5px;
+}
+
+.album-upload-header p {
+  font-size: 12px;
+  color: #888;
+  margin: 0;
+}
+
+.album-badge {
+  background: #f8edf6;
+  color: #97538C;
+  padding: 6px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.album-upload-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px 15px;
+  border: 2px dashed #c99bc1;
+  background: #fcf8fb;
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: center;
+  transition: 0.2s;
+}
+
+.album-upload-box:hover {
+  background: #f8edf6;
+  border-color: #97538C;
+}
+
+.album-upload-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #97538C;
+  color: #fff;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.album-upload-box h5 {
+  font-size: 14px;
+  font-weight: 700;
+  margin: 0 0 5px;
+}
+
+.album-upload-box p {
+  font-size: 12px;
+  color: #888;
+  margin: 0;
+}
+
+.album-preview-header {
+  display: flex;
+  justify-content: space-between;
+  margin: 18px 0 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #444;
+}
+
+.album-preview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(65px, 1fr));
+  gap: 8px;
+}
+
+.album-preview-item {
+  position: relative;
+  width: 75px;
+  max-height: 75px;
+}
+
+.album-preview-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.album-preview-item {
+  position: relative;
+  height: 110px;
+}
+
+.album-preview-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #eee;
+}
+
+.album-preview-item button {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 23px;
+  height: 23px;
+  border: none;
+  border-radius: 50%;
+  background: #f11f46;
+  color: white;
+  font-size: 17px;
+  cursor: pointer;
+}
+
+.album-submit-btn {
+  margin-top: 18px;
+  padding: 11px 18px;
+  background: #97538C;
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+}
+
+.album-submit-btn:hover {
+  background: #804477;
+}
+
+.album-submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
