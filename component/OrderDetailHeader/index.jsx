@@ -8,7 +8,7 @@ const OrderDetailHeader = ({ orderDetail }) => {
     return new Date(dateString).toLocaleDateString("en-GB", options);
   };
 
-
+ console.log("orderDetail in OrderDetailHeader:", orderDetail);
   useEffect(() => {
     // Save OTP to localStorage
     localStorage.setItem("otp", orderDetail?.otp);
@@ -57,7 +57,10 @@ const OrderDetailHeader = ({ orderDetail }) => {
               <span className="fw-semiBold myOrderDetails-heading">Google Map Location:</span>{" "}
               <a href={orderDetail.addressId.address2} style={{ fontWeight: "bold", cursor: "pointer", wordWrap: "break-word", color: 'blue', borderBottom: '1px solid blue' }} target="_blank" rel="noopener">{orderDetail.addressId.address2}</a>
             </p>
-
+            <p className="mt-2">
+              <span className="fw-semiBold myOrderDetails-heading">Event Name:</span>{" "}
+              {orderDetail?.eventData?.[0]?.hostName ? orderDetail?.eventData?.[0]?.hostName : (orderDetail?.eventName || "N/A")}
+            </p>
           </div>
         )}
       </div>

@@ -100,8 +100,6 @@ const ProfileUpdate = () => {
         "aadhar_no": "26353476353",
         "aadhar_front_img": "attachment-1678985056105.jpg",
         "aadhar_back_img": "attachment-1678985062522.jpg",
-        "experience": "20",
-        "avatar": "attachment-1678985070996.jpg",
         "name": userDetails.name,
         "userServedLocalities": [
             "646c7995b8ca968c0921d1e0",

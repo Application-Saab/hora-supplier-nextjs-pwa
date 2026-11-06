@@ -178,6 +178,7 @@ const OrderDetail = () => {
             decorationComments={decorationComments}
             decorationAddon={decorationAddon}
             balanceAmount={balanceAmount}
+            onRefresh={fetchPhotographyDetails}
           />
         </div>
       </div>

@@ -124,7 +124,16 @@ const Login = () => {
         await saveAuthToken(response.data.token);
         localStorage.setItem("supplierJobProfile", response?.data?.data?.job_profile);
      
-        if (supplierJobProfile != null) {
+        const supplierResponse = response?.data?.data;
+
+        const isProfileComplete =
+          supplierResponse?.name &&
+          supplierResponse?.age &&
+          supplierResponse?.experience &&
+          supplierResponse?.city &&
+          supplierResponse?.job_profile;
+
+        if (isProfileComplete) {
           router.push("/home");
         } else {
           router.push("/Profile");

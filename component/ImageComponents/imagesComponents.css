@@ -1,0 +1,370 @@
+.event-masonry-item {
+    margin-bottom: 0px;
+    break-inside: avoid;
+    border-radius: 5px;
+    overflow: hidden;
+    background-color: #e9ecef;
+    min-height: 50px;
+    position: relative;
+    display: block;
+    transition: background-color 0.3s;
+    padding: 2px;
+    aspect-ratio: 1 / 1;
+    width: 100%;
+}
+
+/* Styles for the <img> tag itself within LazyImage */
+.event-lazy-image-actual-img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.event-lazy-image-actual-img.loaded {
+    opacity: 1;
+}
+
+/* Spinner container and spinner animation */
+.event-lazy-image-spinner-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.event-lazy-image-spinner-animation {
+    width: 28px;
+    height: 28px;
+    border: 3px solid rgba(0, 0, 0, 0.2);
+    border-top-color: #333;
+    border-radius: 50%;
+    animation: lazy-image-spin 0.7s linear infinite;
+}
+
+@keyframes lazy-image-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Masonry Grid column setup (ensure these are suitable for your design) */
+.event-image-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+}
+
+.grid-item.small {
+    grid-column: span 1;
+    grid-row: span 1;
+    aspect-ratio: 1 / 1;
+}
+
+.grid-item.big {
+    grid-column: span 2;
+    grid-row: span 2;
+    aspect-ratio: 2 / 2;
+}
+
+.grid-item.small-right-top {
+    grid-column: 3 / 4;
+    grid-row: span 1;
+    aspect-ratio: 1 / 1;
+}
+
+.grid-item.small-right-bottom {
+    grid-column: 3 / 4;
+    grid-row: span 1;
+    aspect-ratio: 1 / 1;
+}
+
+.lazy-video-wrapper {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    border-radius: 5px;
+    background-color: #e9ecef;
+    min-height: 50px;
+}
+
+.lazy-video-element {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    opacity: 0;
+    transition: opacity 0.4s ease-in-out;
+}
+
+.lazy-video-element.loaded {
+    opacity: 1;
+}
+
+.lazy-video-spinner-container {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.lazy-video-spinner {
+    width: 26px;
+    height: 26px;
+    border: 3px solid rgba(0, 0, 0, 0.2);
+    border-top-color: #333;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.lazy-video-overlay {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    display: flex;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    padding: 2px 6px;
+    border-radius: 6px;
+    font-size: 13px;
+}
+
+.lazy-video-play-icon {
+    font-size: 14px;
+    margin-left: 5px;
+    opacity: 0.9;
+}
+
+.lazy-video-duration {
+    font-size: 13px;
+}
+.popupOverlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.9);
+    /* black overlay better */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.popupContent {
+    width: 100%;
+    height: 100vh;
+    /* full screen height */
+    background-color: #000;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.popupHeader {
+    flex-shrink: 0;
+}
+
+.popupHeader h2 {
+    margin: 0;
+}
+
+.popupHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 45px 12px 25px 12px;
+}
+
+.popupHeader-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.closeButton {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+.image-index {
+    margin-bottom: 0;
+    color: white;
+    font-size: 18px;
+}
+
+.popupSliderWrapper {
+    flex: 1;
+    min-height: 0;
+    position: relative;
+    background: black;
+    padding: 0px 0px 0px 0px;
+}
+
+.slick-slide-item {
+    width: 100%;
+    height: 100%;
+}
+
+.popupFooter a {
+    font-size: 15px;
+    color: #bfbfbf;
+}
+
+.popupFooter img {
+    cursor: pointer;
+    /* filter: invert(90%) sepia(0) saturate(0) hue-rotate(0deg) brightness(90%) contrast(90%); */
+    /* margin-left: 10px; */
+}
+.slick-slider,
+.slick-list,
+.slick-track {
+    height: 100%;
+}
+
+.slick-slide {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+}
+
+svg.svg-inline--fa.fa-arrow-left.fa-xl.closeEffect {
+    height: 13px !important;
+}
+
+.slick-next:before {
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-left: 10px solid #e2e8f0;
+}
+
+.slick-prev:before {
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-right: 10px solid #e2e8f0;
+}
+.slick-prev,
+.slick-next {
+    z-index: 111 !important;
+    background-color: transparent !important;
+}
+.slick-prev::before,
+.slick-next::before {
+    display: none !important;
+    content: "" !important;
+}
+
+
+.slick-prev,
+.slick-next {
+    position: absolute !important;
+    top: 50% !important;
+    transform: translateY(-50%);
+    z-index: 50;
+
+    width: 40px;
+    height: 40px;
+
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 50%;
+
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.slick-prev {
+    left: 10px !important;
+}
+
+.slick-next {
+    right: 10px !important;
+}
+
+.lazy-video-wrapper {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    border-radius: 5px;
+    background-color: #e9ecef;
+    min-height: 50px;
+}
+
+.lazy-video-element {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    opacity: 0;
+    transition: opacity 0.4s ease-in-out;
+}
+
+.lazy-video-element.loaded {
+    opacity: 1;
+}
+
+.lazy-video-spinner-container {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.lazy-video-spinner {
+    width: 26px;
+    height: 26px;
+    border: 3px solid rgba(0, 0, 0, 0.2);
+    border-top-color: #333;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.lazy-video-overlay {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    display: flex;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    padding: 2px 6px;
+    border-radius: 6px;
+    font-size: 13px;
+}
+
+.lazy-video-play-icon {
+    font-size: 14px;
+    margin-left: 5px;
+    opacity: 0.9;
+}
+
+.lazy-video-duration {
+    font-size: 13px;
+}

@@ -1,18 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { BASE_URL, ORDERLIST_ENDPOINT } from "../../apiconstant/apiconstant";
+import { BASE_URL, ORDERLIST_ENDPOINT } from "../../apiconstant/apiconstant.js";
 import { useRouter } from "next/router";
-import Layout from "../../component/Layout";
-import socket, { connectSocket } from "../../socket";
+import Layout from "../../component/Layout.js";
+import { connectSocket } from "../../socket.js";
 import OrderList from "../../component/OrderList/index.jsx";
 
 const Orderlist = () => {
   const router = useRouter();
   const [orders, setOrders] = useState([]);
-  // Popup state (must be inside the component)
   const [showPopup, setShowPopup] = useState(false);
   const [ordersLoaded, setOrdersLoaded] = useState(false);
 
-  //order_status: { type: Number, default: 0 /* 0-Booking ,1-Accepted ,2-pending/in-progress, 3-delivery/completed, 4-failed, 5- handle -> {1,2,3}, 6- expire  */ }
 
   let supplierJobType;
   let supplierID;
@@ -30,10 +28,9 @@ const Orderlist = () => {
   }
 
   if (supplierCity === "Bengaluru") {
-    supplierCity = "Bangalore"; // Adjusting for city name
+    supplierCity = "Bangalore";
   }
 
-  // let phoneNumber = localStorage.getItem("mobileNumber");
   let phoneNumber = null;
   if (typeof window !== "undefined") {
     phoneNumber = localStorage.getItem("mobileNumber");
@@ -73,22 +70,22 @@ const Orderlist = () => {
               supplierCity.slice(1).toLowerCase(),
           }),
         });
-    if(response.ok){
-      const responseData = await response.json();
+        if (response.ok) {
+          const responseData = await response.json();
 
-        if (responseData && responseData.data && responseData.data.order) {
-          const sortedOrders = responseData.data.order.sort(
-            (a, b) => new Date(a.order_date) - new Date(b.order_date)
-          );
+          if (responseData && responseData.data && responseData.data.order) {
+            const sortedOrders = responseData.data.order.sort(
+              (a, b) => new Date(a.order_date) - new Date(b.order_date)
+            );
 
-          setOrders(sortedOrders);
+            setOrders(sortedOrders);
+          } else {
+            console.log("No orders found");
+          }
         } else {
-          console.log("No orders found");
+          alert("Failed to fetch orders. Please try again later.");
         }
-    } else {
-      alert("Failed to fetch orders. Please try again later.");
-    }
-        
+
       } catch (error) {
         console.log("Error fetching orders:", error);
       } finally {
@@ -99,23 +96,23 @@ const Orderlist = () => {
     fetchOrderList();
   }, [supplierID, Number(status)]);
 
-useEffect(() => {
-  const userId = localStorage.getItem("supplierID");
-  const socket = connectSocket(userId);
+  useEffect(() => {
+    const userId = localStorage.getItem("supplierID");
+    const socket = connectSocket(userId);
 
-  if (!socket) {
-    return;
-  }
+    if (!socket) {
+      return;
+    }
 
-  socket.on("order:new", (data) => {
-    setOrders((prev) => [data, ...prev]);
-  });
+    socket.on("order:new", (data) => {
+      setOrders((prev) => [data, ...prev]);
+    });
 
-  return () => {
-    socket.off("order:new");
-  };
-}, []);
-  
+    return () => {
+      socket.off("order:new");
+    };
+  }, []);
+
 
   const getOrderStatus = (orderStatusValue) => {
     switch (orderStatusValue) {
@@ -169,14 +166,8 @@ useEffect(() => {
     return new Date(dateString).toLocaleDateString("en-GB", options);
   };
 
-  const openContinueShopping = () => {
-    router.push("/");
-  };
-
   const handleViewDetail = (order) => {
     const { _id, order_id, type, otp } = order;
-    // localStorage.setItem("orderOtp" , otp )
-
     if (
       typeof window !== "undefined" &&
       typeof window.localStorage !== "undefined"
@@ -193,25 +184,6 @@ useEffect(() => {
     });
   };
 
-
-  if (!ordersLoaded ) {
-    return (
-      <center>
-        <div className="custom-spinner">
-          <div>
-            <div className="spinner-border" role="status">
-              <span className="visually-hidden">Loading...</span>
-            </div>
-            <div style={{ color: "#9252AA", textAlign: "center" }}>
-              <h4>Data is loading...</h4>
-            </div>
-          </div>
-        </div>
-      </center>
-    );
-  }
-
-  // Show popup if userStatus === 0
   if (showPopup) {
     return (
       <div style={{
@@ -261,58 +233,58 @@ useEffect(() => {
 
   const bookedOrders = orders.filter((order) => order?.order_status === 0 || order?.order_status === 7);
 
-const finalOrders = bookedOrders.filter((order) => {
+  const finalOrders = bookedOrders.filter((order) => {
 
-  if (order.toId) {
-    return false;
-  }
+    if (order.toId) {
+      return false;
+    }
 
-  if(order.status === 0 && order.order_status === 0){
-    return false;
-  }
+    if (order.status === 1 && order.isEmergencyOrder === true) {
+      return order.processedBy?.some(
+        (processed) =>
+          processed.id === supplierID && processed.action === "yes"
+      );
+    }
 
-  // Emergency order
-  if (order.status === 1 && order.isEmergencyOrder === true) {
-    return order.processedBy?.some(
-      (processed) =>
-        processed.id === supplierID && processed.action === "yes"
-    );
-  }
-
-  // Existing condition for normal orders
-  return order.status === 1 || (order.status === 0 && order.isEmergencyOrder === true);
-});
+    return order.status === 1 || (order.status === 0 && order.isEmergencyOrder === true);
+  });
 
 
   return (
     <Layout>
-      <main className="order-list">
-        <div className="orderlist-container">
-          {finalOrders.length === 0 ? (
-            <p className="no-orders-message">No orders available</p>
-          ) : (
-            finalOrders.map((order) => {
-              const orderStatus = getOrderStatus(order?.order_status);
-              return (
-                <OrderList
-                  key={order.order_id}
-                  orderId={order.order_id}
-                  statusClassName={orderStatus.className}
-                  status={orderStatus.status}
-                  orderType={getOrderType(order?.type)}
-                  orderDate={formatDate(order.order_date)}
-                  orderTime={order.order_time}
-                  noOfPeople={order.no_of_people}
-                  balanceAmount={order.balance_amount}
-                  viewDetailsHandler={() => handleViewDetail(order)}
-                  isEmergencyOrder={order?.isEmergencyOrder}
-                  order_status={order?.order_status}
-                />
-              );
-            })
-          )}
+      {!ordersLoaded ?
+        <div className="profile-loader">
+          <div className="loader-circle"></div>
         </div>
-      </main>
+        :
+        <main className="order-list">
+          <div className="orderlist-container">
+            {finalOrders.length === 0 ? (
+              <p className="no-orders-message">No orders available</p>
+            ) : (
+              finalOrders.map((order) => {
+                const orderStatus = getOrderStatus(order?.order_status);
+                return (
+                  <OrderList
+                    key={order.order_id}
+                    orderId={order.order_id}
+                    statusClassName={orderStatus.className}
+                    status={orderStatus.status}
+                    orderType={getOrderType(order?.type)}
+                    orderDate={formatDate(order.order_date)}
+                    orderTime={order.order_time}
+                    noOfPeople={order.no_of_people}
+                    balanceAmount={order.balance_amount}
+                    viewDetailsHandler={() => handleViewDetail(order)}
+                    isEmergencyOrder={order?.isEmergencyOrder}
+                    order_status={order?.order_status}
+                  />
+                );
+              })
+            )}
+          </div>
+        </main>
+      }
     </Layout>
   );
 };
