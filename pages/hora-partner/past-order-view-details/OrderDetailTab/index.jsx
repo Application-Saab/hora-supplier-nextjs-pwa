@@ -37,8 +37,12 @@ const OrderDetailTab = ({
       throw new Error("Please provide at least one valid Google Drive link.");
     }
 
-    const rawPhotosRow = linksToSend.find((item) => item.linkType === "colorCorrectedPhotos");
-    const rawFolderUrl = rawPhotosRow ? rawPhotosRow.link : "";
+    const photoFolderRow = linksToSend.find(
+      (item) =>
+        ["colorCorrectedPhotos", "rawPhotos"].includes(item.linkType)
+    );
+
+    const rawFolderUrl = photoFolderRow ? photoFolderRow.link : "";
 
     const response = await axios.post(`${BASE_URL}/api/photo/drive/add-order-drive-link`, {
       order_id: currentOrder.order_id,
@@ -50,23 +54,102 @@ const OrderDetailTab = ({
     return response.data;
   };
 
+  // useEffect(() => {
+  //   if (orderDetail) {
+  //     const inclusions = orderDetail?.call_checklist?.inclusions || {};
+  //     const existingLinks = orderDetail?.allDriveLinks || [];
+
+  //     const inclusionKeys = Object.keys(inclusions).filter(
+  //       (key) => inclusions[key] === true
+  //     );
+
+  //     // Color Corrected Photos ko priority
+  //     const hasColorCorrected =
+  //       inclusions["Color Corrected Photos"] === true;
+
+  //     const filteredKeys = hasColorCorrected
+  //       ? inclusionKeys.filter((key) => key !== "Raw Photos")
+  //       : inclusionKeys;
+
+  //     const initialInputState = filteredKeys
+  //       .filter((key) => key.toLowerCase() !== "album")
+  //       .map((name) => {
+  //         // const linkType = name
+  //         //   .replace(/\s+/g, "")
+  //         //   .replace(/^./, (str) => str.toLowerCase());
+
+  //         const linkType =
+  //           name === "Edited Video"
+  //             ? "editedVideos"
+  //             : name
+  //               .replace(/\s+/g, "")
+  //               .replace(/^./, (str) => str.toLowerCase());
+
+  //         const matchedSavedLink = existingLinks.find(
+  //           (item) =>
+  //             item.linkType?.toLowerCase() === linkType.toLowerCase()
+  //         );
+
+  //         return {
+  //           linkType,
+  //           link:
+  //             matchedSavedLink?.link ||
+  //             (linkType === "colorCorrectedPhotos"
+  //               ? orderDetail?.orderDriveLink || ""
+  //               : ""),
+  //           isExisting:
+  //             !!matchedSavedLink?.link ||
+  //             (linkType === "colorCorrectedPhotos" &&
+  //               !!orderDetail?.orderDriveLink),
+  //         };
+  //       });
+
+  //     setDriveLinksInput(initialInputState);
+  //   }
+  // }, [orderDetail]);
+ 
+
   useEffect(() => {
     if (orderDetail) {
       const inclusions = orderDetail?.call_checklist?.inclusions || {};
       const existingLinks = orderDetail?.allDriveLinks || [];
 
-      const initialInputState = Object.keys(inclusions)
-        .filter((key) => inclusions[key] === true)
+      const inclusionKeys = Object.keys(inclusions).filter(
+        (key) => inclusions[key] === true
+      );
+
+      // Color Corrected Photos priority
+      const hasColorCorrected =
+        inclusions["Color Corrected Photos"] === true;
+
+      // Raw Video + Raw Video Clips same field
+      const hasRawVideoClips =
+        inclusions["Raw Video Clips"] === true;
+
+      const filteredKeys = inclusionKeys.filter((key) => {
+        if (hasColorCorrected && key === "Raw Photos") return false;
+
+        if (hasRawVideoClips && key === "Raw Video") return false;
+
+        return true;
+      });
+
+      const initialInputState = filteredKeys
         .filter((key) => key.toLowerCase() !== "album")
         .map((name) => {
+          const linkType =
+            name === "Edited Video"
+              ? "editedVideos"
+              : ["Raw Video", "Raw Video Clips"].includes(name)
+                ? "rawVideoClips"
+                : name
+                  .replace(/\s+/g, "")
+                  .replace(/^./, (str) => str.toLowerCase());
 
-          const linkType = name
-            .replace(/\s+/g, "")
-            .replace(/^./, (str) => str.toLowerCase());
-
-          const matchedSavedLink = existingLinks.find(
-            (item) =>
-              item.linkType.toLowerCase() === linkType.toLowerCase()
+          const matchedSavedLink = existingLinks.find((item) =>
+            linkType === "rawVideoClips"
+              ? ["rawVideoClips", "rawVideos"].includes(item.linkType)
+              : item.linkType?.toLowerCase() === linkType.toLowerCase()
           );
 
           return {
@@ -76,21 +159,30 @@ const OrderDetailTab = ({
               (linkType === "colorCorrectedPhotos"
                 ? orderDetail?.orderDriveLink || ""
                 : ""),
-            isExisting: !!matchedSavedLink?.link ||
-              (linkType === "colorCorrectedPhotos" && !!orderDetail?.orderDriveLink),
+            isExisting:
+              !!matchedSavedLink?.link ||
+              (linkType === "colorCorrectedPhotos" &&
+                !!orderDetail?.orderDriveLink),
           };
         });
 
       setDriveLinksInput(initialInputState);
     }
   }, [orderDetail]);
-  const totalInclusionsCount = driveLinksInput.length;
+ 
+  const isAlbumIncluded =
+    orderDetail?.call_checklist?.inclusions?.Album === true;
 
-  const submittedLinksCount = driveLinksInput.filter(
-    (item) => item.isExisting === true
-  ).length;
+  const totalInclusionsCount =
+    driveLinksInput.length + (isAlbumIncluded ? 1 : 0);
 
-  const areAllLinksSubmitted = totalInclusionsCount > 0 && submittedLinksCount === totalInclusionsCount;
+  const submittedLinksCount =
+    driveLinksInput.filter((item) => item.isExisting === true).length +
+    (isAlbumIncluded && orderDetail?.isAlbumVerified === true ? 1 : 0);
+
+  const areAllLinksSubmitted =
+    totalInclusionsCount > 0 &&
+    submittedLinksCount === totalInclusionsCount;
 
 
   const [submittingIndex, setSubmittingIndex] = useState(null);

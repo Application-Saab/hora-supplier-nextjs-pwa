@@ -9,6 +9,7 @@ import addIcon from "../assets/photographerprofile/addIcon.svg";
 import ImageGrid from "../component/ImageComponents/ImageGrid";
 import CommonImagePopup from "../component/ImageComponents/CommonImagePopup";
 import { getSocket } from "../folderSocket";
+import Layout from "./Layout";
 
 const CONCURRENCY = 1;
 
@@ -157,7 +158,7 @@ export default function ImageUpload({ orderId, customerId }) {
             )
             : -1;
 
-    const isWithinUploadWindow = daysPassed >= 0 && daysPassed <= 4;
+    const isWithinUploadWindow = daysPassed <= 4;
 
     const getSupplierID = () => {
         if (typeof window === "undefined") return "";
@@ -192,7 +193,7 @@ export default function ImageUpload({ orderId, customerId }) {
     );
 
     useEffect(() => {
-        if (!router.isReady || !orderId || !customerId || !customerPhone) return;
+        if (!router.isReady || !orderId || !customerId || !customerPhone || !isWithinUploadWindow) return;
 
         getSubFolderData();
     }, [
@@ -201,6 +202,7 @@ export default function ImageUpload({ orderId, customerId }) {
         orderId,
         customerId,
         customerPhone,
+        isWithinUploadWindow,
         getSubFolderData
     ]);
 
@@ -531,6 +533,7 @@ export default function ImageUpload({ orderId, customerId }) {
                 {
                     folderName: `${orderId}_${customerId}_${customerPhone}`,
                     userId: customerId,
+                    orderId: orderId,
                 },
                 { headers: { Authorization: `${token}` } }
             );
@@ -581,6 +584,7 @@ export default function ImageUpload({ orderId, customerId }) {
     }, [visibleThumbnails]);
 
     return (
+        <Layout backLink={`/hora-partner/past-order-view-details?apiOrderId=${apiId}&orderType=8&orderId=${orderId}`}>
             <div className="subfolder-page">
                 <div className="subfolder-banner">
                     <img
@@ -603,7 +607,7 @@ export default function ImageUpload({ orderId, customerId }) {
                                 <div className="loader-circle"></div>
                             </div>
                         ) : ( */}
-                        {isWithinUploadWindow ?
+                        {!isWithinUploadWindow ?
                         <div className="expiry-text">
                             <div>
                             <h3>Upload Access Expired</h3>
@@ -785,5 +789,6 @@ export default function ImageUpload({ orderId, customerId }) {
                     renderFooter={() => null}
                 />
             </div>
+            </Layout>
     );
 }
