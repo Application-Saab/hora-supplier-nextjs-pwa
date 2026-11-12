@@ -19,7 +19,7 @@ const OrderUpload = () => {
     return (
         <div>
             <ImageUpload orderId={orderId} customerId={id} />
-        </div>
+        </div> 
     );
 };
 

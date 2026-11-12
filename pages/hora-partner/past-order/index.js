@@ -238,8 +238,12 @@ const GoogleDriveForm = () => {
 
   const inclusionToApiKey = (name) => {
     const aliases = {
-      "Edited Video": "editedVideo",
+      "Edited Video": "editedVideos",
       "Raw Video": "rawVideos",
+      "Raw Photos": "colorCorrectedPhotos",
+      "Color Corrected Photos": "colorCorrectedPhotos",
+      "Raw Video": "rawVideoClips",
+      "Raw Video Clips": "rawVideoClips",
     };
 
     if (aliases[name]) return aliases[name];
@@ -258,10 +262,11 @@ const GoogleDriveForm = () => {
 
 
   const lateSubmissionDeadlines = {
-    colorCorrectedPhotos: 48 * 60 * 60 * 1000,       // 48 hours
-    editedPhotos: 24 * 60 * 60 * 1000,    // 24 hours
-    editedVideos: 3 * 24 * 60 * 60 * 1000, // 3 days
-    album: 6 * 24 * 60 * 60 * 1000,      // 6 days
+    colorCorrectedPhotos: 48 * 60 * 60 * 1000,
+    rawPhotos: 48 * 60 * 60 * 1000,
+    editedPhotos: 24 * 60 * 60 * 1000,
+    editedVideos: 3 * 24 * 60 * 60 * 1000,
+    album: 6 * 24 * 60 * 60 * 1000,
   };
 
   const isLateSubmission = (order) => {
@@ -271,35 +276,98 @@ const GoogleDriveForm = () => {
 
     const inclusions = order?.call_checklist?.inclusions || {};
     const existingLinks = order?.allDriveLinks || [];
-
     const now = Date.now();
 
-    const lateInclusions = [
-      { name: "Raw Photos", apiKey: "colorCorrectedPhotos" },
-      { name: "Edited Photos", apiKey: "editedPhotos" },
-      { name: "Edited Video", apiKey: "editedVideos" },
-      { name: "Album", apiKey: "album" },
+    // Raw Photos: colorCorrectedPhotos gets priority
+    const rawPhotoOptions = [
+      {
+        name: "Color Corrected Photos",
+        apiKey: "colorCorrectedPhotos",
+      },
+      {
+        name: "Raw Photos",
+        apiKey: "rawPhotos",
+      },
     ];
 
-    return lateInclusions.some(({ name, apiKey }) => {
-      // Only check selected inclusions
-      if (inclusions[name] !== true) return false;
+    // First find an option where BOTH inclusion and link match.
+    // If colorCorrectedPhotos doesn't match, check rawPhotos.
+    // If neither has a link, use the selected inclusion for pending check.
+    const selectedRawPhoto = (
+      rawPhotoOptions.find(
+        ({ name, apiKey }) =>
+          inclusions[name] === true &&
+          existingLinks.some(
+            (item) => item.linkType === apiKey && item.link?.trim()
+          )
+      ) ||
+      rawPhotoOptions.find(({ name }) => inclusions[name] === true)
+    );
 
-      const deadline = fulfillmentDate + lateSubmissionDeadlines[apiKey];
+    const lateInclusions = [
+      ...(selectedRawPhoto
+        ? [{
+          name: selectedRawPhoto.name,
+          apiKey: selectedRawPhoto.apiKey,
+          deadlineKey: "colorCorrectedPhotos",
+          isRawPhoto: true,
+        }]
+        : []),
 
-      // Check if link is already submitted
-      const isSubmitted = existingLinks.some(
-        (item) => item.linkType === apiKey && item.link?.trim()
-      );
+      {
+        name: "Edited Photos",
+        apiKey: "editedPhotos",
+        deadlineKey: "editedPhotos",
+      },
+      {
+        name: "Edited Video",
+        apiKey: "editedVideos",
+        deadlineKey: "editedVideos",
+      },
+      {
+        name: "Album",
+        apiKey: "album",
+        deadlineKey: "album",
+      },
+    ];
 
-      // Raw Photos fallback
-      const rawPhotosSubmitted =
-        apiKey === "colorCorrectedPhotos" && !!order?.orderDriveLink?.trim();
+    return lateInclusions.some(
+      ({ name, apiKey, deadlineKey, isRawPhoto }) => {
+        if (inclusions[name] !== true) return false;
 
+        const deadline =
+          fulfillmentDate + lateSubmissionDeadlines[deadlineKey];
 
-      return now > deadline && !isSubmitted && !rawPhotosSubmitted;
-    });
+        const matchedLink = existingLinks.find(
+          (item) =>
+            item.linkType === apiKey &&
+            item.link?.trim()
+        );
+
+        // Existing Raw Photos fallback
+        const rawPhotosSubmitted =
+          isRawPhoto &&
+          (
+            order?.imageUploadByApp === true ||
+            !!order?.orderDriveLink?.trim()
+          );
+
+        // Check actual submission time
+        if (matchedLink?.submittedAt) {
+          const submittedAt = new Date(matchedLink.submittedAt).getTime();
+
+          return !isNaN(submittedAt) && submittedAt > deadline;
+        }
+
+        // Submitted but timestamp unavailable
+        if (matchedLink || rawPhotosSubmitted) return false;
+
+        // Not submitted: check whether deadline has passed
+        return now > deadline;
+      }
+    );
   };
+
 
   const OrderItem = ({ order }) => {
     let totalInclusionsCount = 0;
@@ -321,8 +389,14 @@ const GoogleDriveForm = () => {
       totalInclusionsCount = finalApiKeysToShow.length;
 
       finalApiKeysToShow.forEach((backendApiKey) => {
-        const matchedSavedLink = existingLinks.find(
-          (item) => item.linkType === backendApiKey
+        const matchedSavedLink = existingLinks.find((item) =>
+          backendApiKey === "colorCorrectedPhotos"
+            ? ["colorCorrectedPhotos", "rawPhotos"].includes(item.linkType) &&
+            !!item.link?.trim()
+            : backendApiKey === "rawVideoClips"
+              ? ["rawVideoClips", "rawVideos"].includes(item.linkType) &&
+              !!item.link?.trim()
+              : item.linkType === backendApiKey && !!item.link?.trim()
         );
 
         const rawPhotosSubmitted =
@@ -516,8 +590,11 @@ const GoogleDriveForm = () => {
       totalInclusionsCount = finalApiKeysToShow.length;
 
       finalApiKeysToShow.forEach((backendApiKey) => {
-        const matchedSavedLink = existingLinks.find(
-          (item) => item.linkType === backendApiKey
+        const matchedSavedLink = existingLinks.find((item) =>
+          backendApiKey === "colorCorrectedPhotos"
+            ? ["colorCorrectedPhotos", "rawPhotos"].includes(item.linkType) &&
+            !!item.link?.trim()
+            : item.linkType === backendApiKey && !!item.link?.trim()
         );
 
         const rawPhotosSubmitted =
@@ -653,9 +730,11 @@ const GoogleDriveForm = () => {
           <button style={styles.filterTab(statusFilter === "noRating")} onClick={() => setStatusFilter("noRating")}>
             No Rating
           </button>
+          {supplierJobType === 8 && (
           <button style={styles.filterTab(statusFilter === "lateSubmission")} onClick={() => setStatusFilter("lateSubmission")}>
             Late Submission
           </button>
+          )}
         </div>
 
         {loading ? (
