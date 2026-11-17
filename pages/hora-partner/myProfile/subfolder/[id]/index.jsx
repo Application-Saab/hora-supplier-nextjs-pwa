@@ -412,6 +412,7 @@ export default function SubFolder() {
                     fileName: uniqueFileName,
                     fileType: file.type,
                     folderName: `recentWork_${supplierID}`,
+                    inclusionType:"supplierProfile"
                 },
                 { headers: { Authorization: `${token}` } }
             );
@@ -472,6 +473,7 @@ export default function SubFolder() {
                     fileType: contentType,
                     totalChunks,
                     folderName: `recentWork_${supplierID}`,
+                    inclusionType:"supplierUploads"
                 }),
             });
 

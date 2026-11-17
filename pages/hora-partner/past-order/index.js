@@ -239,7 +239,6 @@ const GoogleDriveForm = () => {
   const inclusionToApiKey = (name) => {
     const aliases = {
       "Edited Video": "editedVideos",
-      "Raw Video": "rawVideos",
       "Raw Photos": "colorCorrectedPhotos",
       "Color Corrected Photos": "colorCorrectedPhotos",
       "Raw Video": "rawVideoClips",
@@ -262,10 +261,13 @@ const GoogleDriveForm = () => {
 
 
   const lateSubmissionDeadlines = {
-    colorCorrectedPhotos: 48 * 60 * 60 * 1000,
-    rawPhotos: 48 * 60 * 60 * 1000,
+    colorCorrectedPhotos: 15 * 60 * 60 * 1000,
+    rawVideoClips: 15 * 60 * 60 * 1000,
     editedPhotos: 24 * 60 * 60 * 1000,
+    teaser: 3 * 24 * 60 * 60 * 1000,
     editedVideos: 3 * 24 * 60 * 60 * 1000,
+    droneShoot: 3 * 24 * 60 * 60 * 1000,
+    editedReel: 3 * 24 * 60 * 60 * 1000,
     album: 6 * 24 * 60 * 60 * 1000,
   };
 
@@ -305,24 +307,43 @@ const GoogleDriveForm = () => {
     );
 
     const lateInclusions = [
-      ...(selectedRawPhoto
-        ? [{
-          name: selectedRawPhoto.name,
-          apiKey: selectedRawPhoto.apiKey,
-          deadlineKey: "colorCorrectedPhotos",
-          isRawPhoto: true,
-        }]
-        : []),
-
+      {
+        name: "Color Corrected Photos",
+        apiKey: "colorCorrectedPhotos",
+        deadlineKey: "colorCorrectedPhotos",
+        isRawPhoto: true,
+        alternateName: "Raw Photos",
+      },
+      {
+        name: "Raw Video Clips",
+        apiKey: "rawVideoClips",
+        deadlineKey: "rawVideoClips",
+        alternateName: "Raw Video",
+      },
       {
         name: "Edited Photos",
         apiKey: "editedPhotos",
         deadlineKey: "editedPhotos",
       },
       {
+        name: "Teaser",
+        apiKey: "teaser",
+        deadlineKey: "teaser",
+      },
+      {
         name: "Edited Video",
         apiKey: "editedVideos",
         deadlineKey: "editedVideos",
+      },
+      {
+        name: "Drone Shoot",
+        apiKey: "droneShoot",
+        deadlineKey: "droneShoot",
+      },
+      {
+        name: "Edited Reel",
+        apiKey: "editedReel",
+        deadlineKey: "editedReel",
       },
       {
         name: "Album",
@@ -332,15 +353,24 @@ const GoogleDriveForm = () => {
     ];
 
     return lateInclusions.some(
-      ({ name, apiKey, deadlineKey, isRawPhoto }) => {
-        if (inclusions[name] !== true) return false;
+      ({ name, apiKey, deadlineKey, isRawPhoto, alternateName }) => {
+        if (
+          inclusions[name] !== true &&
+          inclusions[alternateName] !== true
+        ) return false;
 
         const deadline =
           fulfillmentDate + lateSubmissionDeadlines[deadlineKey];
 
         const matchedLink = existingLinks.find(
           (item) =>
-            item.linkType === apiKey &&
+            (
+              apiKey === "colorCorrectedPhotos"
+                ? ["colorCorrectedPhotos", "rawPhotos"].includes(item.linkType)
+                : apiKey === "rawVideoClips"
+                  ? ["rawVideoClips", "rawVideos"].includes(item.linkType)
+                  : item.linkType === apiKey
+            ) &&
             item.link?.trim()
         );
 
@@ -592,9 +622,10 @@ const GoogleDriveForm = () => {
       finalApiKeysToShow.forEach((backendApiKey) => {
         const matchedSavedLink = existingLinks.find((item) =>
           backendApiKey === "colorCorrectedPhotos"
-            ? ["colorCorrectedPhotos", "rawPhotos"].includes(item.linkType) &&
-            !!item.link?.trim()
-            : item.linkType === backendApiKey && !!item.link?.trim()
+            ? ["colorCorrectedPhotos", "rawPhotos"].includes(item.linkType) && !!item.link?.trim()
+            : backendApiKey === "rawVideoClips"
+              ? ["rawVideoClips", "rawVideos"].includes(item.linkType) && !!item.link?.trim()
+              : item.linkType === backendApiKey && !!item.link?.trim()
         );
 
         const rawPhotosSubmitted =
