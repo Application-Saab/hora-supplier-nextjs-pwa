@@ -473,6 +473,7 @@ export default function SubFolder() {
                     fileType: contentType,
                     totalChunks,
                     folderName: `recentWork_${supplierID}`,
+                    inclusionType:"supplierUploads"
                 }),
             });
 
