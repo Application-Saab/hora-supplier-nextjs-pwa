@@ -412,6 +412,7 @@ export default function SubFolder() {
                     fileName: uniqueFileName,
                     fileType: file.type,
                     folderName: `recentWork_${supplierID}`,
+                    inclusionType:"supplierProfile"
                 },
                 { headers: { Authorization: `${token}` } }
             );
