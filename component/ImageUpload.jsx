@@ -45,7 +45,15 @@ const MIME_BY_EXT = {
 };
 
 
-const toInclusionKey = (name) => String(name || "").replace(/\s+/g, "");
+const toInclusionKey = (name) => {
+    const value = String(name || "").replace(/\s+/g, "");
+
+    if (value === "EditedVideo") {
+        return "editedVideos";
+    }
+
+    return value.charAt(0).toLowerCase() + value.slice(1);
+};
 const isRawVideoClips = (inclusionType) => toInclusionKey(inclusionType) === "RawVideoClips";
 const DEFAULT_TAB_KEY = toInclusionKey(DEFAULT_TAB);
 

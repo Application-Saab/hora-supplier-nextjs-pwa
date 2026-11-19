@@ -20,7 +20,7 @@ const OrderDetailTab = ({
   const router = useRouter();
   const decorationArray = Array.isArray(decorationItems) ? decorationItems : [decorationItems];
   const [tab, setTab] = useState("Menu");
-  const [activeUploadTab, setActiveUploadTab] = useState("images");
+  const [activeUploadTab, setActiveUploadTab] = useState("drive");
   const [albumImages, setAlbumImages] = useState([]);
   const [albumUploading, setAlbumUploading] = useState(false);
   const albumInputRef = useRef(null);
@@ -525,7 +525,7 @@ const OrderDetailTab = ({
           />
 
           <div className="upload-options-wrapper">
-            <div className="upload-tabs">
+            {/* <div className="upload-tabs">
               <button
                 className={`upload-tab ${activeUploadTab === "images" ? "active" : ""}`}
                 onClick={() => setActiveUploadTab("images")}
@@ -541,9 +541,9 @@ const OrderDetailTab = ({
                 <span>🔗</span>
                 Google Drive Links
               </button>
-            </div>
+            </div> */}
 
-            {activeUploadTab === "images" && (
+            {/* {activeUploadTab === "images" && (
               <div className="upload-tab-content image-upload-tab">
 
                 {(orderDetail.order_status === 3 || orderDetail.order_status === 6) ? (
@@ -577,7 +577,7 @@ const OrderDetailTab = ({
                 )}
 
               </div>
-            )}
+            )} */}
 
             {activeUploadTab === "drive" && (
               <>

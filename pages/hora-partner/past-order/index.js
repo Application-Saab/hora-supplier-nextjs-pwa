@@ -382,11 +382,27 @@ const GoogleDriveForm = () => {
             !!order?.orderDriveLink?.trim()
           );
 
-        // Check actual submission time
-        if (matchedLink?.submittedAt) {
-          const submittedAt = new Date(matchedLink.submittedAt).getTime();
+        let actualSubmittedAt = matchedLink?.submittedAt;
 
-          return !isNaN(submittedAt) && submittedAt > deadline;
+
+        if (!actualSubmittedAt && order?.imageUploadByApp === true) {
+          const appInclusions = order?.folderData?.[0]?.appUploadInclusions || [];
+
+          const appInclusion = appInclusions.find(
+            (item) =>
+              item.inclusionType === deadlineKey &&
+              item.value === true
+          );
+
+          actualSubmittedAt = appInclusion?.startedAt;
+        }
+
+        if (actualSubmittedAt) {
+          const submittedAt = new Date(actualSubmittedAt).getTime();
+
+          if (!isNaN(submittedAt)) {
+            return submittedAt > deadline;
+          }
         }
 
         // Submitted but timestamp unavailable

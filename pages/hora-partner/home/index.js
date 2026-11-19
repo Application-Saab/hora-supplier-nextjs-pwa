@@ -185,8 +185,12 @@ const Home = () => {
                       <b>Delivery timeline:</b>
                       <ul className="hora-vendor-sublist">
                         <li>• Color corrected drive link within <b>15 hrs</b></li>
-                        <li>• Edited photos in <b>24 hrs</b></li>
-                        <li>• Edited video in <b>3 days</b></li>
+                        <li>• Raw Video Clips <b>15 hrs</b></li>
+                        <li>• Edited photos <b>24 hrs</b></li>
+                        <li>• Edited video <b>3 Days</b></li>
+                        <li>• Teaser <b>3 Days</b></li>
+                        <li>• Edited Reels in <b>3 days</b></li>
+                        <li>• Drone Shoot <b>3 days</b></li>
                         <li>• Album delivery in <b>6 days</b></li>
                       </ul>
                     </li>
