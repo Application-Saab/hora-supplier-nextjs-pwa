@@ -8,6 +8,26 @@ import CommonImagePopup from './ImageComponents/CommonImagePopup';
 import axios from "axios";
 import { jsPDF } from "jspdf";
 
+
+
+
+const getImageBlob = async (image) => {
+    const imageUrl =
+        typeof image === "string" ? image : image?.originalUrl;
+
+    const filename = decodeURIComponent(
+        new URL(imageUrl).pathname.split("/").pop()
+    );
+
+    const response = await axios.get(
+        `${BASE_URL}/api/download-image?filename=${encodeURIComponent(filename)}&mode=view`,
+        { responseType: "blob" }
+    );
+
+    return response.data;
+};
+
+
 const DecorationOrderDetailsTab = ({
     orderDetail,
     decorationComments,
@@ -34,34 +54,20 @@ const DecorationOrderDetailsTab = ({
 
     const handleDownloadImage = async (image) => {
         try {
-            const imageUrl =
-                typeof image === "string"
-                    ? image
-                    : image?.originalUrl;
-
-            if (!imageUrl) {
-                console.error("Image URL missing:", image);
-                return;
-            }
-
-            const response = await axios.get(imageUrl, {
-                responseType: "blob",
-            });
-
-            const blobUrl = window.URL.createObjectURL(response.data);
+            const blob = await getImageBlob(image);
+            const url = URL.createObjectURL(blob);
 
             const link = document.createElement("a");
-            link.href = blobUrl;
-            link.download = imageUrl.split("/").pop();
-
+            link.href = url;
+            link.download = "verified-image.jpg";
             document.body.appendChild(link);
             link.click();
-            document.body.removeChild(link);
-
-            window.URL.revokeObjectURL(blobUrl);
-
+            link.remove();
+            alert("Image downloaded successfully!");
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
         } catch (error) {
             console.error("Image download failed:", error);
+            alert("Image download failed");
         }
     };
 
@@ -72,19 +78,14 @@ const DecorationOrderDetailsTab = ({
             for (let i = 0; i < allVerifiedImages.length; i++) {
                 const image = allVerifiedImages[i];
 
-                console.log("PDF IMAGE URL:", image.originalUrl);
-
-                // Original URL use hoga, filename/extension change nahi hoga
-                const response = await axios.get(image.originalUrl, {
-                    responseType: "blob",
-                });
+                const blob = await getImageBlob(image);
 
                 const reader = new FileReader();
 
                 const imageData = await new Promise((resolve, reject) => {
                     reader.onload = () => resolve(reader.result);
                     reader.onerror = reject;
-                    reader.readAsDataURL(response.data);
+                    reader.readAsDataURL(blob);
                 });
 
                 const img = new window.Image();
@@ -112,11 +113,6 @@ const DecorationOrderDetailsTab = ({
                 const x = (pageWidth - width) / 2;
                 const y = (pageHeight - height) / 2;
 
-                // Actual image format detect karo
-                const format = response.data.type.includes("png")
-                    ? "PNG"
-                    : "JPEG";
-
                 const canvas = document.createElement("canvas");
                 canvas.width = img.naturalWidth;
                 canvas.height = img.naturalHeight;
@@ -130,9 +126,11 @@ const DecorationOrderDetailsTab = ({
             }
 
             pdf.save("Item-Verified-Images.pdf");
+            alert("PDF downloaded successfully!");
 
         } catch (error) {
             console.error("PDF download failed:", error);
+            alert("PDF download failed. Please try again.");
         }
     };
 

@@ -134,51 +134,45 @@ export default function SubFolder() {
         return `91+ XXXXXX${last4}`;
     };
 
-
-    const handleDownloadImage = async (currentImage) => {
-        const url = currentImage?.originalUrl;
-
-        if (!url) {
-            console.error("Image URL is missing");
-            return;
-        }
-        let blobUrl;
-        try {
-            const response = await fetch(
-                url + (url.includes("?") ? "&" : "?") + "corsTest=" + Date.now(),
-                {
-                    method: "GET",
-                    mode: "cors",
-                    cache: "no-store",
+        const handleDownloadImage = async (currentImage) => {
+            const url = currentImage?.originalUrl;
+    
+            if (!url) {
+                console.error("Image URL is missing");
+                return;
+            }
+    
+            try {
+                const downloadUrl = `${BASE_URL}/api/internal/download-s3-video?url=${encodeURIComponent(url)}`;
+    
+                const response = await fetch(downloadUrl);
+    
+                if (!response.ok) {
+                    throw new Error("Image download failed");
                 }
-            );
-            if (!response.ok) {
-                throw new Error(`Download failed: ${response.status}`);
+    
+                const blob = await response.blob();
+                const filename =
+                    decodeURIComponent(new URL(url).pathname.split("/").pop()) ||
+                    "downloaded-image.jpg";
+    
+                const blobUrl = URL.createObjectURL(blob);
+    
+                const link = document.createElement("a");
+                link.href = blobUrl;
+                link.download = filename;
+    
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+                alert("Image downloaded successfully!");
+                setTimeout(() => URL.revokeObjectURL(blobUrl), 5000);
+    
+            } catch (error) {
+                console.error("Error downloading image:", error);
+                alert("Image download failed!");
             }
-            const blob = await response.blob();
-            const fileWithExt = decodeURIComponent(
-                new URL(url).pathname.split("/").pop()
-            );
-            const filename = fileWithExt || "downloaded-image.jpg";
-            blobUrl = URL.createObjectURL(blob);
-
-            const link = document.createElement("a");
-            link.href = blobUrl;
-            link.download = filename;
-
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
-
-        } catch (error) {
-            console.error("Error downloading the file:", error);
-        } finally {
-            if (blobUrl) {
-                setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
-            }
-        }
-    };
-
+        };
 
 
     const handleImageShare = async (imageUrl, id) => {

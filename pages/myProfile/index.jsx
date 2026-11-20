@@ -377,30 +377,21 @@ const Profile = () => {
             return;
         }
 
-        let blobUrl;
-
         try {
-            const response = await fetch(
-                url + (url.includes("?") ? "&" : "?") + "corsTest=" + Date.now(),
-                {
-                    method: "GET",
-                    mode: "cors",
-                    cache: "no-store",
-                }
-            );
+            const downloadUrl = `${BASE_URL}/api/internal/download-s3-video?url=${encodeURIComponent(url)}`;
+
+            const response = await fetch(downloadUrl);
+
             if (!response.ok) {
-                throw new Error(`Download failed: ${response.status}`);
+                throw new Error("Image download failed");
             }
 
             const blob = await response.blob();
+            const filename =
+                decodeURIComponent(new URL(url).pathname.split("/").pop()) ||
+                "downloaded-image.jpg";
 
-            const fileWithExt = decodeURIComponent(
-                new URL(url).pathname.split("/").pop()
-            );
-
-            const filename = fileWithExt || "downloaded-image.jpg";
-
-            blobUrl = URL.createObjectURL(blob);
+            const blobUrl = URL.createObjectURL(blob);
 
             const link = document.createElement("a");
             link.href = blobUrl;
@@ -409,13 +400,12 @@ const Profile = () => {
             document.body.appendChild(link);
             link.click();
             link.remove();
+            alert("Image downloaded successfully!");
+            setTimeout(() => URL.revokeObjectURL(blobUrl), 5000);
 
         } catch (error) {
-            console.error("Error downloading the file:", error);
-        } finally {
-            if (blobUrl) {
-                setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
-            }
+            console.error("Error downloading image:", error);
+            alert("Image download failed!");
         }
     };
     const getProfileData = async () => {
