@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import { useEffect } from "react";
-import ImageUpload from "../../../component/ImageUpload";
+import ImageUpload from "../../component/ImageUpload";
 
 const OrderUpload = () => {
     const router = useRouter();
@@ -12,7 +12,7 @@ const OrderUpload = () => {
         const supplierID = localStorage.getItem("supplierID");
 
         if (!supplierID) {
-            router.replace("/login");
+            router.replace("/hora-partner/login");
         }
     }, [router.isReady]);
 
