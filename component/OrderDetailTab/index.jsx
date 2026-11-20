@@ -67,7 +67,7 @@ const OrderDetailTab = ({
 
   const acceptOrder = async () => {
     try {
-      const token = await localStorage.getItem("token");
+      const token = await localStorage.getItem("supplierToken");
 
       const response = await fetch(BASE_URL + ACCEPT_ORDER, {
         method: "POST",
@@ -156,136 +156,136 @@ const OrderDetailTab = ({
     }
   }, [supplierID, orderDetail]);
 
-  return ( 
-       <>
+  return (
+    <>
       {loadingLimit ?
         <div>
           loading data...
         </div>
         :
-    <>
+        <>
 
-    
-      {parseInt(orderType) == 2 ? (
-        <div>
-          <div className="tabs">
-            <button
-              className={`${tab === "Menu" ? "tab active" : "tab"}`}
-              onClick={() => setTab("Menu")}
-            >
-              Menu
-            </button>
-            <button
-              className={`${tab === "Appliances" ? "tab active" : "tab"}`}
-              onClick={() => setTab("Appliances")}
-            >
-              Appliances
-            </button>
-            <button
-              className={`${tab === "Ingredients" ? "tab active" : "tab"}`}
-              onClick={() => setTab("Ingredients")}
-            >
-              Ingredients
-            </button>
-          </div>
-          {tab === "Menu" && (
-            <OrderDetailsMenu orderDetail={orderDetail} orderType={orderType} />
-          )}
-          {tab === "Appliances" && (
-            <OrderDetailsAppliances
+
+          {parseInt(orderType) == 2 ? (
+            <div>
+              <div className="tabs">
+                <button
+                  className={`${tab === "Menu" ? "tab active" : "tab"}`}
+                  onClick={() => setTab("Menu")}
+                >
+                  Menu
+                </button>
+                <button
+                  className={`${tab === "Appliances" ? "tab active" : "tab"}`}
+                  onClick={() => setTab("Appliances")}
+                >
+                  Appliances
+                </button>
+                <button
+                  className={`${tab === "Ingredients" ? "tab active" : "tab"}`}
+                  onClick={() => setTab("Ingredients")}
+                >
+                  Ingredients
+                </button>
+              </div>
+              {tab === "Menu" && (
+                <OrderDetailsMenu orderDetail={orderDetail} orderType={orderType} />
+              )}
+              {tab === "Appliances" && (
+                <OrderDetailsAppliances
+                  orderDetail={orderDetail}
+                  orderType={orderType}
+                />
+              )}
+              {tab === "Ingredients" && (
+                <OrderDetailsIngre
+                  orderDetail={orderDetail}
+                  orderType={orderType}
+                />
+              )}
+            </div>
+          ) : orderType == 6 ? (
+            <>
+              <OrderDetailsMenu orderDetail={orderDetail} orderType={orderType} />
+              <div className="food-delivert-inclusions-container">
+                <h5>Inclusions:</h5>
+                <ul className="list-unstyled-inclusion">
+                  <li>
+                    <span>✔️</span> Food Delivery at Door-Step
+                  </li>
+                  <li>
+                    <span>✔️</span> Free Delivery
+                  </li>
+                  <li>
+                    <span>✔️</span> Hygienically Packed boxes
+                  </li>
+                  <li>
+                    <span>✔️</span> Freshly Cooked Food
+                  </li>
+                  <li>
+                    <span>✔️</span> Quality Disposable set of Plates & Spoons &
+                    forks
+                  </li>
+                  <li>
+                    <span>✔️</span> Water bottles (small bottles equal to number of
+                    people)
+                  </li>
+                </ul>
+              </div>
+            </>
+          ) : orderType == 7 ? (
+            <>
+              <OrderDetailsMenu orderDetail={orderDetail} orderType={orderType} />
+              <div class="live-catering-container">
+                <div class="live-catering-title">Inclusion:</div>
+                <ul class="live-catering-inclusions">
+                  <li>✔️ Well Groomed Waiters (2 Nos)</li>
+                  <li>
+                    ✔️ Bone-china Crockery & Quality disposal for loose items.
+                  </li>
+                  <li>✔️ Transport (to & fro)</li>
+                  <li>✔️ Dustbin with Garbage bag</li>
+                  <li>✔️ Head Mask for waiters & chefs</li>
+                  <li>✔️ Tandoor/Other cooking Utensiles</li>
+                  <li>✔️ Chafing Dish</li>
+                  <li>✔️ Cocktail Napkins</li>
+                  <li>✔️ 2 Chef</li>
+                  <li>✔️ Water Can (Bisleri)(20 litres)</li>
+                  <li>✔️ Hand gloves</li>
+                </ul>
+                <div class="live-catering-title">Exclusion:</div>
+                <ul class="live-catering-exclusions">
+                  <li>
+                    ❌ Buffet table/kitchen table is in client scope (can be
+                    provided at additional cost)
+                  </li>
+                </ul>
+              </div>
+            </>
+          ) : orderType == 1 ? (
+            <DecorationOrderDetailsTab
               orderDetail={orderDetail}
-              orderType={orderType}
+              decorationComments={decorationComments}
+              decorationAddon={decorationAddon}
+              balanceAmount={balanceAmount}
+              decorationArray={decorationArray}
             />
-          )}
-          {tab === "Ingredients" && (
-            <OrderDetailsIngre
+          ) : orderType == 8 ? (
+            <PhotographyOrderDetailsTab
               orderDetail={orderDetail}
-              orderType={orderType}
+              decorationComments={decorationComments}
+              balanceAmount={balanceAmount}
+              bulletItems={bulletItems}
             />
-          )}
-        </div>
-      ) : orderType == 6 ? (
-        <>
-          <OrderDetailsMenu orderDetail={orderDetail} orderType={orderType} />
-          <div className="food-delivert-inclusions-container">
-            <h5>Inclusions:</h5>
-            <ul className="list-unstyled-inclusion">
-              <li>
-                <span>✔️</span> Food Delivery at Door-Step
-              </li>
-              <li>
-                <span>✔️</span> Free Delivery
-              </li>
-              <li>
-                <span>✔️</span> Hygienically Packed boxes
-              </li>
-              <li>
-                <span>✔️</span> Freshly Cooked Food
-              </li>
-              <li>
-                <span>✔️</span> Quality Disposable set of Plates & Spoons &
-                forks
-              </li>
-              <li>
-                <span>✔️</span> Water bottles (small bottles equal to number of
-                people)
-              </li>
-            </ul>
-          </div>
-        </>
-      ) : orderType == 7 ? (
-        <>
-          <OrderDetailsMenu orderDetail={orderDetail} orderType={orderType} />
-          <div class="live-catering-container">
-            <div class="live-catering-title">Inclusion:</div>
-            <ul class="live-catering-inclusions">
-              <li>✔️ Well Groomed Waiters (2 Nos)</li>
-              <li>
-                ✔️ Bone-china Crockery & Quality disposal for loose items.
-              </li>
-              <li>✔️ Transport (to & fro)</li>
-              <li>✔️ Dustbin with Garbage bag</li>
-              <li>✔️ Head Mask for waiters & chefs</li>
-              <li>✔️ Tandoor/Other cooking Utensiles</li>
-              <li>✔️ Chafing Dish</li>
-              <li>✔️ Cocktail Napkins</li>
-              <li>✔️ 2 Chef</li>
-              <li>✔️ Water Can (Bisleri)(20 litres)</li>
-              <li>✔️ Hand gloves</li>
-            </ul>
-            <div class="live-catering-title">Exclusion:</div>
-            <ul class="live-catering-exclusions">
-              <li>
-                ❌ Buffet table/kitchen table is in client scope (can be
-                provided at additional cost)
-              </li>
-            </ul>
-          </div>
-        </>
-      ) : orderType == 1 ? (
-        <DecorationOrderDetailsTab 
-        orderDetail={orderDetail}
-        decorationComments={decorationComments}
-        decorationAddon={decorationAddon}
-        balanceAmount={balanceAmount}
-        decorationArray={decorationArray}
-        />
-      ) : orderType == 8 ? (
-        <PhotographyOrderDetailsTab
-        orderDetail={orderDetail}
-        decorationComments={decorationComments}
-        balanceAmount={balanceAmount}
-        bulletItems={bulletItems}
-        />
-          ) : null}        
+          ) : null}
 
           {orderDetail?.isEmergencyOrder === true &&
             orderDetail?.isPaymentDone === false ? (
             emergencyResponse ? (
               <div
                 className={`emergency-order-message ${emergencyResponse.action === "yes"
-                    ? "emergency-accepted"
-                    : "emergency-rejected"
+                  ? "emergency-accepted"
+                  : "emergency-rejected"
                   }`}
               >
                 <p>
@@ -347,8 +347,8 @@ const OrderDetailTab = ({
               </div>
             </>
           )}
-    </> 
-    }
+        </>
+      }
     </>
   );
 };
