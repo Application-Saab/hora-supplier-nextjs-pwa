@@ -3,6 +3,8 @@ import type { AppProps } from 'next/app';
 import '../styles/login.css';
 import './orders-details/OrderDashboard.css';
 import '../component/OrderList/orderlist.css';
+import "./myProfile/profile.css";
+import "../component/ImageComponents/imagesComponents.css"
 
 import FirebaseNotificationManager from
   '../component/FirebaseNotificationManager';

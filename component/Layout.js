@@ -25,7 +25,7 @@ const Layout = ({ children, navTitle, backLink, showBackButton = true }) => {
   return (
     <div>
       <div style={{
-        height: "24px",
+        height: "40px",
         backgroundColor: "rgb(38, 35, 35)",
         width: "100%"
       }}
@@ -33,7 +33,9 @@ const Layout = ({ children, navTitle, backLink, showBackButton = true }) => {
       <Navbar backLink={backLink} navTitle={navTitle} showBackButton={showBackButton} />
       <div>
         <main>
-          {children}
+          <div className='main-app-container'>
+            {children}
+          </div>
         </main>
       </div>
     </div>

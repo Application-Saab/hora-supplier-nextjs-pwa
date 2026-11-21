@@ -2,6 +2,30 @@ import logo from '../assets/new_logo_light.png.png'
 import checkIcon from '../assets/checkIcon.png'
 import Image from "next/image";
 import { getInclusions } from '../utils/getInclusions'
+import { BASE_URL } from "../apiconstant/apiconstant";
+import { useState } from "react";
+import CommonImagePopup from './ImageComponents/CommonImagePopup';
+import axios from "axios";
+import { jsPDF } from "jspdf";
+
+
+
+
+const getImageBlob = async (image) => {
+    const imageUrl =
+        typeof image === "string" ? image : image?.originalUrl;
+
+    const filename = decodeURIComponent(
+        new URL(imageUrl).pathname.split("/").pop()
+    );
+
+    const response = await axios.get(
+        `${BASE_URL}/api/download-image?filename=${encodeURIComponent(filename)}&mode=view`,
+        { responseType: "blob" }
+    );
+
+    return response.data;
+};
 
 
 const DecorationOrderDetailsTab = ({
@@ -12,6 +36,104 @@ const DecorationOrderDetailsTab = ({
     decorationArray,
 }) => {
 
+    const [selectedImageIndex, setSelectedImageIndex] = useState(null);
+    const [verifiedImages, setVerifiedImages] = useState([]);
+
+    const allVerifiedImages = Object.entries(
+        orderDetail?.call_checklist?.itemsVerifiedImages || {}
+    ).flatMap(([itemName, images]) =>
+        Array.isArray(images)
+            ? images.map((image) => ({
+                originalUrl: `${BASE_URL}/api/uploads/${image}`,
+                thumbnailImageUrl: `${BASE_URL}/api/uploads/${image}`,
+                type: "image",
+                itemName,
+            }))
+            : []
+    );
+
+    const handleDownloadImage = async (image) => {
+        try {
+            const blob = await getImageBlob(image);
+            const url = URL.createObjectURL(blob);
+
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "verified-image.jpg";
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            alert("Image downloaded successfully!");
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+        } catch (error) {
+            console.error("Image download failed:", error);
+            alert("Image download failed");
+        }
+    };
+
+    const handleDownloadPDF = async () => {
+        try {
+            const pdf = new jsPDF("p", "mm", "a4");
+
+            for (let i = 0; i < allVerifiedImages.length; i++) {
+                const image = allVerifiedImages[i];
+
+                const blob = await getImageBlob(image);
+
+                const reader = new FileReader();
+
+                const imageData = await new Promise((resolve, reject) => {
+                    reader.onload = () => resolve(reader.result);
+                    reader.onerror = reject;
+                    reader.readAsDataURL(blob);
+                });
+
+                const img = new window.Image();
+
+                await new Promise((resolve, reject) => {
+                    img.onload = resolve;
+                    img.onerror = reject;
+                    img.src = imageData;
+                });
+
+                if (i > 0) pdf.addPage();
+
+                const pageWidth = 210;
+                const pageHeight = 297;
+                const margin = 10;
+
+                const ratio = Math.min(
+                    (pageWidth - margin * 2) / img.width,
+                    (pageHeight - margin * 2) / img.height
+                );
+
+                const width = img.width * ratio;
+                const height = img.height * ratio;
+
+                const x = (pageWidth - width) / 2;
+                const y = (pageHeight - height) / 2;
+
+                const canvas = document.createElement("canvas");
+                canvas.width = img.naturalWidth;
+                canvas.height = img.naturalHeight;
+
+                const ctx = canvas.getContext("2d");
+                ctx.drawImage(img, 0, 0);
+
+                const rgbImageData = canvas.toDataURL("image/jpeg", 0.95);
+
+                pdf.addImage(rgbImageData, "JPEG", x, y, width, height);
+            }
+
+            pdf.save("Item-Verified-Images.pdf");
+            alert("PDF downloaded successfully!");
+
+        } catch (error) {
+            console.error("PDF download failed:", error);
+            alert("PDF download failed. Please try again.");
+        }
+    };
+
     return (
         <div className="decoration-container">
             {decorationArray?.map((product, index) => {
@@ -19,14 +141,24 @@ const DecorationOrderDetailsTab = ({
                     <div key={index} className="orderlist-decDetails">
                         <div className="myOrder-decDetailsLeft">
                             <>
-                                <Image
-                                    src={`https://horaservices.com/api/uploads/compressed_webp/${product?.featured_images?.length > 0 && product?.featured_images[0]?.fileName?.split(".")[0]
-                                        }.webp`}
-                                    alt={product?.name}
-                                    height={300}
-                                    width={300}
-                                    style={{ height: "auto", width: "100%" }}
-                                />
+                                {orderDetail?.customProductImage ? (
+                                    <Image
+                                        src={`https://horaservices.com/api/uploads/compressed_webp/${orderDetail?.customProductImage}`}
+                                        width={300}
+                                        height={300}
+                                        alt="Custom Product"
+                                        style={{ height: "auto", width: "100%" }}
+                                    />
+                                ) : (
+                                    <Image
+                                        src={`https://horaservices.com/api/uploads/compressed_webp/${product?.featured_images?.length > 0 && product?.featured_images[0]?.fileName?.split(".")[0]
+                                            }.webp`}
+                                        alt={product?.name}
+                                        height={300}
+                                        width={300}
+                                        style={{ height: "auto", width: "100%" }}
+                                    />
+                                )}
                                 <div
                                     style={{
                                         position: "absolute",
@@ -46,10 +178,10 @@ const DecorationOrderDetailsTab = ({
                                 {product?.name}
                             </h1>
                             {product?.inclusion && product?.inclusion.length > 0 && (
-                            <div style={{ marginBottom: "12px" }}>
-                                {getInclusions(product?.inclusion, true)}
-                            </div>
-                    )}
+                                <div style={{ marginBottom: "12px" }}>
+                                    {getInclusions(product?.inclusion, true)}
+                                </div>
+                            )}
 
                             {orderDetail.customInclusion?.length > 0 && (
                                 <div style={{ marginBottom: "12px" }}>
@@ -136,12 +268,87 @@ const DecorationOrderDetailsTab = ({
                                                     />
                                                 </div>
 
-                                                <div className='info-text'>{comment}</div> 
+                                                <div className='info-text'>{comment}</div>
                                             </div>
                                         ))}
                                     </div>
                                 )}
                             </div>
+
+                            <div className="fw-semiBold myOrderDetails-heading">
+                                Item Verified
+                            </div>
+                            {orderDetail?.call_checklist?.itemsVerifiedImages &&
+                                Object.keys(orderDetail.call_checklist.itemsVerifiedImages).length > 0 && (
+                                    <div style={{ marginBottom: "12px" }}>
+                                        {Object.entries(orderDetail.call_checklist.itemsVerifiedImages).map(
+                                            ([itemName, images]) => (
+                                                <div key={itemName} style={{ marginBottom: "10px" }}>
+
+                                                    <div className="info-row">
+                                                        <div className="info-icon">
+                                                            <Image
+                                                                src={checkIcon}
+                                                                alt="Info"
+                                                                className="info-icon-img"
+                                                            />
+                                                        </div>
+
+                                                        <div>{itemName}</div>
+                                                    </div>
+
+                                                    <div
+                                                        style={{
+                                                            display: "flex",
+                                                            gap: "6px",
+                                                            marginLeft: "25px",
+                                                            marginTop: "5px",
+                                                            flexWrap: "wrap",
+                                                        }}
+                                                    >
+                                                        {Array.isArray(images) &&
+                                                            images.map((image, index) => {
+                                                                const imageUrl = `${BASE_URL}/api/uploads/${image}`;
+                                                                return (
+                                                                    <div
+                                                                        key={index}
+                                                                        style={{
+                                                                            display: "flex",
+                                                                            flexDirection: "column",
+                                                                            alignItems: "center",
+                                                                            gap: "4px",
+                                                                        }}
+                                                                    >
+                                                                        <Image
+                                                                            src={imageUrl}
+                                                                            alt={itemName}
+                                                                            width={55}
+                                                                            height={45}
+                                                                            onClick={() => {
+                                                                                setVerifiedImages(allVerifiedImages);
+                                                                                setSelectedImageIndex(
+                                                                                    allVerifiedImages.findIndex(
+                                                                                        (img) => img.originalUrl === imageUrl
+                                                                                    )
+                                                                                );
+                                                                            }}
+                                                                            style={{
+                                                                                width: "55px",
+                                                                                height: "45px",
+                                                                                objectFit: "cover",
+                                                                                borderRadius: "4px",
+                                                                                cursor: "pointer",
+                                                                            }}
+                                                                        />
+                                                                    </div>
+                                                                );
+                                                            })}
+                                                    </div>
+                                                </div>
+                                            )
+                                        )}
+                                    </div>
+                                )}
                             <div className="fw-semiBold myOrderDetails-heading">
                                 Price Details
                             </div>
@@ -177,6 +384,91 @@ const DecorationOrderDetailsTab = ({
                     </div>
                 );
             })}
+
+            <CommonImagePopup
+                images={verifiedImages}
+                selectedIndex={selectedImageIndex}
+                setSelectedIndex={setSelectedImageIndex}
+                onClose={() => setSelectedImageIndex(null)}
+                renderFooter={(image) => (
+                    <div
+                        style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            gap: "15px",
+                            padding: "12px",
+                            marginBottom: "60px",
+                        }}
+                    >
+                        <button
+                            type="button"
+                            onClick={() => handleDownloadImage(image)}
+                            style={{
+                                background: "#97538C",
+                                color: "#fff",
+                                border: "none",
+                                padding: "10px 20px",
+                                borderRadius: "6px",
+                                cursor: "pointer",
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: "5px",
+                                fontWeight: "500",
+                            }}
+                        >
+                            <svg
+                                width="18"
+                                height="18"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                            >
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                <polyline points="7 10 12 15 17 10" />
+                                <line x1="12" y1="15" x2="12" y2="3" />
+                            </svg>
+                            Download Image
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={handleDownloadPDF}
+                            style={{
+                                background: "#97538C",
+                                color: "#fff",
+                                border: "none",
+                                padding: "10px 20px",
+                                borderRadius: "6px",
+                                cursor: "pointer",
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: "5px",
+                                fontWeight: "500",
+                            }}
+                        >
+                            <svg
+                                width="18"
+                                height="18"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                            >
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                <polyline points="7 10 12 15 17 10" />
+                                <line x1="12" y1="15" x2="12" y2="3" />
+                            </svg>
+                            Download All as PDF
+                        </button>
+                    </div>
+                )}
+            />
+
         </div>
     )
 };
