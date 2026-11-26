@@ -7,7 +7,9 @@ import { useState } from "react";
 import CommonImagePopup from './ImageComponents/CommonImagePopup';
 import axios from "axios";
 import { jsPDF } from "jspdf";
+import { registerPlugin } from "@capacitor/core";
 
+const MediaSave = registerPlugin("MediaSave");
 
 
 
@@ -52,22 +54,36 @@ const DecorationOrderDetailsTab = ({
             : []
     );
 
+
+    const blobToBase64 = (blob) => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+
+            reader.onloadend = () => {
+                const result = reader.result;
+                resolve(result.split(",")[1]);
+            };
+
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+        });
+    };
+
     const handleDownloadImage = async (image) => {
         try {
             const blob = await getImageBlob(image);
-            const url = URL.createObjectURL(blob);
+            const base64Data = await blobToBase64(blob);
 
-            const link = document.createElement("a");
-            link.href = url;
-            link.download = "verified-image.jpg";
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
-            alert("Image downloaded successfully!");
-            setTimeout(() => URL.revokeObjectURL(url), 1000);
+            await MediaSave.saveFile({
+                fileName: `verified-image-${Date.now()}.jpg`,
+                mimeType: "image/jpeg",
+                data: base64Data
+            });
+
+            alert("Image saved successfully in Gallery!");
         } catch (error) {
             console.error("Image download failed:", error);
-            alert("Image download failed");
+            alert("Image download failed. Please try again.");
         }
     };
 
@@ -125,8 +141,16 @@ const DecorationOrderDetailsTab = ({
                 pdf.addImage(rgbImageData, "JPEG", x, y, width, height);
             }
 
-            pdf.save("Item-Verified-Images.pdf");
-            alert("PDF downloaded successfully!");
+            const pdfBlob = pdf.output("blob");
+            const base64Data = await blobToBase64(pdfBlob);
+
+            await MediaSave.saveFile({
+                fileName: "Item-Verified-Images.pdf",
+                mimeType: "application/pdf",
+                data: base64Data
+            });
+
+            alert("PDF saved successfully in Downloads!");
 
         } catch (error) {
             console.error("PDF download failed:", error);
