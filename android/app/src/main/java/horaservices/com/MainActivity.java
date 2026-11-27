@@ -17,11 +17,12 @@ public class MainActivity extends BridgeActivity {
     private static final int UPDATE_REQUEST_CODE = 100;
     private AppUpdateManager appUpdateManager;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        checkForUpdate(); // 🔥 start me hi check
-    }
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+    registerPlugin(MediaSavePlugin.class);
+    super.onCreate(savedInstanceState);
+    checkForUpdate();
+}
 
     private void checkForUpdate() {
         appUpdateManager = AppUpdateManagerFactory.create(this);

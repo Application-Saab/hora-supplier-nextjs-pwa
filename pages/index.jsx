@@ -27,7 +27,7 @@ const Login = () => {
 
 
   const loadAuthToken = () => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("supplierToken");
     const supplierJobProfile = localStorage.getItem("supplierJobProfile");
 
     if (token) {
@@ -81,12 +81,12 @@ const Login = () => {
         phone: mobileNumber, role: "supplier"
       }
       const device_token = localStorage.getItem("fmcToken");
-      if(device_token){
+      if (device_token) {
         body.device_token = device_token;
       }
       const response = await axios.post(
         `${BASE_URL}${OTP_GENERATE_END_POINT}`,
-         body,
+        body,
         { headers: { "Content-Type": "application/json" } }
       );
 
@@ -118,13 +118,21 @@ const Login = () => {
       if (response.data.status === API_SUCCESS_CODE) {
         localStorage.setItem("isLoggedIn", "true");
         localStorage.setItem("mobileNumber", mobileNumber);
-        localStorage.setItem("token", response.data.token);
+        localStorage.setItem("supplierToken", response.data.token);
         localStorage.setItem("supplierID", response.data.data._id);
         const supplierJobProfile = localStorage.getItem("supplierJobProfile");
         await saveAuthToken(response.data.token);
         localStorage.setItem("supplierJobProfile", response?.data?.data?.job_profile);
-     
-        if (supplierJobProfile != null) {
+        const supplierResponse = response?.data?.data;
+
+        const isProfileComplete =
+          supplierResponse?.name &&
+          supplierResponse?.age &&
+          supplierResponse?.experience &&
+          supplierResponse?.city &&
+          supplierResponse?.job_profile;
+
+        if (isProfileComplete) {
           router.push("/home");
         } else {
           router.push("/Profile");
@@ -152,7 +160,7 @@ const Login = () => {
     setOtp("");
     setIsOtpSent(true);
     setOtpError("");
-    resetTimer(); 
+    resetTimer();
     await sendOtp();
   };
 
@@ -162,13 +170,13 @@ const Login = () => {
     <div className="login-container">
       <div className="login-content">
         <div className="login-header">
-        <Image
-                  src={logo}
-                  alt="logo"
-                  width={60}
-                  height={60}
-                
-              />
+          <Image
+            src={logo}
+            alt="logo"
+            width={60}
+            height={60}
+
+          />
           <h2>Login to Hora!</h2>
         </div>
         <div className="otp-login">
@@ -225,18 +233,18 @@ const Login = () => {
             </div>
           ) : !otpError && isOtpSent && (
             <div className="d-flex justify-content-center mt-4 resend-timer">
-     {isTimeUp ? (
-      <p
-        style={{ color: "#9252AA", cursor: "pointer" }}
-        onClick={resendOtp}
-      >
-        Resend Code
-      </p>
-    ) : (
-      <p className="m-0 p-0 text-center" style={{ color: "#8A8A8A" }}>
-        Resend Code in {time} sec
-      </p>
-    )}
+              {isTimeUp ? (
+                <p
+                  style={{ color: "#9252AA", cursor: "pointer" }}
+                  onClick={resendOtp}
+                >
+                  Resend Code
+                </p>
+              ) : (
+                <p className="m-0 p-0 text-center" style={{ color: "#8A8A8A" }}>
+                  Resend Code in {time} sec
+                </p>
+              )}
             </div>
           )}
 

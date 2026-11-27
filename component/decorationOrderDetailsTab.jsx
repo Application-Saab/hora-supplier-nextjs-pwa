@@ -71,43 +71,24 @@ const DecorationOrderDetailsTab = ({
 
     const handleDownloadImage = async (image) => {
         try {
-            alert("STEP 1: Fetching image...");
-
             const blob = await getImageBlob(image);
-
-            alert(
-                `STEP 2: Image received\nSize: ${blob.size}\nType: ${blob.type}`
-            );
-
             const base64Data = await blobToBase64(blob);
 
-            alert(`STEP 3: Base64 ready\nLength: ${base64Data.length}`);
-
-            alert("STEP 4: Calling Android native plugin...");
-
             const result = await MediaSave.saveFile({
-                fileName: `verified-image-${Date.now()}.jpg`,
+                fileName: `verified-image-${Date.now()}-${orderDetail?.order_id ? orderDetail?.order_id + 10800 : ""}.jpg`,
                 mimeType: "image/jpeg",
                 data: base64Data
             });
-
-            alert(
-                `STEP 5: SAVE SUCCESS!\nURI: ${result.uri}\nSize: ${result.size}`
-            );
-
+            alert(`SAVE SUCCESS!\nURI: ${result.uri}\nSize: ${result.size}`);
         } catch (error) {
             console.error("DOWNLOAD ERROR:", error);
-
-            alert(
-                `DOWNLOAD FAILED!\nMessage: ${error.message}\nCode: ${error.code || "N/A"}`
-            );
+            alert(`DOWNLOAD FAILED!\nMessage: ${error.message}\nCode: ${error.code || "N/A"}`);
         }
     };
 
     const handleDownloadPDF = async () => {
         try {
             const pdf = new jsPDF("p", "mm", "a4");
-
             for (let i = 0; i < allVerifiedImages.length; i++) {
                 const image = allVerifiedImages[i];
 
@@ -161,17 +142,23 @@ const DecorationOrderDetailsTab = ({
             const pdfBlob = pdf.output("blob");
             const base64Data = await blobToBase64(pdfBlob);
 
-            await MediaSave.saveFile({
-                fileName: "Item-Verified-Images.pdf",
+            const result = await MediaSave.saveFile({
+                fileName: `Item-Verified-Images-${orderDetail?.order_id ? orderDetail?.order_id + 10800 : ""}.pdf`,
                 mimeType: "application/pdf",
                 data: base64Data
             });
 
-            alert("PDF saved successfully in Downloads!");
+            alert(`SAVE SUCCESS
+URI: ${result.uri}
+Size: ${result.size} bytes`);
 
         } catch (error) {
-            console.error("PDF download failed:", error);
-            alert("PDF download failed. Please try again.");
+            console.error("PDF DOWNLOAD ERROR:", error);
+
+            alert(`PDF DOWNLOAD FAILED!
+Message: ${error.message}
+Code: ${error.code || "N/A"}
+Stack: ${error.stack || "N/A"}`);
         }
     };
 
@@ -317,7 +304,7 @@ const DecorationOrderDetailsTab = ({
                             </div>
 
                             <div className="fw-semiBold myOrderDetails-heading">
-                                Item Verified test
+                                Item Verified
                             </div>
                             {orderDetail?.call_checklist?.itemsVerifiedImages &&
                                 Object.keys(orderDetail.call_checklist.itemsVerifiedImages).length > 0 && (
