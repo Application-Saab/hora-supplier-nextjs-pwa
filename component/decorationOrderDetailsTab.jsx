@@ -317,7 +317,7 @@ const DecorationOrderDetailsTab = ({
                             </div>
 
                             <div className="fw-semiBold myOrderDetails-heading">
-                                Item Verified
+                                Item Verified test
                             </div>
                             {orderDetail?.call_checklist?.itemsVerifiedImages &&
                                 Object.keys(orderDetail.call_checklist.itemsVerifiedImages).length > 0 && (
