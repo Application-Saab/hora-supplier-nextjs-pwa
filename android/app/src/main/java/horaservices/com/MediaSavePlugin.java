@@ -11,6 +11,7 @@ import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
+import com.getcapacitor.JSObject;
 
 import java.io.OutputStream;
 
@@ -80,7 +81,12 @@ public class MediaSavePlugin extends Plugin {
                         .update(uri, completed, null, null);
             }
 
-            call.resolve();
+            JSObject result = new JSObject();
+result.put("success", true);
+result.put("uri", uri.toString());
+result.put("size", bytes.length);
+
+call.resolve(result);
 
         } catch (Exception e) {
 
@@ -90,7 +96,10 @@ public class MediaSavePlugin extends Plugin {
                 );
             }
 
-            call.reject("File save failed: " + e.getMessage(), e);
+            call.reject(
+    "NATIVE ERROR: " + e.getClass().getSimpleName()
+    + " - " + e.getMessage(), e
+);
         }
     }
 }

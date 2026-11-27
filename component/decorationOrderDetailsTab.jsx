@@ -71,19 +71,36 @@ const DecorationOrderDetailsTab = ({
 
     const handleDownloadImage = async (image) => {
         try {
+            alert("STEP 1: Fetching image...");
+
             const blob = await getImageBlob(image);
+
+            alert(
+                `STEP 2: Image received\nSize: ${blob.size}\nType: ${blob.type}`
+            );
+
             const base64Data = await blobToBase64(blob);
 
-            await MediaSave.saveFile({
+            alert(`STEP 3: Base64 ready\nLength: ${base64Data.length}`);
+
+            alert("STEP 4: Calling Android native plugin...");
+
+            const result = await MediaSave.saveFile({
                 fileName: `verified-image-${Date.now()}.jpg`,
                 mimeType: "image/jpeg",
                 data: base64Data
             });
 
-            alert("Image saved successfully in Gallery!");
+            alert(
+                `STEP 5: SAVE SUCCESS!\nURI: ${result.uri}\nSize: ${result.size}`
+            );
+
         } catch (error) {
-            console.error("Image download failed:", error);
-            alert("Image download failed. Please try again.");
+            console.error("DOWNLOAD ERROR:", error);
+
+            alert(
+                `DOWNLOAD FAILED!\nMessage: ${error.message}\nCode: ${error.code || "N/A"}`
+            );
         }
     };
 
