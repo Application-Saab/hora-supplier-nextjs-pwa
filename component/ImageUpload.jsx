@@ -1010,7 +1010,7 @@ export default function ImageUpload({ orderId, customerId }) {
     return (
         <Layout backLink={orderDetailsBackLink}>
             <div className="subfolder-page">
-                <div className="subfolder-banner">
+                {/* <div className="subfolder-banner">
                     <img
                         src={backIcon.src}
                         alt="Back"
@@ -1018,6 +1018,25 @@ export default function ImageUpload({ orderId, customerId }) {
                         onClick={() => router.push(orderDetailsBackLink)}
                     />
                     <h1 className="subfolder-title">{viewOnlyOrderId}</h1>
+                </div> */}
+
+                <div className="subfolder-banner">
+                    <img
+                        src={backIcon.src}
+                        alt="Back"
+                        className="subfolder-back-icon"
+                        onClick={() => router.push(`/hora-partner/myProfile`)}
+                    />
+
+                    <img
+                        src="/subFolderBanner.svg"
+                        alt="Banner"
+                        className="subfolder-banner-image"
+                    />
+
+                    <h1 className="subfolder-title">
+                        {loading ? "" : subFolder?.folderName || ""}
+                    </h1>
                 </div>
 
                 <div className="subfolder-content">

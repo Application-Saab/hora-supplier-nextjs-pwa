@@ -951,14 +951,20 @@ min-height: 36.96px !important;
     height: 90px;
     margin-top: 7px;
     position: relative;
-
-    background-image: url("/subFolderBanner.svg");
-    background-size: cover;
-    background-position: center;
-
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow: hidden;
+}
+
+.subfolder-banner-image {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    object-fit: cover;
+    z-index: 0;
 }
 
 .subfolder-back-icon {

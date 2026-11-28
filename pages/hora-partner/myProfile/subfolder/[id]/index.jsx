@@ -724,12 +724,32 @@ export default function SubFolder() {
     return (
         <Layout backLink="/hora-partner/myProfile">
             <div className="subfolder-page">
+                {/* <div className="subfolder-banner">
+                    <img
+                        src={backIcon.src}
+                        alt="Back"
+                        className="subfolder-back-icon"
+                        onClick={() => router.push(`/hora-partner/myProfile`)}
+                    />
+
+                    <h1 className="subfolder-title">
+                        {loading ? "" : subFolder?.folderName || ""}
+                    </h1>
+                </div> */}
+
+
                 <div className="subfolder-banner">
                     <img
                         src={backIcon.src}
                         alt="Back"
                         className="subfolder-back-icon"
                         onClick={() => router.push(`/hora-partner/myProfile`)}
+                    />
+
+                    <img
+                        src="/subFolderBanner.svg"
+                        alt="Banner"
+                        className="subfolder-banner-image"
                     />
 
                     <h1 className="subfolder-title">
